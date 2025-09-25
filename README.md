@@ -66,7 +66,6 @@ Hello World!
 ```
 
 也可以加上运行截图、效果图（推荐）：
-![示例图片](docs/example.png)
 
 ---
 
