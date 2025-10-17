@@ -16,7 +16,7 @@ MCPBOX is an open-source MCP service management platform designed to help users 
 
 ### ✨ Key Features
 
-- **🤖 AI-Powered Development**: Leverage Claude Code to build applications using natural language
+- **🤖 Multi-protocol compatibility and conversion**: Leverage Claude Code to build applications using natural language
 - **🔒 Isolated Sandboxes**: Each project runs in its own Kubernetes-managed container environment
 - **🗄️ Automatic Database Provisioning**: PostgreSQL databases created on-demand using KubeBlocks
 - **🌐 Web-Based Terminal**: Integrated ttyd terminal for direct environment access
@@ -79,15 +79,22 @@ For web projects, you can add:
 
 ---
 
-## 📌 Examples  
-Provide typical usage examples:  
+## 📌 Frequently Asked Questions  
 
-```python
-from your_project import YourModule
+### Why choose MCPBOX instead of other management platforms?
+MCPBOX is an open-source management platform designed specifically for the MCP service ecosystem, unlike general-purpose admin systems.
+It supports MCP stdio ↔ SSE protocol conversion, three connection modes, and visualized traffic monitoring, enabling end-to-end management from configuration to distribution.
+Compared to other platforms, MCPBOX focuses on unified management of large-model toolchains and intelligent services, making development and operations more efficient and secure.
 
-result = YourModule.do_something("example")
-print(result)
-```
+### What unique advantages does MCPBOX have compared to similar products?
+
+- Stronger protocol compatibility: Natively supports MCP stdio/SSE conversion and multiple connection methods.
+
+- More flexible operating modes: Switch freely among Direct, Proxy, and Hosted modes.
+
+- Enhanced security mechanisms: Supports Token authentication and multi-level permission control.
+
+- More intuitive operations experience: Graphical interface displays real-time service status and traffic data.
 
 Output:  
 ```
