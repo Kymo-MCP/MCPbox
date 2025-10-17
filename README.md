@@ -40,6 +40,9 @@ pip install -r requirements.txt
 
 ---
 
+## ⚡ Deployment
+For detailed deployment steps, please refer to https://kymo-mcp.github.io/mcp-box-deploy/ for details.
+
 ## 🚀 Usage  
 Explain how to run the project. Include command-line or script instructions if necessary:  
 
