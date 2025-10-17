@@ -77,12 +77,11 @@ You can also add screenshots of the running project or effect images (recommende
 
 ## 🤝 Contributing  
 Contributions are welcome!  
-
-1. Fork this project  
-2. Create your feature branch (`git checkout -b feature/your-feature`)  
-3. Commit your changes (`git commit -m 'Add some feature'`)  
-4. Push to the branch (`git push origin feature/your-feature`)  
-5. Open a Pull Request  
+- New features and improvements
+- Documentation improvements
+- Bug reports and fixes
+- Translations and suggestions
+Join our Discord community for discussion and support.
 
 ---
 
