@@ -17,11 +17,11 @@ MCPBOX is an open-source MCP service management platform designed to help users 
 ### ✨ Key Features
 
 - **🛡️ Multi-protocol Compatibility and Conversion**: Supports automatic conversion of MCP's stdio configuration protocol to SSE configuration protocol, simplifying the development and integration process and enabling seamless docking and communication between systems of different architectures.
-- 🔗 Multi-mode Connection Management: Provides three protocol modes: direct connection mode, proxy mode, and managed mode, meeting multi-scenario requirements from local debugging to enterprise-level hosting.
-- 📊 MCP Service Visual Monitoring: Real-time displays the running status, traffic data, and log records of each MCP instance in the form of charts and lists, helping administrators intuitively grasp the service health status.
-- 🧩 Modular Service Management System: Includes four modules: template management, instance management, environment management, and code package management, forming a complete service lifecycle management loop.
-- 🔒 Security Authentication and Permission Control: Supports Token-based security verification mechanism. Administrators can assign different levels of access permissions to achieve secure multi-user collaboration and resource isolation.
-- 🚀 One-stop Distribution and Deployment Capability: Provides quick release, configuration, and distribution functions for MCP services, supports batch operations and multi-environment synchronization, allowing teams to efficiently complete service deployment and sharing.
+- **🔗 Multi-mode Connection Management**: Provides three protocol modes: direct connection mode, proxy mode, and managed mode, meeting multi-scenario requirements from local debugging to enterprise-level hosting.
+- **📊 MCP Service Visual Monitoring**: Real-time displays the running status, traffic data, and log records of each MCP instance in the form of charts and lists, helping administrators intuitively grasp the service health status.
+- **🧩 Modular Service Management System**: Includes four modules: template management, instance management, environment management, and code package management, forming a complete service lifecycle management loop.
+- **🔒 Security Authentication and Permission Control**: Supports Token-based security verification mechanism. Administrators can assign different levels of access permissions to achieve secure multi-user collaboration and resource isolation.
+- **🚀 One-stop Distribution and Deployment Capability**: Provides quick release, configuration, and distribution functions for MCP services, supports batch operations and multi-environment synchronization, allowing teams to efficiently complete service deployment and sharing.
 ---
 
 ## 🛠️ Technology Stack
