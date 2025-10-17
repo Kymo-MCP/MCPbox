@@ -77,12 +77,15 @@ You can also add screenshots of the running project or effect images (recommende
 ---
 
 ## 🤝 Contributing  
-Contributions are welcome!  
+Contributions of any kind are welcome!
+
 - New features and improvements
 - Documentation improvements
-- Bug reports and fixes
-- Translations and suggestions
-Join our [Discord](https://discord.com/channels/1428637640856571995/1428637896532820038) community for discussion and support.
+- Bug reports & fixes
+- Translations & suggestions
+
+Welcome to Join our [Discord](https://discord.com/channels/1428637640856571995/1428637896532820038) community for discussion and support.
+
 
 ---
 
