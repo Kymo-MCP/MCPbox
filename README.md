@@ -81,7 +81,7 @@ Contributions are welcome!
 - Documentation improvements
 - Bug reports and fixes
 - Translations and suggestions
-Join our Discord community for discussion and support.
+Join our [Discord](https://discord.com/channels/1428637640856571995/1428637896532820038) community for discussion and support.
 
 ---
 
