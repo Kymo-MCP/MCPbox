@@ -25,6 +25,28 @@ MCPBOX is an open-source MCP service management platform designed to help users 
 - **🎨 Modern UI**: Built with Next.js 15, Tailwind CSS v4, and Shadcn/UI components
 ---
 
+## 🛠️ Technology Stack
+
+### Frontend
+- **Framework**: Next.js 15.5.4 (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS v4
+- **UI Components**: Shadcn/UI
+- **State Management**: React Hooks
+
+### Backend
+- **Runtime**: Node.js
+- **API**: Next.js API Routes
+- **Database ORM**: Prisma
+- **Authentication**: NextAuth v5 with GitHub OAuth
+
+### Infrastructure
+- **Container Orchestration**: Kubernetes
+- **Database**: PostgreSQL (via KubeBlocks)
+- **Web Terminal**: ttyd
+- **Container Image**: fullstack-web-runtime (Custom Docker image with development tools）
+
+  
 ## 🛠️ Installation  
 Provide detailed steps to install and configure the environment.  
 ```bash
