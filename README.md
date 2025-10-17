@@ -1,22 +1,35 @@
-# MCPBOX  
+# MCPBOX - MCPBOX - An open source platform focused on efficient management of MCP services, and a mid- and back-end management tool that supports protocol conversion.
 
-A one-sentence overview of your project, so others can quickly understand what it does.  
-
+<div align="center">
+  <img src="https://img.shields.io/badge/Next.js-15.5.4-black?style=for-the-badge&logo=next.js" alt="Next.js"/>
+  <img src="https://img.shields.io/badge/TypeScript-5.0-blue?style=for-the-badge&logo=typescript" alt="TypeScript"/>
+  <img src="https://img.shields.io/badge/PostgreSQL-14-blue?style=for-the-badge&logo=postgresql" alt="PostgreSQL"/>
+  <img src="https://img.shields.io/badge/Kubernetes-1.28-326ce5?style=for-the-badge&logo=kubernetes" alt="Kubernetes"/>
+  <img src="https://img.shields.io/badge/Claude_Code-AI-purple?style=for-the-badge" alt="Claude Code"/>
+</div>
 ---
 
-## 📖 Introduction  
+## 🚀 Overview
+
+MCPBOX is an open-source MCP service management platform designed to help users efficiently manage and organize MCP services. As a mid- and back-end product, MCPBOX supports converting MCP's stdio configuration protocol to the SSE configuration protocol, making it easier for administrators to distribute these protocols to other users. It also incorporates a unique token verification mechanism to ensure secure and controllable use.
+
+<img width="1511" height="775" alt="image" src="https://github.com/user-attachments/assets/4683a22c-800b-45b7-91a3-6ed5114ea3c9" />
+
 Briefly explain the project’s background, objectives, and the problems it solves.  
 - Why was this project initiated?  
 - What is the core value of the project?  
 
 ---
 
-## ✨ Features  
-List the main features of the project:  
-- ✅ Feature 1  
-- ✅ Feature 2  
-- ✅ Feature 3  
+### ✨ Key Features
 
+- **🤖 AI-Powered Development**: Leverage Claude Code to build applications using natural language
+- **🔒 Isolated Sandboxes**: Each project runs in its own Kubernetes-managed container environment
+- **🗄️ Automatic Database Provisioning**: PostgreSQL databases created on-demand using KubeBlocks
+- **🌐 Web-Based Terminal**: Integrated ttyd terminal for direct environment access
+- **🔐 GitHub Integration**: Seamless code repository management and version control
+- **⚡ Real-time Progress Tracking**: Visual feedback during sandbox creation and deployment
+- **🎨 Modern UI**: Built with Next.js 15, Tailwind CSS v4, and Shadcn/UI components
 ---
 
 ## 🛠️ Installation  
