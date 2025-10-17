@@ -26,6 +26,7 @@ MCPBOX is an open-source MCP service management platform designed to help users 
 - **🎨 Modern UI**: Built with Next.js 15, Tailwind CSS v4, and Shadcn/UI components
 ---
 
+W33
 ## 🛠️ Installation  
 Provide detailed steps to install and configure the environment.  
 ```bash
