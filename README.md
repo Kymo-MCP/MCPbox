@@ -11,17 +11,18 @@
 ## 🚀 Overview
 
 MCPBOX is an open-source MCP service management platform designed to help users efficiently manage and organize MCP services. As a mid- and back-end product, MCPBOX supports converting MCP's stdio configuration protocol to the SSE configuration protocol, making it easier for administrators to distribute these protocols to other users. It also incorporates a unique token verification mechanism to ensure secure and controllable use.
-<img width="1920" height="911" alt="867d671a9265e155d8988908e1932aef" src="https://github.com/user-attachments/assets/faef6d8e-d0d7-4203-8f07-cfeb66e24fd7" />
+<img width="1879" height="896" alt="image" src="https://github.com/user-attachments/assets/ee804f92-7e69-419b-8cfc-d5676783fe3d" />
+
 
 
 ### ✨ Key Features
 
 - **🛡️ Multi-protocol Compatibility and Conversion**: Supports automatic conversion of MCP's stdio configuration protocol to SSE configuration protocol, simplifying the development and integration process and enabling seamless docking and communication between systems of different architectures.
 - **🔗 Multi-mode Connection Management**: Provides three protocol modes: direct connection mode, proxy mode, and managed mode, meeting multi-scenario requirements from local debugging to enterprise-level hosting.
-- **📊 MCP Service Visual Monitoring**: Real-time displays the running status, traffic data, and log records of each MCP instance in the form of charts and lists, helping administrators intuitively grasp the service health status.
+- **📊 MCP Service Visual Monitoring**: Displays the running status, traffic data, and log records of each MCP instance in real time in the form of a list, helping administrators intuitively grasp the service health status.
 - **🧩 Modular Service Management System**: Includes four modules: template management, instance management, environment management, and code package management, forming a complete service lifecycle management loop.
 - **🔒 Security Authentication and Permission Control**: Supports Token-based security verification mechanism. Administrators can assign different levels of access permissions to achieve secure multi-user collaboration and resource isolation.
-- **🚀 One-stop Distribution and Deployment Capability**: Provides quick release, configuration, and distribution functions for MCP services, supports batch operations and multi-environment synchronization, allowing teams to efficiently complete service deployment and sharing.
+- **🚀 One-stop Distribution and Deployment Capability**: Provides quick release, configuration, and distribution functions for MCP services, helping teams efficiently complete service deployment and sharing.
 ---
 
 ## 🛠️ Technology Stack
