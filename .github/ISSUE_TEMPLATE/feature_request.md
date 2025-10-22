@@ -7,14 +7,14 @@ assignees: ''
 
 ---
 
-**Is your feature request related to a problem? Please describe.**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+**Current Problem / 当前问题**
+What problem are you trying to solve? / 您想要解决什么问题？
 
-**Describe the solution you'd like**
-A clear and concise description of what you want to happen.
+**Proposed Solution / 建议方案**
+How would you like this to work? / 您期望的解决方案是什么？
 
-**Describe alternatives you've considered**
-A clear and concise description of any alternative solutions or features you've considered.
+**Alternatives / 替代方案**
+Have you considered any alternatives? / 您是否考虑过其他解决方案？
 
-**Additional context**
-Add any other context or screenshots about the feature request here.
+**Additional Context / 补充说明**
+Any screenshots, mockups, or relevant information? / 有任何截图、设计图或相关信息吗？
