@@ -9,9 +9,10 @@
 </div>
 
 ## 🚀 Overview
-
-MCPBOX is an open-source MCP service management platform designed to help users efficiently manage and organize MCP services. As a mid- and back-end product, MCPBOX supports converting MCP's stdio configuration protocol to the SSE configuration protocol, making it easier for administrators to distribute these protocols to other users. It also incorporates a unique token verification mechanism to ensure secure and controllable use.
 <img width="1879" height="896" alt="image" src="https://github.com/user-attachments/assets/ee804f92-7e69-419b-8cfc-d5676783fe3d" />
+
+
+MCP BOX is a lightweight platform focused on agile management of MCP services. It relies on containerization technology to achieve rapid deployment and remote access of local MCP services, while also supporting centralized configuration management of external MCP services. Its core functions are designed around "deployment convenience" and "basic management capabilities."
 
 
 
