@@ -3,14 +3,14 @@ server:
 
 database:
   mysql:
-    host: 134.175.7.229
-    port: 31306
+    host: "mysql-svc"
+    port: 3306
     database: mcp_dev
     username: mcp_user
     password: dev-password
   redis:
-    host: 134.175.7.229
-    port: 31379
+    host: "redis-svc"
+    port: 6379
     password: "dev-redis-password"
     db: 0
 

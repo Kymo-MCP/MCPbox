@@ -11,8 +11,8 @@ kubernetes:
   defaultConfigFilePath: "/Users/nolan/Library/Application Support/Lens/kubeconfigs/f0a69454-ed44-4575-9330-826ff5e3ab2d-pasted-kubeconfig.yaml"
 database:
   mysql:
-    host: 134.175.7.229
-    port: 31306
+    host: "mysql-svc"
+    port: 3306
     database: mcp_dev
     username: mcp_user
     password: dev-password
