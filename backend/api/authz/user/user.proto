@@ -1,0 +1,351 @@
+syntax = "proto3";
+
+package authz.user;
+
+import "google/api/annotations.proto";
+
+option go_package = "qm-mcp-server/api/authz/user";
+
+// 用户状态枚举
+enum UserStatus {
+  // @inject_tag: json:"unspecified" desc:"未指定状态"
+  UserStatusUnspecified = 0; 
+  // @inject_tag: json:"enabled" desc:"启用"
+  UserStatusEnabled = 1;     
+  // @inject_tag: json:"disabled" desc:"禁用"
+  UserStatusDisabled = 2;    
+}
+
+// 用户来源枚举
+enum UserSource {
+  // @inject_tag: json:"unspecified" desc:"未指定来源"
+  UserSourceUnspecified = 0; 
+  // @inject_tag: json:"system" desc:"系统创建"
+  UserSourceSystem = 1;      
+  // @inject_tag: json:"register" desc:"用户注册"
+  UserSourceRegister = 2;    
+  // @inject_tag: json:"import" desc:"批量导入"
+  UserSourceImport = 3;      
+}
+
+// 用户信息
+message SysUser {
+  // @inject_tag: json:"id" desc:"用户ID"
+  int64 id = 1;                
+  // @inject_tag: json:"username" desc:"用户名"
+  string username = 2;         
+  // @inject_tag: json:"fullName" desc:"用户全名"
+  string fullName = 3;         
+  // @inject_tag: json:"password" desc:"密码"
+  string password = 4;         
+  // @inject_tag: json:"email" desc:"电子邮箱"
+  string email = 5;            
+  // @inject_tag: json:"phone" desc:"手机号码"
+  string phone = 6;            
+  // @inject_tag: json:"avatar" desc:"头像URL"
+  string avatar = 7;           
+  // @inject_tag: json:"status" desc:"用户状态"
+  UserStatus status = 8;       
+  // @inject_tag: json:"source" desc:"用户来源"
+  UserSource source = 9;       
+  // @inject_tag: json:"deptId" desc:"部门ID"
+  int64 deptId = 10;           
+  // @inject_tag: json:"deptName" desc:"部门名称"
+  string deptName = 11;        
+  // @inject_tag: json:"roleIds" desc:"角色ID列表"
+  repeated int64 roleIds = 12; 
+  // @inject_tag: json:"roleNames" desc:"角色名称列表"
+  repeated string roleNames = 13; 
+  // @inject_tag: json:"createdAt" desc:"创建时间"
+  int64 createdAt = 14;        
+  // @inject_tag: json:"updatedAt" desc:"更新时间"
+  int64 updatedAt = 15;        
+  // @inject_tag: json:"createdBy" desc:"创建者"
+  string createdBy = 16;       
+  // @inject_tag: json:"updatedBy" desc:"更新者"
+  string updatedBy = 17;       
+}
+
+// 分页信息
+message PageInfo {
+  // @inject_tag: json:"page" desc:"当前页码"
+  int32 page = 1;        
+  // @inject_tag: json:"size" desc:"每页大小"
+  int32 size = 2;        
+  // @inject_tag: json:"total" desc:"总记录数"
+  int64 total = 3;       
+  // @inject_tag: json:"pages" desc:"总页数"
+  int32 pages = 4;       
+}
+
+// 分页用户响应
+message PageSysUser {
+  // @inject_tag: json:"users" desc:"用户列表"
+  repeated SysUser users = 1;  
+  // @inject_tag: json:"pageInfo" desc:"分页信息"
+  PageInfo pageInfo = 2;       
+}
+
+// 查询条件
+message UserQuery {
+  // @inject_tag: json:"blurry" desc:"模糊查询(用户名/邮箱)"
+  string blurry = 1;           
+  // @inject_tag: json:"deptId" desc:"部门ID"
+  int64 deptId = 2;            
+  // @inject_tag: json:"status" desc:"用户状态"
+  UserStatus status = 3;       
+  // @inject_tag: json:"createdAt" desc:"创建时间范围[开始时间, 结束时间]"
+  repeated int64 createdAt = 4; 
+}
+
+// 权限树节点
+message PermissionTreeNode {
+  // @inject_tag: json:"id" desc:"权限ID"
+  int64 id = 1;                           
+  // @inject_tag: json:"name" desc:"权限名称"
+  string name = 2;                        
+  // @inject_tag: json:"code" desc:"权限编码"
+  string code = 3;                        
+  // @inject_tag: json:"type" desc:"权限类型"
+  int32 type = 4;                         
+  // @inject_tag: json:"parentId" desc:"父权限ID"
+  int64 parentId = 5;                     
+  // @inject_tag: json:"path" desc:"路由路径"
+  string path = 6;                        
+  // @inject_tag: json:"component" desc:"组件路径"
+  string component = 7;                   
+  // @inject_tag: json:"icon" desc:"图标"
+  string icon = 8;                        
+  // @inject_tag: json:"sort" desc:"排序字段"
+  int32 sort = 9;                         
+  // @inject_tag: json:"status" desc:"权限状态"
+  string status = 10;                     
+  // @inject_tag: json:"activePath" desc:"默认选中"
+  string activePath = 11;                 
+  // @inject_tag: json:"componentName" desc:"组件名称"
+  string componentName = 12;              
+  // @inject_tag: json:"hidden" desc:"是否隐藏"
+  bool hidden = 13;                       
+  // @inject_tag: json:"createdAt" desc:"创建时间"
+  int64 createdAt = 14;                   
+  // @inject_tag: json:"iframe" desc:"是否iframe"
+  bool iframe = 15;                       
+  // @inject_tag: json:"children" desc:"子权限列表"
+  repeated PermissionTreeNode children = 16; 
+}
+
+// 创建用户请求
+message CreateUserRequest {
+  // @inject_tag: json:"username" desc:"用户名"
+  string username = 1;         
+  // @inject_tag: json:"fullName" desc:"用户全名"
+  string fullName = 2;         
+  // @inject_tag: json:"password" desc:"密码"
+  string password = 3;         
+  // @inject_tag: json:"email" desc:"电子邮箱"
+  string email = 4;            
+  // @inject_tag: json:"phone" desc:"手机号码"
+  string phone = 5;            
+  // @inject_tag: json:"avatar" desc:"头像URL"
+  string avatar = 6;           
+  // @inject_tag: json:"status" desc:"用户状态"
+  UserStatus status = 7;       
+  // @inject_tag: json:"deptId" desc:"部门ID"
+  int64 deptId = 8;            
+  // @inject_tag: json:"roleIds" desc:"角色ID列表"
+  repeated int64 roleIds = 9;  
+}
+
+// 创建用户响应
+message CreateUserResponse {
+  // @inject_tag: json:"user" desc:"创建的用户信息"
+  SysUser user = 1;  
+}
+
+// 更新用户请求
+message UpdateUserRequest {
+  // @inject_tag: json:"id" desc:"用户ID"
+  int64 id = 1;                
+  // @inject_tag: json:"fullName" desc:"用户全名"
+  string fullName = 2;         
+  // @inject_tag: json:"email" desc:"电子邮箱"
+  string email = 3;            
+  // @inject_tag: json:"phone" desc:"手机号码"
+  string phone = 4;            
+  // @inject_tag: json:"avatar" desc:"头像URL"
+  string avatar = 5;           
+  // @inject_tag: json:"status" desc:"用户状态"
+  UserStatus status = 6;       
+  // @inject_tag: json:"deptId" desc:"部门ID"
+  int64 deptId = 7;            
+  // @inject_tag: json:"roleIds" desc:"角色ID列表"
+  repeated int64 roleIds = 8;  
+}
+
+// 更新用户响应
+message UpdateUserResponse {
+  // @inject_tag: json:"user" desc:"更新后的用户信息"
+  SysUser user = 1;  
+}
+
+// 获取用户请求
+message GetUserByIdRequest {
+  // @inject_tag: json:"id" uri:"id" desc:"用户ID"
+  int64 id = 1;  
+}
+
+// 获取用户响应
+message GetUserByIdResponse {
+  // @inject_tag: json:"user" desc:"用户信息"
+  SysUser user = 1;  
+}
+
+// 删除用户请求
+message DeleteUserRequest {
+  // @inject_tag: json:"id" uri:"id" desc:"用户ID"
+  int64 id = 1;  
+}
+
+// 删除用户响应
+message DeleteUserResponse {
+  // 空响应
+}
+
+// 用户列表请求
+message ListUsersRequest {
+  // @inject_tag: json:"query" form:"query" desc:"查询条件"
+  UserQuery query = 1;    
+  // @inject_tag: json:"pageInfo" form:"pageInfo" desc:"分页信息"
+  PageInfo pageInfo = 2;  
+}
+
+// 用户列表响应
+message ListUsersResponse {
+  // @inject_tag: json:"data" desc:"分页用户数据"
+  PageSysUser data = 1;  
+}
+
+// 获取当前用户请求
+message GetCurrentUserRequest {
+  // 空请求，从token中获取用户信息
+}
+
+// 获取当前用户响应
+message GetCurrentUserResponse {
+  // @inject_tag: json:"user" desc:"当前用户信息"
+  SysUser user = 1;  
+}
+
+// 获取用户权限请求
+message GetUserPermissionsRequest {
+  // @inject_tag: json:"userId" uri:"id" desc:"用户ID，可选，不传则获取当前用户权限"
+  int64 userId = 1;  
+}
+
+// 获取用户权限响应
+message GetUserPermissionsResponse {
+  // @inject_tag: json:"permissions" desc:"权限树列表"
+  repeated PermissionTreeNode permissions = 1;  
+}
+
+// 更新密码请求
+message UpdatePasswordRequest {
+  // @inject_tag: json:"oldPassword" desc:"原密码"
+  string oldPassword = 1;  
+  // @inject_tag: json:"newPassword" desc:"新密码"
+  string newPassword = 2;
+  // @inject_tag: json:"confirmPassword" desc:"确认新密码"
+  string confirmPassword = 3;
+}
+
+// 更新密码响应
+message UpdatePasswordResponse {
+  // 空响应
+}
+
+// 更新头像请求
+message UpdateAvatarRequest {
+  // @inject_tag: json:"image" form:"image" desc:"头像文件"
+  bytes image = 1;  
+}
+
+// 更新头像响应
+message UpdateAvatarResponse {
+  // @inject_tag: json:"path" desc:"图片路径"
+  string path = 1;
+  // @inject_tag: json:"size" desc:"图片大小"
+  int64 size = 2;
+  // @inject_tag: json:"mime" desc:"图片MIME类型"
+  string mime = 3;
+}
+
+// 用户服务
+service UserService {
+  // 创建用户
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse) {
+    option (google.api.http) = {
+      post: "/authz/users"
+      body: "*"
+    };
+  }
+
+  // 更新用户
+  rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse) {
+    option (google.api.http) = {
+      put: "/authz/users/{id}"
+      body: "*"
+    };
+  }
+
+  // 获取用户详情
+  rpc GetUserById(GetUserByIdRequest) returns (GetUserByIdResponse) {
+    option (google.api.http) = {
+      get: "/authz/users/{id}"
+    };
+  }
+
+  // 删除用户
+  rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse) {
+    option (google.api.http) = {
+      delete: "/authz/users/{id}"
+    };
+  }
+
+  // 分页查询用户列表
+  rpc ListUsers(ListUsersRequest) returns (ListUsersResponse) {
+    option (google.api.http) = {
+      post: "/authz/users/list-users"
+      body: "*"
+    };
+  }
+
+  // 获取当前登录用户详情
+  rpc GetCurrentUser(GetCurrentUserRequest) returns (GetCurrentUserResponse) {
+    option (google.api.http) = {
+      get: "/authz/users/get-current-user"
+    };
+  }
+
+  // 获取用户的权限列表
+  rpc GetUserPermissions(GetUserPermissionsRequest) returns (GetUserPermissionsResponse) {
+    option (google.api.http) = {
+      get: "/authz/users/permission-list"
+    };
+  }
+
+  // 更新用户密码
+  rpc UpdatePassword(UpdatePasswordRequest) returns (UpdatePasswordResponse) {
+    option (google.api.http) = {
+      put: "/authz/users/update-password"
+      body: "*"
+    };
+  }
+
+  // 更新用户头像
+  rpc UpdateAvatar(UpdateAvatarRequest) returns (UpdateAvatarResponse) {
+    option (google.api.http) = {
+      put: "/authz/users/update-avatar"
+      body: "*"
+    };
+  }
+}

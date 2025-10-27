@@ -1,0 +1,15 @@
+version: v1
+name: buf.build/nolan/qm-mcp-server
+deps:
+  - buf.build/googleapis/googleapis
+  - buf.build/gogo/protobuf
+  - buf.build/opentelemetry/opentelemetry
+lint:
+  use:
+    - DEFAULT
+breaking:
+  use:
+    - FILE
+build:
+  excludes:
+    - vendor

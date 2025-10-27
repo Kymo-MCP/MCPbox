@@ -1,0 +1,9 @@
+{
+  "4000": "Invalid signature",
+  "4001": "Signature expired",
+  "4002": "Missing signature",
+  "4003": "Replay attack",
+  "4004": "Invalid timestamp",
+  "4005": "Key not found",
+  "4006": "Key expired"
+}

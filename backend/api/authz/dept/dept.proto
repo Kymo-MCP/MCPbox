@@ -1,0 +1,267 @@
+syntax = "proto3";
+
+package dept;
+
+option go_package = "qm-mcp-server/api/authz/dept";
+
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+
+// DeptStatus 部门状态枚举
+enum DeptStatus {
+    DeptStatusUnspecified = 0;
+    DeptStatusDisabled = 1;    // 禁用
+    DeptStatusEnabled = 2;     // 启用
+}
+
+// SysDept 系统部门信息
+message SysDept {
+    // @inject_tag: json:"id" desc:"部门ID"
+    int64 id = 1;
+    // @inject_tag: json:"name" desc:"部门名称"
+    string name = 2;
+    // @inject_tag: json:"parentId" desc:"父部门ID"
+    int64 parentId = 3;
+    // @inject_tag: json:"sort" desc:"排序"
+    int32 sort = 4;
+    // @inject_tag: json:"status" desc:"状态"
+    DeptStatus status = 5;
+    // @inject_tag: json:"createdAt" desc:"创建时间"
+    int64 createdAt = 6;
+    // @inject_tag: json:"updatedAt" desc:"更新时间"
+    int64 updatedAt = 7;
+    // @inject_tag: json:"createdBy" desc:"创建人"
+  string createdBy = 8;
+  // @inject_tag: json:"updatedBy" desc:"更新人"
+  string updatedBy = 9;
+    // @inject_tag: json:"children,omitempty" desc:"子部门列表"
+    repeated SysDept children = 10;
+}
+
+// DeptDTO 部门数据传输对象
+message DeptDTO {
+    // @inject_tag: json:"id,omitempty" desc:"部门ID"
+    int64 id = 1;
+    // @inject_tag: json:"name" binding:"required,max=50" desc:"部门名称"
+    string name = 2;
+    // @inject_tag: json:"parentId" desc:"父部门ID"
+    int64 parentId = 3;
+    // @inject_tag: json:"sort" desc:"排序"
+    int32 sort = 4;
+    // @inject_tag: json:"status" binding:"required" desc:"状态"
+    DeptStatus status = 5;
+}
+
+// DeptQueryDTO 部门查询条件
+message DeptQueryDTO {
+    // @inject_tag: json:"page" desc:"页码，从1开始"
+    int32 page = 1;
+    // @inject_tag: json:"size" desc:"每页条数"
+    int32 size = 2;
+    // @inject_tag: json:"name,omitempty" desc:"部门名称"
+    string name = 3;
+    // @inject_tag: json:"code,omitempty" desc:"部门编码"
+    string code = 4;
+    // @inject_tag: json:"status,omitempty" desc:"状态：0-禁用，1-启用"
+    int32 status = 5;
+}
+
+// CreateDeptRequest 创建部门请求
+message CreateDeptRequest {
+    // @inject_tag: json:"dept" binding:"required" desc:"部门信息"
+    DeptDTO dept = 1;
+}
+
+// CreateDeptResponse 创建部门响应
+message CreateDeptResponse {
+    // @inject_tag: json:"code" desc:"响应码"
+    int32 code = 1;
+    // @inject_tag: json:"message" desc:"响应消息"
+    string message = 2;
+    // @inject_tag: json:"data" desc:"部门数据"
+    SysDept data = 3;
+}
+
+// UpdateDeptRequest 更新部门请求
+message UpdateDeptRequest {
+    // @inject_tag: json:"dept" binding:"required" desc:"部门信息"
+    DeptDTO dept = 1;
+}
+
+// UpdateDeptResponse 更新部门响应
+message UpdateDeptResponse {
+    // @inject_tag: json:"code" desc:"响应码"
+    int32 code = 1;
+    // @inject_tag: json:"message" desc:"响应消息"
+    string message = 2;
+    // @inject_tag: json:"data" desc:"部门数据"
+    SysDept data = 3;
+}
+
+// GetDeptByIdRequest 根据ID获取部门请求
+message GetDeptByIdRequest {
+    // @inject_tag: json:"id" uri:"id" binding:"required" desc:"部门ID"
+    int64 id = 1;
+}
+
+// GetDeptByIdResponse 根据ID获取部门响应
+message GetDeptByIdResponse {
+    // @inject_tag: json:"code" desc:"响应码"
+    int32 code = 1;
+    // @inject_tag: json:"message" desc:"响应消息"
+    string message = 2;
+    // @inject_tag: json:"data" desc:"部门数据"
+    SysDept data = 3;
+}
+
+// DeleteDeptRequest 删除部门请求
+message DeleteDeptRequest {
+    // @inject_tag: json:"id" uri:"id" binding:"required" desc:"部门ID"
+    string id = 1;
+}
+
+// DeleteDeptResponse 删除部门响应
+message DeleteDeptResponse {
+    // @inject_tag: json:"code" desc:"响应码"
+    int32 code = 1;
+    // @inject_tag: json:"message" desc:"响应消息"
+    string message = 2;
+}
+
+// GetDeptTreeRequest 获取部门树形结构请求
+message GetDeptTreeRequest {
+    // 无需参数
+}
+
+// GetDeptTreeResponse 获取部门树形结构响应
+message GetDeptTreeResponse {
+    // @inject_tag: json:"code" desc:"响应码"
+    int32 code = 1;
+    // @inject_tag: json:"message" desc:"响应消息"
+    string message = 2;
+    // @inject_tag: json:"data" desc:"部门树形数据"
+    repeated SysDept data = 3;
+}
+
+// ListDeptsRequest 查询部门列表请求
+message ListDeptsRequest {
+    // @inject_tag: json:"page" form:"page" query:"page" desc:"页码，从1开始"
+    int32 page = 1;
+    // @inject_tag: json:"size" form:"size" query:"size" desc:"每页条数"
+    int32 size = 2;
+    // @inject_tag: json:"name" form:"name" query:"name" desc:"部门名称"
+    string name = 3;
+    // @inject_tag: json:"code" form:"code" query:"code" desc:"部门编码"
+    string code = 4;
+    // @inject_tag: json:"status" form:"status" query:"status" desc:"状态：0-禁用，1-启用"
+    int32 status = 5;
+}
+
+// ListDeptsResponse 查询部门列表响应
+message ListDeptsResponse {
+    // @inject_tag: json:"code" desc:"响应码"
+    int32 code = 1;
+    // @inject_tag: json:"message" desc:"响应消息"
+    string message = 2;
+    // @inject_tag: json:"data" desc:"部门列表数据"
+    repeated SysDept data = 3;
+}
+
+// PageDeptsRequest 分页查询部门列表请求
+message PageDeptsRequest {
+    // @inject_tag: json:"query" binding:"required" desc:"查询条件"
+    DeptQueryDTO query = 1;
+}
+
+// PageInfo 分页信息
+message PageInfo {
+    // @inject_tag: json:"totalElements" desc:"总元素数"
+    int64 totalElements = 1;
+    // @inject_tag: json:"totalPages" desc:"总页数"
+    int32 totalPages = 2;
+    // @inject_tag: json:"first" desc:"是否第一页"
+    bool first = 3;
+    // @inject_tag: json:"last" desc:"是否最后一页"
+    bool last = 4;
+    // @inject_tag: json:"size" desc:"页面大小"
+    int32 size = 5;
+    // @inject_tag: json:"number" desc:"页码"
+    int32 number = 6;
+    // @inject_tag: json:"numberOfElements" desc:"当前页元素数"
+    int32 numberOfElements = 7;
+    // @inject_tag: json:"empty" desc:"是否为空"
+    bool empty = 8;
+}
+
+// PageSysDept 分页部门数据
+message PageSysDept {
+    // @inject_tag: json:"depts" desc:"部门列表"
+  repeated SysDept depts = 1;
+    // @inject_tag: json:"pageInfo" desc:"分页信息"
+    PageInfo pageInfo = 2;
+}
+
+// PageDeptsResponse 分页查询部门列表响应
+message PageDeptsResponse {
+    // @inject_tag: json:"code" desc:"响应码"
+    int32 code = 1;
+    // @inject_tag: json:"message" desc:"响应消息"
+    string message = 2;
+    // @inject_tag: json:"data" desc:"分页部门数据"
+    PageSysDept data = 3;
+}
+
+// DeptService 部门管理服务
+service DeptService {
+    // 创建部门
+    rpc CreateDept(CreateDeptRequest) returns (CreateDeptResponse) {
+        option (google.api.http) = {
+            post: "/authz/depts"
+            body: "dept"
+        };
+    }
+    
+    // 更新部门
+    rpc UpdateDept(UpdateDeptRequest) returns (UpdateDeptResponse) {
+        option (google.api.http) = {
+            put: "/authz/depts"
+            body: "dept"
+        };
+    }
+    
+    // 根据ID获取部门详情
+    rpc GetDeptById(GetDeptByIdRequest) returns (GetDeptByIdResponse) {
+        option (google.api.http) = {
+            get: "/authz/depts/{id}"
+        };
+    }
+    
+    // 删除部门
+    rpc DeleteDept(DeleteDeptRequest) returns (DeleteDeptResponse) {
+        option (google.api.http) = {
+            delete: "/authz/depts/{id}"
+        };
+    }
+    
+    // 获取部门树形结构
+    rpc GetDeptTree(GetDeptTreeRequest) returns (GetDeptTreeResponse) {
+        option (google.api.http) = {
+            get: "/authz/depts/tree"
+        };
+    }
+    
+    // 查询部门列表
+    rpc ListDepts(ListDeptsRequest) returns (ListDeptsResponse) {
+        option (google.api.http) = {
+            get: "/authz/depts/list"
+        };
+    }
+    
+    // 分页查询部门列表
+    rpc PageDepts(PageDeptsRequest) returns (PageDeptsResponse) {
+        option (google.api.http) = {
+            post: "/authz/depts/page-depts"
+            body: "query"
+        };
+    }
+}

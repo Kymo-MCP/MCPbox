@@ -1,0 +1,310 @@
+syntax = "proto3";
+
+package authz.role;
+
+import "google/api/annotations.proto";
+
+option go_package = "qm-mcp-server/api/authz/role";
+
+// 角色状态枚举
+enum RoleStatus {
+  // @inject_tag: json:"unspecified" desc:"未指定状态"
+  RoleStatusUnspecified = 0; 
+  // @inject_tag: json:"enabled" desc:"启用"
+  RoleStatusEnabled = 1;     
+  // @inject_tag: json:"disabled" desc:"禁用"
+  RoleStatusDisabled = 2;    
+}
+
+// 权限类型枚举
+enum PermissionType {
+  // @inject_tag: json:"unspecified" desc:"未指定类型"
+  PermissionTypeUnspecified = 0; 
+  // @inject_tag: json:"menu" desc:"菜单"
+  PermissionTypeMenu = 1;        
+  // @inject_tag: json:"button" desc:"按钮"
+  PermissionTypeButton = 2;      
+}
+
+// 角色信息
+message SysRole {
+  // @inject_tag: json:"id" desc:"角色ID"
+  int64 id = 1;                
+  // @inject_tag: json:"name" desc:"角色名称"
+  string name = 2;             
+  // @inject_tag: json:"code" desc:"角色编码"
+  string code = 3;             
+  // @inject_tag: json:"description" desc:"角色描述"
+  string description = 4;      
+  // @inject_tag: json:"status" desc:"角色状态"
+  RoleStatus status = 5;       
+  // @inject_tag: json:"sort" desc:"排序字段"
+  int32 sort = 6;              
+  // @inject_tag: json:"createdAt" desc:"创建时间"
+  int64 createdAt = 7;         
+  // @inject_tag: json:"updatedAt" desc:"更新时间"
+  int64 updatedAt = 8;         
+  // @inject_tag: json:"createdBy" desc:"创建者"
+  string createdBy = 9;        
+  // @inject_tag: json:"updatedBy" desc:"更新者"
+  string updatedBy = 10;       
+}
+
+// 权限信息
+message SysPermission {
+  // @inject_tag: json:"id" desc:"权限ID"
+  int64 id = 1;                    
+  // @inject_tag: json:"name" desc:"权限名称"
+  string name = 2;                 
+  // @inject_tag: json:"code" desc:"权限编码"
+  string code = 3;                 
+  // @inject_tag: json:"type" desc:"权限类型"
+  PermissionType type = 4;         
+  // @inject_tag: json:"parentId" desc:"父权限ID"
+  int64 parentId = 5;              
+  // @inject_tag: json:"path" desc:"路由路径"
+  string path = 6;                 
+  // @inject_tag: json:"component" desc:"组件路径"
+  string component = 7;            
+  // @inject_tag: json:"icon" desc:"图标"
+  string icon = 8;                 
+  // @inject_tag: json:"sort" desc:"排序字段"
+  int32 sort = 9;                  
+  // @inject_tag: json:"status" desc:"权限状态"
+  string status = 10;              
+  // @inject_tag: json:"activePath" desc:"默认选中"
+  string activePath = 11;          
+  // @inject_tag: json:"componentName" desc:"组件名称"
+  string componentName = 12;       
+  // @inject_tag: json:"hidden" desc:"是否隐藏"
+  bool hidden = 13;                
+  // @inject_tag: json:"createdAt" desc:"创建时间"
+  int64 createdAt = 14;            
+  // @inject_tag: json:"iframe" desc:"是否iframe"
+  bool iframe = 15;                
+}
+
+// 权限树节点
+message PermissionTreeNode {
+  // @inject_tag: json:"id" desc:"权限ID"
+  int64 id = 1;                           
+  // @inject_tag: json:"name" desc:"权限名称"
+  string name = 2;                        
+  // @inject_tag: json:"code" desc:"权限编码"
+  string code = 3;                        
+  // @inject_tag: json:"type" desc:"权限类型"
+  int32 type = 4;                         
+  // @inject_tag: json:"parentId" desc:"父权限ID"
+  int64 parentId = 5;                     
+  // @inject_tag: json:"path" desc:"路由路径"
+  string path = 6;                        
+  // @inject_tag: json:"component" desc:"组件路径"
+  string component = 7;                   
+  // @inject_tag: json:"icon" desc:"图标"
+  string icon = 8;                        
+  // @inject_tag: json:"sort" desc:"排序字段"
+  int32 sort = 9;                         
+  // @inject_tag: json:"status" desc:"权限状态"
+  string status = 10;                     
+  // @inject_tag: json:"activePath" desc:"默认选中"
+  string activePath = 11;                 
+  // @inject_tag: json:"componentName" desc:"组件名称"
+  string componentName = 12;              
+  // @inject_tag: json:"hidden" desc:"是否隐藏"
+  bool hidden = 13;                       
+  // @inject_tag: json:"createdAt" desc:"创建时间"
+  int64 createdAt = 14;                   
+  // @inject_tag: json:"iframe" desc:"是否iframe"
+  bool iframe = 15;                       
+  // @inject_tag: json:"children" desc:"子权限列表"
+  repeated PermissionTreeNode children = 16; 
+}
+
+// RoleDTO 角色数据传输对象
+message RoleDTO {
+// @inject_tag: json:"id,omitempty" desc:"角色ID"
+  
+    int64 id = 1;
+// @inject_tag: json:"name" binding:"required,max=50" desc:"角色名称"
+    
+    string name = 2;
+// @inject_tag: json:"description" binding:"max=255" desc:"角色描述"
+    
+    string description = 3;
+// @inject_tag: json:"status" binding:"required" desc:"状态"
+    
+    int32 status = 4;
+}
+
+// 查询条件
+message RoleQuery {
+  // @inject_tag: json:"blurry" desc:"模糊查询(角色名称/编码)"
+  string blurry = 1;           
+  // @inject_tag: json:"status" desc:"角色状态"
+  RoleStatus status = 2;       
+  // @inject_tag: json:"createdAt" desc:"创建时间范围[开始时间, 结束时间]"
+  repeated int64 createdAt = 3; 
+}
+
+// 创建角色请求
+message CreateRoleRequest {
+  // @inject_tag: json:"name" desc:"角色名称"
+  string name = 1;             
+  // @inject_tag: json:"code" desc:"角色编码"
+  string code = 2;             
+  // @inject_tag: json:"description" desc:"角色描述"
+  string description = 3;      
+  // @inject_tag: json:"status" desc:"角色状态"
+  RoleStatus status = 4;       
+  // @inject_tag: json:"sort" desc:"排序字段"
+  int32 sort = 5;              
+  // @inject_tag: json:"permissionIds" desc:"权限ID列表"
+  repeated int64 permissionIds = 6; 
+}
+
+// 创建角色响应
+message CreateRoleResponse {
+  // @inject_tag: json:"role" desc:"创建的角色信息"
+  SysRole role = 1;  
+}
+
+// 更新角色请求
+message UpdateRoleRequest {
+  // @inject_tag: json:"id" desc:"角色ID"
+  int64 id = 1;                
+  // @inject_tag: json:"name" desc:"角色名称"
+  string name = 2;             
+  // @inject_tag: json:"code" desc:"角色编码"
+  string code = 3;             
+  // @inject_tag: json:"description" desc:"角色描述"
+  string description = 4;      
+  // @inject_tag: json:"status" desc:"角色状态"
+  RoleStatus status = 5;       
+  // @inject_tag: json:"sort" desc:"排序字段"
+  int32 sort = 6;              
+  // @inject_tag: json:"permissionIds" desc:"权限ID列表"
+  repeated int64 permissionIds = 7; 
+}
+
+// 更新角色响应
+message UpdateRoleResponse {
+  // @inject_tag: json:"role" desc:"更新后的角色信息"
+  SysRole role = 1;  
+}
+
+// 获取角色请求
+message GetRoleByIdRequest {
+  // @inject_tag: json:"id" uri:"id" desc:"角色ID"
+  int64 id = 1;  
+}
+
+// 获取角色响应
+message GetRoleByIdResponse {
+  // @inject_tag: json:"role" desc:"角色信息"
+  SysRole role = 1;  
+}
+
+// 删除角色请求
+message DeleteRoleRequest {
+  // @inject_tag: json:"id" uri:"id" desc:"角色ID"
+  int64 id = 1;  
+}
+
+// 删除角色响应
+message DeleteRoleResponse {
+  // 空响应
+}
+
+// 角色列表请求
+message ListRolesRequest {
+  // @inject_tag: json:"query" form:"query" desc:"查询条件"
+  RoleQuery query = 1;    
+  // @inject_tag: json:"pageInfo" form:"pageInfo" desc:"分页信息"
+  PageInfo pageInfo = 2;  
+}
+
+// 分页信息
+message PageInfo {
+  // @inject_tag: json:"page" desc:"当前页码"
+  int32 page = 1;        
+  // @inject_tag: json:"size" desc:"每页大小"
+  int32 size = 2;        
+  // @inject_tag: json:"total" desc:"总记录数"
+  int64 total = 3;       
+  // @inject_tag: json:"pages" desc:"总页数"
+  int32 pages = 4;       
+}
+
+// 分页角色响应
+message PageSysRole {
+  // @inject_tag: json:"roles" desc:"角色列表"
+  repeated SysRole roles = 1;  
+  // @inject_tag: json:"pageInfo" desc:"分页信息"
+  PageInfo pageInfo = 2;       
+}
+
+// 角色列表响应
+message ListRolesResponse {
+  // @inject_tag: json:"data" desc:"分页角色数据"
+  PageSysRole data = 1;  
+}
+
+// 获取角色权限请求
+message GetRolePermissionsRequest {
+  // @inject_tag: json:"roleId" uri:"roleId" desc:"角色ID"
+  int64 roleId = 1;  
+}
+
+// 获取角色权限响应
+message GetRolePermissionsResponse {
+  // @inject_tag: json:"permissions" desc:"权限树列表"
+  repeated PermissionTreeNode permissions = 1;  
+}
+
+// 角色服务
+service RoleService {
+  // 创建角色
+  rpc CreateRole(CreateRoleRequest) returns (CreateRoleResponse) {
+    option (google.api.http) = {
+      post: "/authz/roles"
+      body: "*"
+    };
+  }
+
+  // 更新角色
+  rpc UpdateRole(UpdateRoleRequest) returns (UpdateRoleResponse) {
+    option (google.api.http) = {
+      put: "/authz/roles/{id}"
+      body: "*"
+    };
+  }
+
+  // 获取角色详情
+  rpc GetRoleById(GetRoleByIdRequest) returns (GetRoleByIdResponse) {
+    option (google.api.http) = {
+      get: "/authz/roles/{id}"
+    };
+  }
+
+  // 删除角色
+  rpc DeleteRole(DeleteRoleRequest) returns (DeleteRoleResponse) {
+    option (google.api.http) = {
+      delete: "/authz/roles/{id}"
+    };
+  }
+
+  // 分页查询角色列表
+  rpc ListRoles(ListRolesRequest) returns (ListRolesResponse) {
+    option (google.api.http) = {
+      post: "/authz/roles/list-roles"
+      body: "*"
+    };
+  }
+
+  // 获取角色的权限列表
+  rpc GetRolePermissions(GetRolePermissionsRequest) returns (GetRolePermissionsResponse) {
+    option (google.api.http) = {
+      get: "/authz/roles/{roleId}/permissions"
+    };
+  }
+}

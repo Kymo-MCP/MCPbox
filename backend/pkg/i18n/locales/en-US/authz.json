@@ -1,0 +1,6 @@
+{
+  "3000": "Insufficient permissions",
+  "3001": "Access denied",
+  "3002": "Role required",
+  "3003": "Permission required"
+}

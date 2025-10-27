@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package storage;
+
+option go_package = "qm-mcp-server/api/market/storage";
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+// UploadImageRequest 上传图片请求
+message UploadImageRequest {
+    // @inject_tag: json:"image" form:"image" desc:"图片文件"
+    bytes image = 1;
+}
+
+// UploadImageResponse 上传图片响应
+message UploadImageResponse {
+    // @inject_tag: json:"path" desc:"图片路径"
+    string path = 1;
+    // @inject_tag: json:"size" desc:"图片大小"
+    int64 size = 2;
+    // @inject_tag: json:"mime" desc:"图片MIME类型"
+    string mime = 3;
+}
+
+// StorageService 资源管理服务
+service StorageService {
+    // UploadImage
+    rpc UploadImage(UploadImageRequest) returns (UploadImageResponse) {     
+        option (google.api.http) = {
+            post: "/storage/image"
+            body: "*"
+        };
+    }
+}

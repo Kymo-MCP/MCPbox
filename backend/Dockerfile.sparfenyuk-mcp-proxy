@@ -1,0 +1,25 @@
+# 构建阶段
+FROM sparfenyuk-qm-mcp-server:latest as builder
+
+USER root
+
+# 安装必要的运行时依赖
+RUN apk add --no-cache ca-certificates tzdata
+
+# 设置时区
+ENV TZ=Asia/Shanghai
+
+# 设置工作目录
+WORKDIR /app
+
+# 设置 apk aliyun 源
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+
+# 安装必要的构建工具
+RUN apk add --no-cache make git dateutils tar wget zip unzip
+
+# 安装 Node.js、npm 和 npx
+RUN apk add --no-cache nodejs npm
+
+# 验证安装
+RUN node --version && npm --version && npx --version

@@ -1,0 +1,8 @@
+{
+  "6000": "Database error",
+  "6001": "Network error",
+  "6002": "File system error",
+  "6003": "Configuration error",
+  "6004": "Timeout error",
+  "6005": "Dependency error"
+}

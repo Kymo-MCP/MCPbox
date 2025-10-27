@@ -1,0 +1,27 @@
+# docker build -t ccr.ccs.tencentyun.com/itqm-private/golang:1.24.2 -f Dockerfile.build-golang-1.24.2 .
+FROM ccr.ccs.tencentyun.com/itqm-private/golang:1.21-alpine AS builder
+
+USER root
+
+# 设置工作目录
+WORKDIR /app
+
+# 设置 apk aliyun 源
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+
+# 下载并安装 Go 1.24.2
+RUN wget https://go.dev/dl/go1.24.2.linux-amd64.tar.gz && \
+    rm -rf /usr/local/go && \
+    tar -C /usr/local -xzf go1.24.2.linux-amd64.tar.gz && \
+    rm go1.24.2.linux-amd64.tar.gz && \
+    ln -sf /usr/local/go/bin/go /usr/local/bin/go
+
+# 安装必要的构建工具
+RUN apk add --no-cache make git dateutils
+
+# 设置 go 环境变量
+ENV GOPROXY=https://goproxy.cn/,direct
+ENV GOOS=linux
+ENV GOARCH=amd64
+ENV CGO_ENABLED=0
+ENV GO111MODULE='on'

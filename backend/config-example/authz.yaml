@@ -1,0 +1,38 @@
+server:
+  httpPort: 8082 # HTTP 端口
+
+secret: "dev-app-secret"
+
+services:
+  mcpMarket:
+    host: "mcp-market-svc"
+    port: 8081
+  mcpAuthz:
+    host: "127.0.0.1"
+    port: 8082
+
+database:
+  mysql:
+    host: "mysql-svc"
+    port: 3306
+    database: mcp_dev
+    username: mcp_user
+    password: dev-password
+  redis:
+    host: "redis-svc"
+    port: 6379
+    password: "dev-redis-password"
+    db: 0
+
+log:
+  level: debug
+  format: text
+
+storage:
+  # 存储根目录
+  rootPath: ./data
+  # 代码包存放路径
+  codePath: ./data/code-package
+  # static 存放路径
+  staticPath: ./data/static
+

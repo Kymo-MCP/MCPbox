@@ -1,0 +1,181 @@
+syntax = "proto3";
+
+package mcp_environment;
+
+option go_package = "qm-mcp-server/api/market/mcp_environment";
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+// McpEnvironmentType environment type enumeration
+enum McpEnvironmentType {
+    Kubernetes = 0;
+    Docker = 1;
+}
+
+// McpEnvironmentInfo environment information
+message McpEnvironmentInfo {
+    // @inject_tag: json:"id" desc:"environment ID"
+    int32 id = 1;
+    // @inject_tag: json:"name" desc:"environment name"
+    string name = 2;
+    // @inject_tag: json:"environment" desc:"runtime environment type"
+    string environment = 3;
+    // @inject_tag: json:"config" desc:"connection configuration"
+    string config = 4;
+    // @inject_tag: json:"namespace" desc:"namespace"
+    string namespace = 5;
+    // @inject_tag: json:"createdAt" desc:"creation time"
+    string createdAt = 6;
+    // @inject_tag: json:"updatedAt" desc:"update time"
+    string updatedAt = 7;
+}
+
+// CreateEnvironmentRequest create environment request
+message CreateEnvironmentRequest {
+    // @inject_tag: json:"name" form:"name" desc:"environment name"
+    string name = 1;
+    // @inject_tag: json:"environment" form:"environment" desc:"runtime environment type: 0 kubernetes, 1 docker"
+    McpEnvironmentType environment = 2;
+    // @inject_tag: json:"config" form:"config" desc:"connection configuration"
+    string config = 3;
+    // @inject_tag: json:"namespace" form:"namespace" desc:"namespace"
+    string namespace = 4;
+}
+
+// UpdateEnvironmentRequest update environment request
+message UpdateEnvironmentRequest {
+    // @inject_tag: json:"id" uri:"id" desc:"environment ID"
+    int32 id = 1;
+    // @inject_tag: json:"name" form:"name" desc:"environment name"
+    string name = 2;
+    // @inject_tag: json:"environment" form:"environment" desc:"runtime environment type"
+    McpEnvironmentType environment = 3;
+    // @inject_tag: json:"config" form:"config" desc:"connection configuration"
+    string config = 4;
+    // @inject_tag: json:"namespace" form:"namespace" desc:"namespace"
+    string namespace = 5;
+}
+
+// DeleteEnvironmentRequest delete environment request
+message DeleteEnvironmentRequest {
+    // @inject_tag: json:"id" uri:"id" query:"id" form:"id" desc:"environment ID"
+    int32 id = 1;
+}
+
+// ListEnvironmentsRequest environment list request
+message ListEnvironmentsRequest {
+    // @inject_tag: json:"environment" query:"environment" form:"environment" desc:"environment type filter"
+    McpEnvironmentType environment = 1;
+    // @inject_tag: json:"page" query:"page" form:"page" desc:"page number"
+    int32 page = 2;
+    // @inject_tag: json:"pageSize" query:"pageSize" form:"pageSize" desc:"page size"
+    int32 pageSize = 3;
+}
+
+// TestConnectivityRequest connectivity test request
+message TestConnectivityRequest {
+    // @inject_tag: json:"id" uri:"id" desc:"environment ID"
+    int32 id = 1;
+}
+
+// EnvironmentResponse environment operation response
+message EnvironmentResponse {
+    // @inject_tag: json:"id" desc:"environment ID"
+    int32 id = 1;
+    // @inject_tag: json:"name" desc:"environment name"
+    string name = 2;
+    // @inject_tag: json:"environment" desc:"runtime environment type"
+    McpEnvironmentType environment = 3;
+    // @inject_tag: json:"config" desc:"connection configuration"
+    string config = 4;
+    // @inject_tag: json:"namespace" desc:"namespace"
+    string namespace = 5;
+    // @inject_tag: json:"createdAt" desc:"creation time"
+    string createdAt = 6;
+    // @inject_tag: json:"updatedAt" desc:"update time"
+    string updatedAt = 7;
+}
+
+// ListEnvironmentsResponse environment list response
+message ListEnvironmentsResponse {
+    // @inject_tag: json:"list" desc:"environment list"
+    repeated McpEnvironmentInfo list = 1;
+    // @inject_tag: json:"total" desc:"total count"
+    int64 total = 2;
+    // @inject_tag: json:"page" desc:"current page number"
+    int32 page = 3;
+    // @inject_tag: json:"pageSize" desc:"page size"
+    int32 pageSize = 4;
+}
+
+// ListNamespacesRequest get namespace list request
+message ListNamespacesRequest {
+    // @inject_tag: json:"config" form:"config" desc:"connection configuration"
+    string config = 1;
+    // @inject_tag: json:"environment" form:"environment" desc:"environment type"
+    McpEnvironmentType environment = 2;
+}
+
+// ListNamespacesResponse get namespace list response
+message ListNamespacesResponse {
+    // @inject_tag: json:"list" desc:"namespace list"
+    repeated string list = 1;
+}
+
+// TestConnectivityResponse connectivity test response
+message TestConnectivityResponse {
+    // @inject_tag: json:"success" desc:"test success status"
+    bool success = 1;
+    // @inject_tag: json:"message" desc:"test result message"
+    string message = 2;
+}
+
+// McpEnvironmentService environment management service
+service McpEnvironmentService {
+    // Create environment
+    rpc CreateEnvironment(CreateEnvironmentRequest) returns (EnvironmentResponse) {
+        option (google.api.http) = {
+            post: "/environments"
+            body: "*"
+        };
+    }
+    
+    // Update environment
+    rpc UpdateEnvironment(UpdateEnvironmentRequest) returns (EnvironmentResponse) {
+        option (google.api.http) = {
+            put: "/environments/{id}"
+            body: "*"
+        };
+    }
+    
+    // Delete environment
+    rpc DeleteEnvironment(DeleteEnvironmentRequest) returns (EnvironmentResponse) {
+        option (google.api.http) = {
+            delete: "/environments/{id}"
+        };
+    }
+    
+    // List environments
+    rpc ListEnvironments(ListEnvironmentsRequest) returns (ListEnvironmentsResponse) {
+        option (google.api.http) = {
+            get: "/environments"
+        };
+    }
+
+    // Get namespace list
+    rpc ListNamespaces(ListNamespacesRequest) returns (ListNamespacesResponse) {
+        option (google.api.http) = {
+            post: "/environments/namespaces"
+            body: "*"
+        };
+    }
+    
+    // Test connectivity
+    rpc TestConnectivity(TestConnectivityRequest) returns (TestConnectivityResponse) {
+        option (google.api.http) = {
+            post: "/environments/{id}/test"
+            body: "*"
+        };
+    }
+}

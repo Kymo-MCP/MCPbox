@@ -1,0 +1,176 @@
+syntax = "proto3";
+
+package market;
+
+option go_package = "qm-mcp-server/api/market/market";
+
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+
+
+// 服务列表
+message ListRequest {
+    // @inject_tag: json:"page" query:"page" form:"page" desc:"页码"
+    int32 page = 1;
+    // @inject_tag: json:"pageSize" query:"pageSize" form:"pageSize" desc:"每页数量"
+    int32 pageSize = 2;
+    // @inject_tag: json:"name" query:"name" form:"name" desc:"应用名称"
+    string name = 3;
+    // @inject_tag: json:"categoryIds" query:"categoryIds" form:"categoryIds" desc:"应用分类ID"
+    repeated string categoryIds = 4;
+}
+
+// 服务列表响应
+message ListResponse {
+    // @inject_tag: json:"total" desc:"总数量"
+    int32 total = 1;
+    // @inject_tag: json:"list" desc:"服务列表"
+    repeated ServiceInfo list = 2;
+    // 服务信息
+    message ServiceInfo {
+        // @inject_tag: json:"id" desc:"服务ID"
+        int32 id = 1;
+        // @inject_tag: json:"name" desc:"服务名称"
+        string name = 2;
+        // @inject_tag: json:"iconUrl" desc:"服务图标URL"
+        string iconUrl = 3;
+        // @inject_tag: json:"brief" desc:"服务简介"
+        string brief = 4;
+        // @inject_tag: json:"typeId" desc:"服务类型ID"
+        int32 typeId = 5;
+        // @inject_tag: json:"categoryIds" desc:"服务分类ID"
+        repeated int32 categoryIds = 6;
+        // @inject_tag: json:"typeName" desc:"服务类型名称"
+        string typeName = 7;
+        // @inject_tag: json:"publishTime" desc:"发布时间"
+        int64 publishTime = 8;
+        // @inject_tag: json:"offlineTime" desc:"下线时间"
+        int64 offlineTime = 9;
+        // @inject_tag: json:"toolCount" desc:"工具数量"
+        int32 toolCount = 10;
+        // @inject_tag: json:"providerName" desc:"提供方名称"
+        string providerName = 11;
+        // @inject_tag: json:"providerContact" desc:"提供方联系电话"
+        string providerContact = 12;
+        // @inject_tag: json:"status" desc:"服务状态"
+        int32 status = 13;
+        // @inject_tag: json:"deployMode" desc:"部署模式"
+        string deployMode = 14;
+    }
+}
+
+message DetailRequest {
+    // @inject_tag: json:"id" query:"id" form:"id" desc:"服务ID"
+    int32 id = 1;
+}
+
+// 服务详情响应
+message DetailResponse {
+    // @inject_tag: json:"service" desc:"服务详情"
+    ServiceInfo service = 1;
+}
+
+// 服务详情
+message ServiceInfo {
+    // @inject_tag: json:"id" desc:"服务ID"
+    int32 id = 1;
+    // @inject_tag: json:"name" desc:"服务名称"
+    string name = 2;
+    // @inject_tag: json:"categoryIds" desc:"服务分类ID列表"
+    repeated int32 categoryIds = 3;
+    // @inject_tag: json:"description" desc:"服务描述"
+    string description = 4;
+    // @inject_tag: json:"detail" desc:"服务详细信息"
+    string detail = 5;
+    // @inject_tag: json:"secretTips" desc:"密钥提示信息"
+    string secretTips = 6;
+    // @inject_tag: json:"cloudApiUrl" desc:"云API地址"
+    string cloudApiUrl = 7;
+    // @inject_tag: json:"iconUrl" desc:"图标URL"
+    string iconUrl = 8;
+    // @inject_tag: json:"providerName" desc:"服务提供方名称"
+    string providerName = 9;
+    // @inject_tag: json:"providerContact" desc:"服务提供方联系方式"
+    string providerContact = 10;
+    // @inject_tag: json:"overview" desc:"服务概览"
+    string overview = 11;
+    // @inject_tag: json:"configTemplate" desc:"配置模板"
+    string configTemplate = 12;
+    // @inject_tag: json:"deployMode" desc:"部署模式"
+    string deployMode = 13;
+    // @inject_tag: json:"codeUrl" desc:"代码URL"
+    string codeUrl = 14;
+    // @inject_tag: json:"imageUrl" desc:"镜像URL"
+    string imageUrl = 15;
+    // @inject_tag: json:"publishTime" desc:"发布时间"
+    int64 publishTime = 16;
+    // @inject_tag: json:"status" desc:"服务状态"
+    string status = 17;
+    // @inject_tag: json:"tools" desc:"工具列表"
+    repeated ToolInfo tools = 18;
+    // @inject_tag: json:"subscribeStatus" desc:"订阅状态"
+    string subscribeStatus = 19;
+    // @inject_tag: json:"categoryIdsJson" desc:"分类ID JSON字符串"
+    string categoryIdsJson = 20;
+
+    // 工具信息
+    message ToolInfo {
+        // @inject_tag: json:"name" desc:"工具名称"
+        string name = 1;
+        // @inject_tag: json:"description" desc:"工具描述"
+        string description = 2;
+        // @inject_tag: json:"params" desc:"参数列表"
+        repeated ParamInfo params = 3;
+    }
+
+    // 参数信息
+    message ParamInfo {
+        // @inject_tag: json:"name" desc:"参数名称"
+        string name = 1;
+        // @inject_tag: json:"type" desc:"参数类型"
+        string type = 2;
+        // @inject_tag: json:"required" desc:"是否必填"
+        bool required = 3;
+    }
+}
+
+// 分类请求
+message CategoryRequest {
+}
+
+// 分类响应
+message CategoryResponse {
+    // @inject_tag: json:"list" desc:"分类列表"
+    repeated CategoryInfo list = 1;
+}
+
+// 分类信息
+message CategoryInfo {
+    // @inject_tag: json:"id" desc:"分类ID"
+    int32 id = 1;
+    // @inject_tag: json:"name" desc:"分类名称"
+    string name = 2;
+}
+
+// 市场服务
+service MarketService {
+    // 服务列表
+    rpc List(ListRequest) returns (ListResponse) {
+        option (google.api.http) = {
+            post: "/market/list"
+            body: "*"
+        };
+    }
+    // 服务详情
+    rpc Detail(DetailRequest) returns (DetailResponse) {
+        option (google.api.http) = {
+            get: "/market/detail"
+        };
+    }
+    // 服务分类
+    rpc Category(CategoryRequest) returns (CategoryResponse) {
+        option (google.api.http) = {
+            get: "/market/category"
+        };
+    }
+}

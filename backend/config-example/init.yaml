@@ -1,0 +1,35 @@
+init:
+  admin_username: admin
+  admin_password: admin123
+  admin_nickname: admin
+  admin_role_name: admin
+  admin_role_description: admin role
+  admin_role_level: 1
+  admin_data_scope: all
+kubernetes:
+  namespace: mcp-box
+  defaultConfigFilePath: "/Users/nolan/Library/Application Support/Lens/kubeconfigs/f0a69454-ed44-4575-9330-826ff5e3ab2d-pasted-kubeconfig.yaml"
+database:
+  mysql:
+    host: 134.175.7.229
+    port: 31306
+    database: mcp_dev
+    username: mcp_user
+    password: dev-password
+  redis:
+    host: 134.175.7.229
+    port: 31379
+    password: "dev-redis-password"
+    db: 0
+log:
+  level: debug
+  format: text
+
+storage:
+  # 存储根目录
+  rootPath: ./data
+  # 代码包存放路径
+  codePath: ./data/code-package
+  # static 存放路径
+  staticPath: ./data/static
+
