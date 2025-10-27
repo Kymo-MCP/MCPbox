@@ -1,4 +1,4 @@
-# MCPBOX：A lightweight MCP service management platform built on a containerized architecture.
+# MCPCAN：A lightweight MCP service management platform built on a containerized architecture.
 <p align="Left">
    <strong>中文</strong> | <a href="./README.en.md">English</a> 
 </p>
