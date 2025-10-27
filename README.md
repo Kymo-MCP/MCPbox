@@ -38,12 +38,12 @@ MCP BOX is a lightweight platform focused on agile management of MCP services. I
 - **🔗 Multi-mode Connection Management**: Provides three protocol modes: direct connection mode, proxy mode, and managed mode, meeting multi-scenario requirements from local debugging to enterprise-level hosting.
 - **📊 MCP Service Visual Monitoring**: Displays the running status, traffic data, and log records of each MCP instance in real time in the form of a list, helping administrators intuitively grasp the service health status.
 - **🧩 Modular Service Management System**: Includes four modules: template management, instance management, environment management, and code package management, forming a complete service lifecycle management loop.
-- **🚀 1. Containerized Agile Deployment: Focusing on Rapid Code Package Rollout
+- **🚀Containerized Agile Deployment**: Focusing on Rapid Code Package Rollout
 Leveraging a standardized container environment (pre-installed with Node.js and Python runtimes), we support lightweight deployment of MCP services. Deployment methods include:
 ● Code Package Upload: Directly upload locally written MCP service code packages (e.g., .zip format). The platform automatically decompresses and adapts them to the container runtime environment.
 ● Volume Mounting: Synchronize code files to the container by mounting external storage volumes. This is ideal for scenarios requiring frequent code updates.
 ● Toolkit Deployment: Provides official Node.js and Python toolkits, enabling developers to deploy code with one click using command-line tools. AA
-- **🚀 2. Protocol Conversion: Enable Remote Access to Local Services
+- **🚀 Protocol Conversion**: Enable Remote Access to Local Services
 A built-in protocol conversion gateway automatically converts local MCP service interactions based on the Standard Input/Output (STDIO) protocol to the Streamable HTTP protocol. This eliminates the need for manual code modifications and enables:
 ● Local services are quickly mapped to remotely accessible HTTP endpoints;
 ● External systems call local MCP services via HTTP requests, solving cross-network access challenges.
