@@ -1,4 +1,4 @@
-# MCPBOX - An open source platform focused on efficient management of MCP services, and a mid- and back-end management tool that supports protocol conversion.
+# MCPBOX：An open source platform focused on efficient management of MCP services, and a mid- and back-end management tool that supports protocol conversion.
 
 <div align="center">
   <img src="https://img.shields.io/badge/Next.js-15.5.4-black?style=for-the-badge&logo=next.js" alt="Next.js"/>
