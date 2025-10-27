@@ -48,23 +48,9 @@ MCP BOX is a lightweight platform focused on agile management of MCP services. I
 - **Container Image**: fullstack-web-runtime (Custom Docker image with development tools）
 
   
-## 🛠️ Installation  
-Provide detailed steps to install and configure the environment.  
-```bash
-# Clone the repository
-git clone https://github.com/your-username/your-project.git
-
-# Navigate to the project directory
-cd your-project
-
-# Install dependencies
-pip install -r requirements.txt
-```
-
----
 
 ## ⚡ Deployment
-For detailed deployment steps, please refer to https://kymo-mcp.github.io/mcp-box-deploy/ for details.
+For detailed deployment steps, please refer to [https://kymo-mcp.github.io/mcp-box-deploy/](https://github.com/Kymo-MCP/mcp-box-deploy/tree/v1.0.0-dev) for details.
 
 
 ## 📌 Frequently Asked Questions  
