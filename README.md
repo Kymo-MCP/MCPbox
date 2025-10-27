@@ -1,6 +1,6 @@
 # MCPCAN：A lightweight MCP service management platform built on a containerized architecture.
 <p align="Left">
-   <strong>中文</strong> | <a href="./README.en.md">English</a> 
+   <strong>English</strong> | <a href="./README.cn.md">中文版</a> 
 </p>
 
 <img width="1879" height="896" alt="image" src="https://github.com/user-attachments/assets/ee804f92-7e69-419b-8cfc-d5676783fe3d" />
