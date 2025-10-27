@@ -1,32 +1,76 @@
-# MCPBOX - An open source platform focused on efficient management of MCP services, and a mid- and back-end management tool that supports protocol conversion.
+# MCPBox
 
 <div align="center">
   <img src="https://img.shields.io/badge/Next.js-15.5.4-black?style=for-the-badge&logo=next.js" alt="Next.js"/>
   <img src="https://img.shields.io/badge/TypeScript-5.0-blue?style=for-the-badge&logo=typescript" alt="TypeScript"/>
   <img src="https://img.shields.io/badge/PostgreSQL-14-blue?style=for-the-badge&logo=postgresql" alt="PostgreSQL"/>
   <img src="https://img.shields.io/badge/Kubernetes-1.28-326ce5?style=for-the-badge&logo=kubernetes" alt="Kubernetes"/>
-  <img src="https://img.shields.io/badge/Claude_Code-AI-purple?style=for-the-badge" alt="Claude Code"/>
+  <img src="https://img.shields.io/badge/License-GPL--3.0-blue?style=for-the-badge" alt="GPL-3.0"/>
 </div>
 
-## 🚀 Overview
-<img width="1879" height="896" alt="image" src="https://github.com/user-attachments/assets/ee804f92-7e69-419b-8cfc-d5676783fe3d" />
+## What is MCPBox?
 
+MCPBox is an open-source platform focused on efficient management of MCP (Model Context Protocol) services, providing DevOps and development teams with comprehensive MCP service lifecycle management capabilities through a modern web interface. <mcreference link="https://github.com/jumpserver/jumpserver" index="0">0</mcreference>
 
-MCP BOX is a lightweight platform focused on agile management of MCP services. It relies on containerization technology to achieve rapid deployment and remote access of local MCP services, while also supporting centralized configuration management of external MCP services. Its core functions are designed around "deployment convenience" and "basic management capabilities."
+MCPBox supports multi-protocol compatibility and conversion, enabling seamless integration between different MCP service architectures while providing visual monitoring, security authentication, and one-stop deployment capabilities.
 
+<div align="center">
+  <img width="1879" height="896" alt="MCPBox Dashboard" src="https://github.com/user-attachments/assets/ee804f92-7e69-419b-8cfc-d5676783fe3d" />
+</div>
 
+## ✨ Key Features
 
-### ✨ Key Features
+- **🛡️ Multi-protocol Compatibility**: Supports automatic conversion between MCP's stdio and SSE protocols
+- **🔗 Multi-mode Connection Management**: Provides direct connection, proxy, and managed modes
+- **📊 Visual Service Monitoring**: Real-time monitoring of MCP service status, traffic, and logs
+- **🧩 Modular Management System**: Complete service lifecycle management with template, instance, environment, and code package management
+- **🔒 Security & Authentication**: Token-based authentication with multi-level permission control
+- **🚀 One-stop Deployment**: Quick release, configuration, and distribution of MCP services
 
-- **🛡️ Multi-protocol Compatibility and Conversion**: Supports automatic conversion of MCP's stdio configuration protocol to SSE configuration protocol, simplifying the development and integration process and enabling seamless docking and communication between systems of different architectures.
-- **🔗 Multi-mode Connection Management**: Provides three protocol modes: direct connection mode, proxy mode, and managed mode, meeting multi-scenario requirements from local debugging to enterprise-level hosting.
-- **📊 MCP Service Visual Monitoring**: Displays the running status, traffic data, and log records of each MCP instance in real time in the form of a list, helping administrators intuitively grasp the service health status.
-- **🧩 Modular Service Management System**: Includes four modules: template management, instance management, environment management, and code package management, forming a complete service lifecycle management loop.
-- **🔒 Security Authentication and Permission Control**: Supports Token-based security verification mechanism. Administrators can assign different levels of access permissions to achieve secure multi-user collaboration and resource isolation.
-- **🚀 One-stop Distribution and Deployment Capability**: Provides quick release, configuration, and distribution functions for MCP services, helping teams efficiently complete service deployment and sharing.
----
+## Quickstart
 
-## 🛠️ Technology Stack
+Prepare a clean Linux Server (64 bit, >= 4c8g)
+
+```bash
+# Clone the repository
+git clone https://github.com/Kymo-MCP/MCPbox.git
+cd MCPbox
+
+# Quick deployment using Kubernetes
+kubectl apply -f deploy/
+
+# Or use Helm for advanced configuration
+helm install mcpbox ./helm --namespace mcpbox --create-namespace
+```
+
+Access MCPBox in your browser at `http://your-mcpbox-ip/`
+
+**Default credentials:**
+- Username: `admin`
+- Password: `ChangeMe`
+
+For detailed deployment instructions, please refer to our [Deployment Guide](https://github.com/Kymo-MCP/mcp-box-deploy).
+
+## Screenshots
+
+| Dashboard | Service Management | Monitoring |
+|-----------|-------------------|------------|
+| ![Dashboard](docs/images/dashboard.png) | ![Services](docs/images/services.png) | ![Monitoring](docs/images/monitoring.png) |
+
+## Components
+
+MCPBox consists of multiple key components, which collectively form the functional framework of MCPBox, providing users with comprehensive MCP service management capabilities.
+
+| Project | Status | Description |
+|---------|--------|-------------|
+| [MCPBox-Web](web/) | ![Status](https://img.shields.io/badge/status-active-green) | MCPBox Web UI (Next.js Frontend) |
+| [MCPBox-Backend](backend/) | ![Status](https://img.shields.io/badge/status-active-green) | MCPBox Backend Services (Go Microservices) |
+| [MCPBox-Gateway](backend/cmd/gateway/) | ![Status](https://img.shields.io/badge/status-active-green) | API Gateway and Load Balancer |
+| [MCPBox-Market](backend/cmd/market/) | ![Status](https://img.shields.io/badge/status-active-green) | MCP Service Marketplace |
+| [MCPBox-Authz](backend/cmd/authz/) | ![Status](https://img.shields.io/badge/status-active-green) | Authentication and Authorization Service |
+| [MCPBox-Proxy](mcp-proxy/) | ![Status](https://img.shields.io/badge/status-active-green) | MCP Protocol Proxy and Converter |
+
+## Technology Stack
 
 ### Frontend
 - **Framework**: Next.js 15.5.4 (App Router)
@@ -36,72 +80,70 @@ MCP BOX is a lightweight platform focused on agile management of MCP services. I
 - **State Management**: React Hooks
 
 ### Backend
-- **Runtime**: Node.js
-- **API**: Next.js API Routes
-- **Database ORM**: Prisma
-- **Authentication**: NextAuth v5 with GitHub OAuth
+- **Language**: Go 1.21+
+- **Framework**: Gin, gRPC
+- **Database**: PostgreSQL, Redis
+- **Message Queue**: NATS
+- **Container**: Docker, Kubernetes
 
 ### Infrastructure
 - **Container Orchestration**: Kubernetes
 - **Database**: PostgreSQL (via KubeBlocks)
-- **Web Terminal**: ttyd
-- **Container Image**: fullstack-web-runtime (Custom Docker image with development tools）
+- **Monitoring**: Prometheus, Grafana
+- **Logging**: ELK Stack
 
-  
+## Architecture
 
-## ⚡ Deployment
-For detailed deployment steps, please refer to [https://kymo-mcp.github.io/mcp-box-deploy/](https://github.com/Kymo-MCP/mcp-box-deploy/tree/v1.0.0-dev) for details.
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Web Frontend  │    │   API Gateway   │    │  Backend Services│
+│    (Next.js)    │◄──►│     (Go)        │◄──►│      (Go)       │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+                                │                       │
+                                ▼                       ▼
+                       ┌─────────────────┐    ┌─────────────────┐
+                       │  MCP Services   │    │   Database      │
+                       │   (Containers)  │    │  (MySQL)        │
+                       └─────────────────┘    └─────────────────┘
+```
 
+## Third-party Projects
 
-## 📌 Frequently Asked Questions  
+- [mcpbox-grafana-dashboard](https://github.com/your-org/mcpbox-grafana-dashboard) - MCPBox with Grafana dashboard
+- [mcpbox-helm-charts](https://github.com/Kymo-MCP/mcp-box-deploy) - Official Helm charts for MCPBox
 
-### 1. Why choose MCPBOX instead of other management platforms?
-MCPBOX is an open-source management platform designed specifically for the MCP service ecosystem, unlike general-purpose admin systems.
-It supports MCP stdio ↔ SSE protocol conversion, three connection modes, and visualized traffic monitoring, enabling end-to-end management from configuration to distribution.
-Compared to other platforms, MCPBOX focuses on unified management of large-model toolchains and intelligent services, making development and operations more efficient and secure.
+## Contributing
 
-### 2. What unique advantages does MCPBOX have compared to similar products?
+Welcome to submit PR to contribute. Please refer to [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
-- Stronger protocol compatibility: Natively supports MCP stdio/SSE conversion and multiple connection methods.
+Before contributing, please:
+1. Read our [Code of Conduct](CODE_OF_CONDUCT.md)
+2. Check existing issues and pull requests
+3. Follow our coding standards and commit message conventions
 
-- More flexible operating modes: Switch freely among Direct, Proxy, and Hosted modes.
+## Security
 
-- Enhanced security mechanisms: Supports Token authentication and multi-level permission control.
+If you discover a security vulnerability, please refer to our [Security Policy](SECURITY.md) for responsible disclosure guidelines.
 
-- More intuitive operations experience: Graphical interface displays real-time service status and traffic data.
+## License
 
-### 3. In what scenarios is MCPBOX suitable?
+Copyright (c) 2024-2025 MCPBox Team, All rights reserved.
 
-MCPBOX is ideal for scenarios requiring centralized management of multiple MCP services, including but not limited to:
+Licensed under The GNU General Public License version 3 (GPLv3) (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
 
-- AI Agent development platforms that need to manage multiple service instances;
+https://www.gnu.org/licenses/gpl-3.0.html
 
-- Enterprises that need secure and controlled distribution of MCP tools across teams;
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
 
-- Developers who want to monitor MCP service performance and traffic data for intelligent operations.
+## Community & Support
 
-- Whether for individual research or enterprise deployment, MCPBOX provides a flexible architecture and open capabilities to support real-world business applications. 
+- 📖 [Documentation](https://mcpbox.dev/docs)
+- 💬 [Discord Community](https://discord.com/channels/1428637640856571995/1428637896532820038)
+- 🐛 [Issue Tracker](https://github.com/Kymo-MCP/MCPbox/issues)
+- 📧 [Mailing List](mailto:opensource@kymo.cn)
 
----
+## Acknowledgements
 
-## 🤝 Contributing  
-Contributions of any kind are welcome!
-
-- New features and improvements
-- Documentation improvements
-- Bug reports & fixes
-- Translations & suggestions
-
-Welcome to Join our [Discord](https://discord.com/channels/1428637640856571995/1428637896532820038) community for discussion and support.
-
-
----
-
-## 📄 License  
-This project is licensed under the **MIT License**. For details, see [LICENSE](./LICENSE).  
-
----
-
-## 🙌 Acknowledgements  
-- Thanks to the open-source libraries or frameworks used  
-- Thanks to contributors and supporters  
+- Thanks to the [MCP Protocol](https://modelcontextprotocol.io/) community
+- Thanks to all contributors and supporters
+- Special thanks to the open-source projects that make MCPBox possible
