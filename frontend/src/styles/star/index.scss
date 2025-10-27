@@ -1,0 +1,141 @@
+// body {
+//   background-color: black;
+// }
+
+@function createShadow($n) {
+  $shadow: '#{random(100)}vw #{random(100)}vh rgb(#{255 255 255})';
+  @for $i from 1 through $n {
+    $shadow: '#{$shadow}, #{random(100)}vw #{random(100)}vh rgb(#{255 255 255})';
+  }
+  @return unquote($shadow);
+}
+
+@function createStart($n) {
+  $start: '#{random(100)}vw #{random(100)}vh 5px rgb(#{255 255 255})';
+  @for $i from 1 through $n {
+    $start: '#{$start}, #{random(100)}vw #{random(100)}vh 5px rgb(#{255 255 255})';
+  }
+  @return unquote($start);
+}
+// rgb(#{random(255) random(255) random(255)})
+$conunt: 100;
+$duration: 80s;
+@for $i from 1 through 3 {
+  $conunt: floor(calc($conunt / 2));
+  $duration: floor(calc($duration / 2));
+  .layer#{$i} {
+    z-index: -1;
+    $size: #{$i * 2}px;
+    position: fixed;
+    width: $size;
+    height: $size;
+    border-radius: 50%;
+    left: 0;
+    top: 0;
+    box-shadow: createStart($conunt);
+    animation: moveUp $duration linear infinite;
+    &::after {
+      content: '';
+      position: fixed;
+      left: 0;
+      top: 100vh;
+      width: inherit;
+      height: inherit;
+      border-radius: inherit;
+      box-shadow: inherit;
+    }
+  }
+}
+.layer4 {
+  z-index: -1;
+  content: '';
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  left: 0;
+  top: 0vh;
+  font-size: 60px;
+  border-radius: 50%;
+  box-shadow: createStart(10);
+  animation: blink 10s linear infinite;
+  &::after {
+    content: '';
+    position: fixed;
+    left: 0;
+    top: 100vh;
+    width: inherit;
+    height: inherit;
+    border-radius: inherit;
+    box-shadow: inherit;
+  }
+}
+@keyframes moveUp {
+  100% {
+    transform: translateY(-100vh);
+    // transform-origin: center;
+  }
+  // 50%{
+  //   transform: translateX(100vh);
+  // }
+  0% {
+    transform: translateY(0vh);
+  }
+}
+
+@keyframes blink {
+  0% {
+    width: 10px;
+    height: 10px;
+    transform: translateY(0vh);
+  }
+  10% {
+    width: 20px;
+    height: 20px;
+    transform: translateY(-10vh);
+  }
+  20% {
+    width: 10px;
+    height: 10px;
+    transform: translateY(-20vh);
+  }
+  30% {
+    width: 20px;
+    height: 20px;
+    transform: translateY(-30vh);
+  }
+  40% {
+    width: 10px;
+    height: 10px;
+    transform: translateY(-40vh);
+  }
+  50% {
+    width: 20px;
+    height: 20px;
+    transform: translateY(-50vh);
+  }
+  60% {
+    width: 10px;
+    height: 10px;
+    transform: translateY(-60vh);
+  }
+  70% {
+    width: 20px;
+    height: 20px;
+    transform: translateY(-70vh);
+  }
+  80% {
+    width: 10px;
+    height: 10px;
+    transform: translateY(-80vh);
+  }
+  90% {
+    width: 20px;
+    height: 20px;
+    transform: translateY(-90vh);
+  }
+  100% {
+    width: 10px;
+    height: 10px;
+    transform: translateY(-100vh);
+  }
+}

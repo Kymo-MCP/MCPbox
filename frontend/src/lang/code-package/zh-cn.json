@@ -1,0 +1,44 @@
+{
+  "code": {
+    "name": "代码包名称",
+    "size": "代码包大小",
+    "detail": "代码包详情",
+    "fileTree": "文件树",
+    "codeEditor": "代码编辑器",
+    "empty": "选择文件查看内容",
+    "columns": {
+      "size": "大小",
+      "type": "类型",
+      "createdAt": "上传时间",
+      "updatedAt": "更新时间",
+      "unspecified": "未知类型",
+      "tar": "TAR",
+      "zip": "ZIP"
+    },
+    "action": {
+      "upload": "上传代码包",
+      "deleteBox": "确定删除",
+      "download": "下载代码包",
+      "loadingText": "代码包下载中...."
+    },
+    "pageDesc": {
+      "list": "代码包管理",
+      "desc": "管理你的代码包以及提供上传功能",
+      "total": "代码包总数"
+    },
+    "status": {
+      "empty": "暂无代码包数据"
+    },
+    "desc": {
+      "select": "请选择需要上传的代码包。支持的格式包括：",
+      "compressed": "压缩包",
+      "suport": "点击或将文件拖拽到这里上传",
+      "click": "点击上传",
+      "describe": "上传说明",
+      "text1": "文件大小限制：单个文件不超过 100MB",
+      "text2": "支持格式：ZIP、TAR、TAR.GZ",
+      "text3": "上传后可以在线查看和编辑代码文件",
+      "text4": "支持下载已上传的代码包"
+    }
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "code": {
+    "name": "Name",
+    "size": "Code Size",
+    "detail": "Package Detail",
+    "fileTree": "File Tree",
+    "codeEditor": "Code Editor",
+    "empty": "No Data",
+    "columns": {
+      "size": "Size",
+      "type": "Type",
+      "createdAt": "UploadTime",
+      "updatedAt": "UpdatedTime",
+      "unspecified": "PackageTypeUnspecified",
+      "tar": "TAR",
+      "zip": "ZIP"
+    },
+    "action": {
+      "upload": "UploadCode",
+      "deleteBox": "Are you confirm delete the package ",
+      "download": "Download",
+      "loadingText": "Downloading...."
+    },
+    "pageDesc": {
+      "list": "Package List",
+      "desc": "Manage your code packages and provide upload functionality",
+      "total": "Total"
+    },
+    "status": {
+      "empty": "No Data"
+    },
+    "desc": {
+      "select": "Please select the code package that needs to be uploaded. The supported formats include:",
+      "compressed": "",
+      "suport": "Click or drag the file here to upload",
+      "click": "Clcik me",
+      "describe": "Describe",
+      "text1": "File size limit: A single file should not exceed 100MB",
+      "text2": "Suport：ZIP、TAR、TAR.GZ",
+      "text3": "After uploading, you can view and edit the code file online",
+      "text4": "Support downloading uploaded code packages"
+    }
+  }
+}

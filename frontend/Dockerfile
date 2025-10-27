@@ -1,0 +1,26 @@
+FROM node:20-alpine
+
+# 设置apk源
+RUN echo "https://mirrors.aliyun.com/alpine/v3.18/main/" > /etc/apk/repositories && \
+    echo "https://mirrors.aliyun.com/alpine/v3.18/community/" >> /etc/apk/repositories && \
+    apk update && \
+    apk add --no-cache bash curl xsel
+
+# 设置 npm 源
+RUN npm config set registry https://registry.npmmirror.com
+
+# 安装依赖
+RUN npm install -g serve
+
+RUN mkdir -p /app
+
+WORKDIR /app
+
+# 复制项目代码
+COPY ./dist /app/
+
+# 暴露端口
+EXPOSE 3000
+
+# 启动项目
+CMD ["serve", "-s", "/app"]

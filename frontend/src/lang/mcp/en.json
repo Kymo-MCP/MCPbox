@@ -1,0 +1,178 @@
+{
+  "mcp": {
+    "template": {
+      "name": "Name",
+      "type": "Type",
+      "env": "ENV",
+      "createTime": "CreateTime",
+      "notes": "Desc",
+      "form": {
+        "placeholderName": "Name"
+      },
+      "action": {
+        "add": "Add",
+        "save": "Save Template",
+        "saveAndInstance": "Save and Add a Instance"
+      },
+      "pageDesc": {
+        "createTitle": "Create a MCP-Server template",
+        "editTitle": "Edite a MCP-Server template",
+        "list": "MCP Template List",
+        "desc": "Manage your template list and provide quick deployment of MCP service instances",
+        "total": "Total",
+        "compress": "The code package has been pressurized at"
+      },
+      "formData": {
+        "title": "Add a new Template",
+        "name": "Name",
+        "notes": "Desc",
+        "isBind": "Bound",
+        "size": "Size",
+        "path": "Path",
+        "accessModes": "AccessModes",
+        "pods": "Pods",
+        "servicePath": "ServicePath",
+        "icon": "Logo"
+      },
+      "rules": {
+        "name": "Please enter the template name",
+        "deployType": "Please select the deployType",
+        "imgAddress": "Please enter the imgAddress",
+        "environmentId": "Please select the environment in which the code package will run",
+        "validForm": "Please complete the form information and try again",
+        "mcpServers": {
+          "must": "MCP server configuration is required",
+          "format": "JSON format parsing error",
+          "name": "McpServer must exist",
+          "serverName": "There must be an MCP service present",
+          "regexServerName": "The MCP service name can only consist of uppercase and lowercase letters, numbers, horizontal lines, and underscores, and cannot start with a number",
+          "url": "The URL cannot be empty",
+          "type": "The protocol type needs to be sse or steamable http",
+          "transport": "The transport field needs to be sse or steamable http",
+          "command": "The command field needs to be filled in"
+        }
+      }
+    },
+    "instance": {
+      "name": "Name",
+      "type": "Type",
+      "status": "Status",
+      "packStatus": "PackStatus",
+      "env": "ENV",
+      "createTime": "CreateTime",
+      "detail": "Instance of detail",
+      "publicProxyConfig": "Config",
+      "viewConfig": "View",
+      "config": "MCP Server Config",
+      "count": {
+        "total": "Total",
+        "running": "Running",
+        "stoped": "Stoped",
+        "connecting": "Connecting"
+      },
+      "form": {
+        "placeholderName": "Name",
+        "placeholderType": "Type",
+        "placeholderStatus": "Status",
+        "placeholderContainerStatus": "ContainerStatus",
+        "accessType": "Access Type",
+        "mcpProtocol": "MCP Protocol"
+      },
+      "action": {
+        "add": "Add",
+        "save": "Save Instance",
+        "create": "Add a new MCP",
+        "view": "View",
+        "log": "Log",
+        "stop": "Stop",
+        "start": "Start",
+        "reStart": "Restart",
+        "probe": "Probe Status",
+        "delete": "Delete",
+        "deleteBox": "Are you sure to delete this instance?",
+        "detection": "Detection successful; Service is connected normally",
+        "restart": "The instance has been restarted",
+        "stopInstance": "Instance stopped",
+        "copy": "Copy Config",
+        "selectTempalte": "Select a Tempalte",
+        "customize": "Customize",
+        "byTemplate": "By Template"
+      },
+      "pageDesc": {
+        "createTitle": "Create a instance",
+        "editTitle": "Edite the instance",
+        "list": "MCP Instance List",
+        "desc": "Manage your instance list and provide URL links",
+        "total": "Total",
+        "confirmEdit": "After editing the instance, it will restart; Are you sure about editing?",
+        "packStatusTips": "There is a delay in the status, and container operation can be checked through status detection or log viewing."
+      },
+      "formData": {
+        "title": "Add a new MCP",
+        "baseInfo": "BaseInfo",
+        "sourceType": "From",
+        "serviceId": "ServiceId",
+        "templateId": "TemplateId",
+        "instanceName": "InstanceName",
+        "deployType": "DeployType",
+        "imgAddress": "ImgAddress",
+        "mcpServers": "mcpServersConfig",
+        "mcpServersPlaceholder": "Please enter the MCP server configuration in JSON format,Example:",
+        "configInfo": "ConfigInfo",
+        "packageId": "CodePackage",
+        "changePackage": "Change Package",
+        "addPackage": "Add",
+        "environmentId": "Environment",
+        "port": "Port",
+        "environmentVariables": "EnvironmentVariables",
+        "key": "KEY",
+        "value": "VALUE",
+        "add-env": "Add",
+        "volumeConfig": "VolumeConfig",
+        "volumeType": "VolumeType",
+        "nodeName": "NodeName",
+        "hostPath": "HostPath",
+        "mountPath": "MountPath",
+        "readOnly": "ReadOnly",
+        "pvcName": "PVCName",
+        "addVolume": "Add",
+        "initScript": "InitScript",
+        "command": "Command"
+      },
+      "rules": {
+        "name": "Please enter the instance name"
+      },
+      "log": {
+        "title": "Instance of Logs",
+        "instanceId": "Instance ID",
+        "updateTime": "Update Time"
+      },
+      "loading": {
+        "restart": "restarting...",
+        "stop": "stoping..."
+      },
+      "probe": {
+        "containerStatus": "Container Status",
+        "serviceReadyStatus": "Container Service Status",
+        "probeHttpStatus": "Probe Status",
+        "ready": "Ready",
+        "unready": "Unready",
+        "title": "Probe Status",
+        "errorInfo": "Error Info",
+        "warnInfo": "Warn Info",
+        "unit": "Warns"
+      }
+    },
+    "type": {
+      "hosting": "HOSTING",
+      "direct": "DIRECT",
+      "proxy": "PROXY"
+    },
+    "source": {
+      "unknown": "Unknown",
+      "market": "Market",
+      "template": "Template",
+      "custom": "Custom"
+    }
+  }
+}

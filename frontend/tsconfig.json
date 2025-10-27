@@ -1,0 +1,18 @@
+{
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.node.json"
+    },
+    {
+      "path": "./tsconfig.app.json"
+    }
+  ],
+  "compilerOptions": {
+    // 其他配置...
+    "noImplicitAny": false, // 关闭“隐式 any 类型”的检测（核心）
+    "allowJs": true, // 允许导入 JS 文件（若未开启）
+    "checkJs": false // 关闭对 JS 文件的类型检查（可选）
+  },
+  "exclude": ["node_modules", "dist"]
+}
