@@ -28,7 +28,7 @@
 ## 🚀 Overview
 
 
-MCP BOX is a lightweight platform focused on agile management of MCP services. It relies on containerization technology to achieve rapid deployment and remote access of local MCP services, while also supporting centralized configuration management of external MCP services. Its core functions are designed around "deployment convenience" and "basic management capabilities."
+MCP CAN is a lightweight platform focused on agile management of MCP services. It relies on containerization technology to achieve rapid deployment and remote access of local MCP services, while also supporting centralized configuration management of external MCP services. Its core functions are designed around "deployment convenience" and "basic management capabilities."
 <img width="1847" height="900" alt="image" src="https://github.com/user-attachments/assets/efe4c922-cb2a-4f18-a9e4-5115ade21506" />
 
 
