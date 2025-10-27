@@ -13,13 +13,10 @@ ENV TZ=Asia/Shanghai
 # 设置工作目录
 WORKDIR /app
 
+# 从构建阶段复制二进制文件
+COPY backend/bin/gateway /app/gateway
+
 RUN mkdir -p /app/config
 
-# 从构建阶段复制二进制文件
-COPY bin/init /app/init
-
-RUN mkdir /app/data
-COPY init-data /app/init-data
-
 # 运行应用
-CMD ["/app/init"]
+CMD ["/app/gateway"]

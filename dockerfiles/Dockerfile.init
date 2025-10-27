@@ -16,7 +16,10 @@ WORKDIR /app
 RUN mkdir -p /app/config
 
 # 从构建阶段复制二进制文件
-COPY bin/market /app/market
+COPY backend/bin/init /app/init
+
+RUN mkdir /app/data
+COPY backend/init-data /app/init-data
 
 # 运行应用
-CMD ["/app/market"]
+CMD ["/app/init"]

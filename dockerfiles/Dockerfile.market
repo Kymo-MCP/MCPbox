@@ -16,7 +16,7 @@ WORKDIR /app
 RUN mkdir -p /app/config
 
 # 从构建阶段复制二进制文件
-COPY bin/authz /app/authz
+COPY backend/bin/market /app/market
 
 # 运行应用
-CMD ["/app/authz"]
+CMD ["/app/market"]

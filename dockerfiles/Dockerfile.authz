@@ -13,10 +13,10 @@ ENV TZ=Asia/Shanghai
 # 设置工作目录
 WORKDIR /app
 
-# 从构建阶段复制二进制文件
-COPY bin/gateway /app/gateway
-
 RUN mkdir -p /app/config
 
+# 从构建阶段复制二进制文件
+COPY backend/bin/authz /app/authz
+
 # 运行应用
-CMD ["/app/gateway"]
+CMD ["/app/authz"]
