@@ -19,9 +19,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n'
 import type { FormInstance } from 'element-plus'
-import { ref, computed } from 'vue'
 
 const { t } = useI18n()
 

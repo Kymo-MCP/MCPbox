@@ -25,7 +25,6 @@
 
 <script setup lang="ts">
 import { Plus } from '@element-plus/icons-vue'
-import { ref, watch, withDefaults } from 'vue'
 import baseConfig from '@/config/base_config.ts'
 import { Storage } from '@/utils/storage'
 import { Delete } from '@element-plus/icons-vue'

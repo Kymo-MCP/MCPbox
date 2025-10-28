@@ -84,7 +84,6 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
 import { UploadFilled, More } from '@element-plus/icons-vue'
 import { CodeAPI } from '@/api/code/index'
 import TablePlus from '@/components/TablePlus/index.vue'

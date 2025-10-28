@@ -1,5 +1,4 @@
 import { store } from '@/stores'
-import { ref } from 'vue'
 import AuthAPI, { type LoginFormData, type EncryptionInfo } from '@/api/auth-api.ts'
 import UserAPI, { type UserInfo } from '@/api/user/user-api'
 import { defineStore } from 'pinia'

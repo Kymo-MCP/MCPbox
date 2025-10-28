@@ -1,6 +1,6 @@
 import { useRouterHooks } from '@/utils/url'
 import { useMcpStoreHook } from '@/stores'
-import { AccessType, McpProtocol, InstanceData, NodeVisible } from '@/types/instance'
+import { type PvcResult, AccessType, McpProtocol, InstanceData, NodeVisible } from '@/types/index'
 
 export const useTemplateFormHooks = () => {
   const { t } = useI18n()
@@ -105,7 +105,7 @@ export const useTemplateFormHooks = () => {
       imgAddress: InstanceData.TIP_IMGADDRESS,
     },
   })
-  const { pvcList } = useMcpStoreHook()
+  const { pvcList } = toRefs(useMcpStoreHook())
   /**
    * mcpServers placeholder
    */
@@ -155,7 +155,7 @@ export const useTemplateFormHooks = () => {
    * PVC node inaccessible condition judgment
    */
   const disabledPvcNode = computed(() => {
-    return (pvc: any) =>
+    return (pvc: PvcResult) =>
       pvc.accessModes?.includes('ReadWriteOnce') && pvc.pods && pvc.pods.length > 0
   })
 
@@ -163,7 +163,7 @@ export const useTemplateFormHooks = () => {
    * selected of pvc
    */
   const selectedPvc = computed(() => {
-    return (pvcName: string) => pvcList.value?.find((pvc: any) => pvc.name === pvcName) || []
+    return (pvcName: string) => pvcList.value?.find((pvc: PvcResult) => pvc.name === pvcName) || []
   })
 
   /**
@@ -172,7 +172,7 @@ export const useTemplateFormHooks = () => {
   const disabledReadOnly = computed(() => {
     return (pvcName: string) =>
       pvcList.value
-        ?.find((pvc: any) => pvc.name === pvcName)
+        ?.find((pvc: PvcResult) => pvc.name === pvcName)
         ?.accessModes?.includes(NodeVisible.ROM)
   })
   return {

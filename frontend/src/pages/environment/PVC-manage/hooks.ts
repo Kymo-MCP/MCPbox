@@ -1,12 +1,13 @@
 import { PvcAPI } from '@/api/env'
 import { NodeVisible } from '@/types/instance'
+import { type PvcResult, type StorageClass } from '@/types/index'
 
 export const usePvcTableHooks = () => {
   const { t } = useI18n()
   const { query } = useRoute()
-  const storageClassOptions = ref<any>([])
+  const storageClassOptions = ref<StorageClass[]>([])
   const tablePlus = ref()
-  const columns = computed(() => {
+  const columns = computed<any>(() => {
     return [
       {
         dataIndex: 'name',
@@ -61,7 +62,7 @@ export const usePvcTableHooks = () => {
       {
         dataIndex: 'capacity',
         label: t('env.pvc.capacity'),
-        customRender: ({ row }: any) => {
+        customRender: ({ row }: { row: PvcResult }) => {
           return row.capacity || '--'
         },
       },

@@ -12,7 +12,8 @@
       "action": {
         "add": "创建模板",
         "save": "保存模板",
-        "saveAndInstance": "保存模板并创建实例"
+        "saveAndInstance": "保存模板并创建实例",
+        "createInstance":"创建实例"
       },
       "pageDesc": {
         "createTitle": "创建 MCP Server 模板",

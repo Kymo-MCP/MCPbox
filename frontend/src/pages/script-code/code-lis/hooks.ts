@@ -1,4 +1,5 @@
 import { CodeAPI } from '@/api/code/index'
+import type { Code } from '@/types'
 import { timestampToDate, formatFileSize } from '@/utils/system'
 
 export const useCodeTableHooks = () => {
@@ -9,7 +10,7 @@ export const useCodeTableHooks = () => {
     loading: false,
     loadingText: t('code.action.loadingText'),
   })
-  const columns = ref([
+  const columns = ref<any>([
     {
       label: t('code.name'),
       dataIndex: 'name',
@@ -25,7 +26,7 @@ export const useCodeTableHooks = () => {
       label: t('code.size'),
       dataIndex: 'size',
 
-      customRender: ({ row }: any) => {
+      customRender: ({ row }: { row: Code }) => {
         return formatFileSize(row.size)
       },
     },
@@ -43,7 +44,7 @@ export const useCodeTableHooks = () => {
           ],
         },
       },
-      customRender: ({ row }: any) => {
+      customRender: ({ row }: { row: Code }) => {
         return [t('code.columns.unspecified'), t('code.columns.tar'), t('code.columns.zip')][
           row.type
         ]
@@ -52,14 +53,14 @@ export const useCodeTableHooks = () => {
     {
       dataIndex: 'createdAt',
       label: t('code.columns.createdAt'),
-      customRender: ({ row }: any) => {
+      customRender: ({ row }: { row: Code }) => {
         return timestampToDate(row.createdAt)
       },
     },
     {
       dataIndex: 'updatedAt',
       label: t('code.columns.updatedAt'),
-      customRender: ({ row }: any) => {
+      customRender: ({ row }: { row: Code }) => {
         return timestampToDate(row.updatedAt)
       },
     },

@@ -1,13 +1,13 @@
 import { TemplateAPI } from '@/api/mcp/template'
 import { useMcpStoreHook } from '@/stores'
 import { timestampToDate } from '@/utils/system'
-import { AccessType } from '@/types/instance'
+import { type TemplateResult, AccessType } from '@/types/instance'
 
 export const useTemplateTableHooks = () => {
   const { t } = useI18n()
   const tablePlus = ref()
   const { accessTypeOptions, mcpProtocolOptions } = useMcpStoreHook()
-  const columns = ref([
+  const columns = ref<any>([
     {
       label: t('mcp.template.name'),
       dataIndex: 'name',
@@ -33,7 +33,7 @@ export const useTemplateTableHooks = () => {
           options: accessTypeOptions,
         },
       },
-      customRender: ({ row }: any) => {
+      customRender: ({ row }: { row: TemplateResult }) => {
         return h(
           'span',
           { class: ['text-grey', 'text-primary', 'text-warning', 'text-success'][row.accessType] },
@@ -52,14 +52,14 @@ export const useTemplateTableHooks = () => {
           options: mcpProtocolOptions,
         },
       },
-      customRender: ({ row }: any) => {
+      customRender: ({ row }: { row: TemplateResult }) => {
         return mcpProtocolOptions.find((item) => item.value === row.mcpProtocol)?.label
       },
     },
     {
       dataIndex: 'environmentName',
       label: t('mcp.template.env'),
-      customRender: ({ row }: any) => {
+      customRender: ({ row }: { row: TemplateResult }) => {
         return row.accessType === AccessType.HOSTING ? row.environmentName : '--'
       },
     },
@@ -68,7 +68,7 @@ export const useTemplateTableHooks = () => {
       label: t('mcp.template.notes'),
       props: {
         'show-overflow-tooltip': true,
-        'tooltip-formatter': ({ row }: any) => {
+        'tooltip-formatter': ({ row }: { row: TemplateResult }) => {
           return h('div', { style: { width: '400px' } }, row.notes)
         },
       },
@@ -76,7 +76,7 @@ export const useTemplateTableHooks = () => {
     {
       dataIndex: 'createdAt',
       label: t('mcp.template.createTime'),
-      customRender: ({ row }: any) => {
+      customRender: ({ row }: { row: TemplateResult }) => {
         return timestampToDate(row.createdAt)
       },
     },

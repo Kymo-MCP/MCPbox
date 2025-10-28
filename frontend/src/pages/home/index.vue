@@ -27,7 +27,7 @@
           </div>
         </div>
       </AnimatedContent>
-      <div class="text-40">MCP BOX</div>
+      <div class="text-40">MCP CAN</div>
       <AnimatedContent
         :distance="100"
         direction="horizontal"
@@ -101,19 +101,18 @@
                       height="40"
                       border-radius="4"
                     ></McpImage>
-
                     <span class="title ellipsis-one flex-sub">{{ itemCase.name }}</span>
                   </div>
                   <template #content>
                     {{ itemCase.name }}
                   </template>
                 </el-tooltip>
-                <el-tooltip class="box-item" effect="dark" placement="top">
+                <el-tooltip class="box-item" effect="dark" placement="right">
                   <div class="w-full ellipsis-three desc">
                     {{ itemCase.description }}
                   </div>
                   <template #content>
-                    <div class="w-full ellipsis-three desc" style="width: 400px">
+                    <div class="w-full  desc" style="width: 400px">
                       {{ itemCase.description }}
                     </div>
                   </template>

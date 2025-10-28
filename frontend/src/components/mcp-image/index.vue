@@ -12,7 +12,6 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
 import baseConfig from '@/config/base_config.ts'
 import defaultImg from '@/assets/logo.png'
 

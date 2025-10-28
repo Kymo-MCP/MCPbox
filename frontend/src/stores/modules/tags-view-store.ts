@@ -1,6 +1,5 @@
 import { store } from '@/stores'
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 /**

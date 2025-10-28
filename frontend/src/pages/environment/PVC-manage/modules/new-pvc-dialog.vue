@@ -87,7 +87,7 @@
 import { PvcAPI, NodeAPI } from '@/api/env'
 import { ElMessage } from 'element-plus'
 import McpButton from '@/components/mcp-button/index.vue'
-import { NodeVisible } from '@/types/instance'
+import { type PvcForm, NodeVisible } from '@/types/index'
 
 const { t } = useI18n()
 const $route = useRoute()
@@ -102,7 +102,7 @@ const dialogInfo = ref({
     name: '',
     storageClass: '',
     accessMode: '',
-    storageSize: '',
+    storageSize: 0,
     nodeName: '',
     hostPath: '',
   },
@@ -114,15 +114,15 @@ const dialogInfo = ref({
     ],
   },
 })
-const storageClassOptions = ref<any>([])
+const storageClassOptions = ref<{ label: string; value: string }[]>([])
 // access model list
-const accessModeOptions = ref<any>([
+const accessModeOptions = ref<{ label: NodeVisible; value: NodeVisible }[]>([
   { label: NodeVisible.RWO, value: NodeVisible.RWO },
   { label: NodeVisible.ROM, value: NodeVisible.ROM },
   { label: NodeVisible.RWM, value: NodeVisible.RWM },
 ])
 // node name options list
-const nodeNameOptions = ref<any>([])
+const nodeNameOptions = ref<{ label: string; value: string }[]>([])
 
 /**
  * Handle cancel
@@ -176,12 +176,9 @@ const handleGetNodeList = async () => {
  * Handle init form data
  * @param form - form data
  */
-const init = (form: any) => {
+const init = () => {
   handleGetNodeList()
   handleGetStorageClassList()
-  if (form) {
-    dialogInfo.value.formData = form
-  }
   dialogInfo.value.visible = true
 }
 

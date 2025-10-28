@@ -1,18 +1,16 @@
-import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import { store } from '@/stores'
 import { EnvAPI, PvcAPI, NodeAPI } from '@/api/env'
 import { CodeAPI } from '@/api/code'
-import { useI18n } from 'vue-i18n'
 import { SourceType, AccessType, McpProtocol } from '@/types/instance'
-import {type Code} from '@/types/index'
+import { type Code, type EnvResult, type nodeResult } from '@/types/index'
 
 export const useMcpStore = defineStore('mcp', () => {
   const { t } = useI18n()
   const packageList = ref<Code[]>([])
-  const envList = ref<any>([])
-  const nodeList = ref<any>([])
-  const pvcList = ref<any>([])
+  const envList = ref<EnvResult[]>([])
+  const nodeList = ref<nodeResult[]>([])
+  const pvcList = ref<any[]>([])
 
   // source of instance list
   const sourceOptions = computed(() => [

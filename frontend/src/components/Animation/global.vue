@@ -3,7 +3,6 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref, toRefs, watch } from 'vue'
 import createGlobe from 'cobe'
 import { useSystemStoreHook } from '@/stores/modules/system-store'
 
@@ -86,7 +85,7 @@ const init = () => {
   window.addEventListener('resize', createGlobeInstance)
 }
 onBeforeUnmount(() => {
-  window.removeEventListener('resize', createGlobeInstance);
+  window.removeEventListener('resize', createGlobeInstance)
   globe.value?.destroy()
 })
 onMounted(init)

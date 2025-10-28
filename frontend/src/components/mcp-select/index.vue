@@ -51,8 +51,6 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch, withDefaults, computed } from 'vue'
-import { useI18n } from 'vue-i18n'
 import zipLogo from '@/assets/logo/zip.png'
 import { Search } from '@element-plus/icons-vue'
 import { formatFileSize, timestampToDate } from '@/utils/system'

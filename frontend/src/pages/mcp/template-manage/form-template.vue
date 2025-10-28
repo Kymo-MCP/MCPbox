@@ -433,11 +433,11 @@
     <div class="action-footer mt-4 flex">
       <el-button @click="handleCancel" class="mr-4">{{ t('common.cancel') }}</el-button>
       <mcp-button @click="handleConfirm">{{ t('mcp.template.action.save') }}</mcp-button>
-      <span class="ml-4">
+      <!-- <span class="ml-4">
         <mcp-button @click="handleSaveAndInstance">{{
           t('mcp.template.action.saveAndInstance')
         }}</mcp-button>
-      </span>
+      </span> -->
     </div>
   </div>
 </template>
@@ -598,13 +598,13 @@ const handleConfirm = async () => {
 /**
  * Handle save template and create a instance
  */
-const handleSaveAndInstance = async () => {
-  const result = await handleSaveTemplate()
-  jumpToPage({
-    url: '/new-instance',
-    data: { templateId: result.templateId || query.templateId },
-  })
-}
+// const handleSaveAndInstance = async () => {
+//   const result = await handleSaveTemplate()
+//   jumpToPage({
+//     url: '/new-instance',
+//     data: { templateId: result.templateId || query.templateId },
+//   })
+// }
 
 /**
  * Handle confirm save

@@ -63,7 +63,7 @@
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item command="handleCreatInstance">
-                  {{ t('mcp.instance.action.add') }}
+                  {{ t('mcp.template.action.createInstance') }}
                 </el-dropdown-item>
                 <el-dropdown-item command="handleDeleteTemplate">
                   <el-button type="danger" link>
@@ -151,7 +151,7 @@ const handleDeleteTemplate = (row: TemplateResult) => {
 /**
  * Handle create a instance by template
  */
-const handleCreatInstance = (row: any) => {
+const handleCreatInstance = (row: TemplateResult) => {
   jumpToPage({
     url: '/new-instance',
     data: { templateId: row.templateId },
@@ -163,7 +163,7 @@ const handleCreatInstance = (row: any) => {
  * @param callback - function name
  * @param row - item of template
  */
-const handleCommand = (callback: string, row: any) => {
+const handleCommand = (callback: string, row: TemplateResult) => {
   switch (callback) {
     case 'handleCreatInstance':
       handleCreatInstance(row)

@@ -1,4 +1,5 @@
 import { NodeAPI } from '@/api/env'
+import type { nodeResult } from '@/types'
 
 export const usePvcTableHooks = () => {
   const { t } = useI18n()
@@ -45,7 +46,7 @@ export const usePvcTableHooks = () => {
     {
       dataIndex: 'internalIp',
       label: t('env.node.internalIp'),
-      customRender: ({ row }: any) => {
+      customRender: ({ row }: { row: nodeResult }) => {
         return row.internalIp || '--'
       },
     },

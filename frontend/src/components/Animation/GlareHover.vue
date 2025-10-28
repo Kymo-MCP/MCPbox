@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { computed, useTemplateRef } from 'vue'
-
 interface GlareHoverProps {
   width?: string
   height?: string

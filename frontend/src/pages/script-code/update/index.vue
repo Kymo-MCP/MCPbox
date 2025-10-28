@@ -46,10 +46,8 @@
 
 <script setup lang="ts">
 import { UploadFilled } from '@element-plus/icons-vue'
-import { ref } from 'vue'
 import baseConfig from '@/config/base_config.ts'
 import { ElMessage } from 'element-plus'
-import { useI18n } from 'vue-i18n'
 import { Storage } from '@/utils/storage'
 
 const { t } = useI18n()

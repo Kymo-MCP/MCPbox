@@ -94,8 +94,6 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
-import { useI18n } from 'vue-i18n'
 import { useRouterHooks } from '@/utils/url'
 import NewEnvDialog from '@/pages/environment/working-environment/modules/new-env-dialog.vue'
 import { TemplateAPI } from '@/api/mcp/template'

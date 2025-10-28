@@ -10,7 +10,6 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
 import { Storage } from '@/utils/storage'
 
 // import { useSystemStoreHook } from '@/stores/modules/system-store'

@@ -20,7 +20,7 @@ export const EnvAPI = {
   },
   // 创建运行环境
   createEnv(data: any) {
-    return request<any, List>({
+    return request({
       url: `${baseConfig.baseUrlVersion}/market/environments`,
       method: 'POST',
       data,
@@ -28,14 +28,14 @@ export const EnvAPI = {
   },
   // 删除运行环境
   delete(id: string) {
-    return request<any, List>({
+    return request({
       url: `${baseConfig.baseUrlVersion}/market/environments/${id}`,
       method: 'DELETE',
     })
   },
   // 编辑运行环境
   editEnv(data: any) {
-    return request<any, List>({
+    return request({
       url: `${baseConfig.baseUrlVersion}/market/environments/${data.id}`,
       method: 'PUT',
       data,
@@ -43,7 +43,7 @@ export const EnvAPI = {
   },
   // 连通性测试
   testEnv(id: string) {
-    return request<any, any>({
+    return request({
       url: `${baseConfig.baseUrlVersion}/market/environments/${id}/test`,
       method: 'POST',
     })

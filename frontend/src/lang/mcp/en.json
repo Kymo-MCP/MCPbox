@@ -12,7 +12,8 @@
       "action": {
         "add": "Add",
         "save": "Save Template",
-        "saveAndInstance": "Save and Add a Instance"
+        "saveAndInstance": "Save and Add a Instance",
+         "createInstance":"Create Instance"
       },
       "pageDesc": {
         "createTitle": "Create a MCP-Server template",

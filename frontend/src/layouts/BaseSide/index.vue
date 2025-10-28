@@ -11,7 +11,7 @@
         <template #title>
           <div class="center" @click="handleToHome">
             <Logo v-if="!isCollapse" />
-            <span class="ml-2"> MCP BOX </span>
+            <span class="ml-2"> MCP CAN </span>
           </div>
         </template>
       </el-menu-item>

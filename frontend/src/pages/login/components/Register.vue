@@ -96,9 +96,7 @@
 <script setup lang="ts">
 import type { FormInstance } from 'element-plus'
 import { User, Lock } from '@element-plus/icons-vue'
-import { useI18n } from 'vue-i18n'
 import AuthAPI, { type LoginFormData } from '@/api/auth-api.ts'
-import { onMounted, ref, computed } from 'vue'
 
 const { t } = useI18n()
 

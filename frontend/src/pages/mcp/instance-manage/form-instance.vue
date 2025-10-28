@@ -422,7 +422,7 @@
                           />
                         </div>
                       </div>
-                      <el-space v-if="!selectedPvc(volume.pvcName).length">
+                      <el-space v-if="!selectedPvc(volume.pvcName)">
                         <el-text type="secondary">
                           {{ t('mcp.template.formData.accessModes') }}:
                           {{ selectedPvc(volume.pvcName).accessModes?.join(', ') }}
@@ -469,7 +469,7 @@ import zipLogo from '@/assets/logo/zip.png'
 import McpButton from '@/components/mcp-button/index.vue'
 import { TemplateAPI } from '@/api/mcp/template'
 import { AccessType, McpProtocol, SourceType, InstanceData, NodeVisible } from '@/types/instance'
-import { type VolumeMountsItme, type PvcForm,type Code } from '@/types/index.ts'
+import { type VolumeMountsItme, type PvcForm, type Code } from '@/types/index.ts'
 
 const { t } = useI18n()
 const {
@@ -511,7 +511,7 @@ const currentPackage = computed(() => {
   return (
     packageList.value?.find(
       (item: { id: string }) => item.id === pageInfo.value.formData.packageId,
-    ) || {name:'',size:"",createdAt:""}
+    ) || { name: '', size: '', createdAt: '' }
   )
 })
 

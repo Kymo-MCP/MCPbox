@@ -134,4 +134,6 @@ export interface TemplateForm extends InstanceForm {
 export interface TemplateResult extends InstanceForm {
   templateId: string
   name: string
+  environmentName: string
+  createdAt: string
 }

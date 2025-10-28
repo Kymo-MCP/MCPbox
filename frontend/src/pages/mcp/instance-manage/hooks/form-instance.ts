@@ -1,6 +1,13 @@
 import { useMcpStoreHook } from '@/stores'
 import { useRouterHooks } from '@/utils/url'
-import { AccessType, McpProtocol, SourceType, InstanceData, NodeVisible } from '@/types/instance'
+import {
+  type PvcResult,
+  AccessType,
+  McpProtocol,
+  SourceType,
+  InstanceData,
+  NodeVisible,
+} from '@/types/index'
 
 export const useInstanceFormHooks = () => {
   const { t } = useI18n()
@@ -157,7 +164,7 @@ export const useInstanceFormHooks = () => {
    * PVC node inaccessible condition judgment
    */
   const disabledPvcNode = computed(() => {
-    return (pvc: any) =>
+    return (pvc: PvcResult) =>
       pvc.accessModes?.includes('ReadWriteOnce') && pvc.pods && pvc.pods.length > 0
   })
 
@@ -165,7 +172,7 @@ export const useInstanceFormHooks = () => {
    * selected of pvc
    */
   const selectedPvc = computed(() => {
-    return (pvcName: string) => pvcList.value?.find((pvc: any) => pvc.name === pvcName) || []
+    return (pvcName: string) => pvcList.value?.find((pvc: PvcResult) => pvc.name === pvcName) || {}
   })
 
   /**
@@ -174,7 +181,7 @@ export const useInstanceFormHooks = () => {
   const disabledReadOnly = computed(() => {
     return (pvcName: string) =>
       pvcList.value
-        ?.find((pvc: any) => pvc.name === pvcName)
+        ?.find((pvc: PvcResult) => pvc.name === pvcName)
         ?.accessModes?.includes(NodeVisible.ROM)
   })
   return {
