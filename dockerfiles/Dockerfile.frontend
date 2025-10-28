@@ -1,3 +1,12 @@
+FROM 77kymo/builder:v1 AS builder
+
+COPY ../frontend /app
+RUN echo "Step 1: Building frontend" >> /var/log/build/build.log && \
+    cd /app && \
+    npm install --production && \
+    npm run build && \
+    echo "$(date): Frontend built successfully" >> /var/log/build/build.log
+
 FROM node:20-alpine
 
 # 设置apk源
@@ -9,7 +18,7 @@ RUN echo "https://mirrors.aliyun.com/alpine/v3.18/main/" > /etc/apk/repositories
 # 设置 npm 源
 RUN npm config set registry https://registry.npmmirror.com
 
-# 安装依赖
+# 安装依赖git 
 RUN npm install -g serve
 
 RUN mkdir -p /app
@@ -17,7 +26,7 @@ RUN mkdir -p /app
 WORKDIR /app
 
 # 复制项目代码
-COPY frontend/dist /app/
+COPY --from=builder /app/dist /app/
 
 # 暴露端口
 EXPOSE 3000
