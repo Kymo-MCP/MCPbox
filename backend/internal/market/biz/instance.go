@@ -371,3 +371,8 @@ func (biz *InstanceBiz) CreatePublicProxyConfig(instanceID string, mcpProtocol m
 		},
 	}
 }
+
+// GetInstancesByEnvironmentID 根据环境ID获取实例列表
+func (biz *InstanceBiz) GetInstancesByEnvironmentID(ctx context.Context, environmentID uint) ([]*model.McpInstance, error) {
+	return mysql.McpInstanceRepo.FindByEnvironmentID(ctx, environmentID)
+}

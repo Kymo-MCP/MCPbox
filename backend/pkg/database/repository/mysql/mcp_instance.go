@@ -257,3 +257,13 @@ func (r *McpInstanceRepository) FindByName(ctx context.Context, name string) (*m
 	}
 	return &instance, nil
 }
+
+// FindByEnvironmentID finds instances by environment ID
+func (r *McpInstanceRepository) FindByEnvironmentID(ctx context.Context, environmentID uint) ([]*model.McpInstance, error) {
+	var instances []*model.McpInstance
+	err := r.getDB().WithContext(ctx).Where("environment_id = ?", environmentID).Find(&instances).Error
+	if err != nil {
+		return nil, err
+	}
+	return instances, nil
+}
