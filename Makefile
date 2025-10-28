@@ -11,8 +11,8 @@ VERSION := $(shell cat $(ROOT_PATH)/VERSION 2>/dev/null || echo "v1.0.0")
 COMMIT := $(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")
 BUILD_TIME := $(shell date +%Y%m%d%H%M%S)
 
-# Docker registry
-QM_IMAGE_REGISTRY := your-docker-registry
+# Container registry
+IMAGE_REGISTRY := your-container-registry
 
 # Go build environment
 GO_PROXY ?= https://goproxy.cn/
@@ -44,7 +44,7 @@ print:
 	@echo "COMMIT: $(COMMIT)"
 	@echo "BUILD_TIME: $(BUILD_TIME)"
 	@echo "GO_VERSION: $(GO_VERSION)"
-	@echo "QM_IMAGE_REGISTRY: $(QM_IMAGE_REGISTRY)"
+	@echo "IMAGE_REGISTRY: $(IMAGE_REGISTRY)"
 	@echo "GO_BUILD_ENV: $(GO_BUILD_ENV)"
 	@echo "-------------------------------------------"
 
@@ -86,8 +86,8 @@ build-frontend:
 # Docker build targets
 define build_docker_image
 	@echo "---------- Start Docker build $(1) ----------"
-	@echo "cd $(ROOT_PATH) && docker build -t $(QM_IMAGE_REGISTRY)/$(2):$(VERSION) -f $(DOCKERFILES_PATH)/Dockerfile.$(1) ."
-	@cd $(ROOT_PATH) && docker build -t $(QM_IMAGE_REGISTRY)/$(2):$(VERSION) -f $(DOCKERFILES_PATH)/Dockerfile.$(1) .
+	@echo "cd $(ROOT_PATH) && docker build -t $(IMAGE_REGISTRY)/$(2):$(VERSION) -f $(DOCKERFILES_PATH)/Dockerfile.$(1) ."
+	@cd $(ROOT_PATH) && docker build -t $(IMAGE_REGISTRY)/$(2):$(VERSION) -f $(DOCKERFILES_PATH)/Dockerfile.$(1) .
 	@echo "---------- End Docker build $(1) ----------"
 endef
 
@@ -121,8 +121,8 @@ docker-build-all: docker-build-init docker-build-market docker-build-authz docke
 # Docker push targets
 define push_docker_image
 	@echo "---------- Start Docker push $(1) ----------"
-	@echo "docker push $(QM_IMAGE_REGISTRY)/$(1):$(VERSION)"
-	@docker push $(QM_IMAGE_REGISTRY)/$(1):$(VERSION)
+	@echo "docker push $(IMAGE_REGISTRY)/$(1):$(VERSION)"
+	@docker push $(IMAGE_REGISTRY)/$(1):$(VERSION)
 	@echo "---------- End Docker push $(1) ----------"
 endef
 
@@ -198,7 +198,7 @@ clean:
 .PHONY: clean-docker
 clean-docker:
 	@echo "Cleaning Docker images..."
-	@docker images | grep "$(QM_IMAGE_REGISTRY)" | awk '{print $$3}' | xargs -r docker rmi -f
+	@docker images | grep "$(IMAGE_REGISTRY)" | awk '{print $$3}' | xargs -r docker rmi -f
 
 # Test targets
 .PHONY: test-backend
