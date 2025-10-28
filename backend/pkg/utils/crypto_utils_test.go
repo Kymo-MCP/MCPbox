@@ -21,12 +21,12 @@ func TestRSAEncrypt(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// base64 解码
+			// Base64 decode
 			publicKey, err := base64.StdEncoding.DecodeString(tt.publicKey)
 			if err != nil {
-				t.Fatalf("base64 解码失败: %v", err)
+				t.Fatalf("Base64 decoding failed: %v", err)
 			}
-			// 加密
+			// Encrypt
 			pwd, err := utils.RSAEncrypt(tt.data, string(publicKey))
 			if err != nil {
 				t.Fatalf("RSAEncrypt() failed: %v", err)

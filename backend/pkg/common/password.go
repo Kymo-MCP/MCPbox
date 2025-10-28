@@ -15,20 +15,20 @@ type PasswordValidationResult struct {
 
 // ValidatePasswordStrength validates password strength based on configured rules
 func ValidatePasswordStrength(password string) error {
-	// 密码长度检查
+	// Password length check
 	if len(password) < PasswordMinLength {
-		return fmt.Errorf("密码长度不能少于%d位", PasswordMinLength)
+		return fmt.Errorf("password length cannot be less than %d characters", PasswordMinLength)
 	}
 
 	if len(password) > PasswordMaxLength {
-		return fmt.Errorf("密码长度不能超过%d位", PasswordMaxLength)
+		return fmt.Errorf("password length cannot exceed %d characters", PasswordMaxLength)
 	}
 
-	// 检查是否包含至少一个字母
+	// Check if contains at least one letter
 	hasLetter := false
-	// 检查是否包含至少一个数字
+	// Check if contains at least one digit
 	hasDigit := false
-	// 检查是否包含特殊字符
+	// Check if contains special characters
 	hasSpecial := false
 
 	for _, char := range password {
@@ -37,31 +37,31 @@ func ValidatePasswordStrength(password string) error {
 			hasLetter = true
 		case char >= '0' && char <= '9':
 			hasDigit = true
-		case char >= PasswordMinASCII && char <= PasswordMaxASCII: // 可打印ASCII字符范围内的特殊字符
+		case char >= PasswordMinASCII && char <= PasswordMaxASCII: // Special characters within printable ASCII range
 			if !((char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z') || (char >= '0' && char <= '9')) {
 				hasSpecial = true
 			}
 		}
 	}
 
-	// 根据配置检查字母要求
+	// Check letter requirement based on configuration
 	if PasswordRequireLetter && !hasLetter {
-		return fmt.Errorf("密码必须包含至少一个字母")
+		return fmt.Errorf("password must contain at least one letter")
 	}
 
-	// 根据配置检查数字要求
+	// Check digit requirement based on configuration
 	if PasswordRequireDigit && !hasDigit {
-		return fmt.Errorf("密码必须包含至少一个数字")
+		return fmt.Errorf("password must contain at least one digit")
 	}
 
-	// 根据配置检查特殊字符要求
+	// Check special character requirement based on configuration
 	if PasswordRequireSpecial && !hasSpecial {
-		return fmt.Errorf("密码必须包含至少一个特殊字符")
+		return fmt.Errorf("password must contain at least one special character")
 	}
 
-	// 如果不强制要求特殊字符，但推荐包含
+	// If special characters are not required but recommended
 	if !PasswordRequireSpecial && !hasSpecial {
-		logger.Warn("密码建议包含特殊字符以提高安全性")
+		logger.Warn("password is recommended to contain special characters for better security")
 	}
 
 	return nil
@@ -69,16 +69,16 @@ func ValidatePasswordStrength(password string) error {
 
 // ValidatePasswordStrengthWithI18n validates password strength and returns i18n error code
 func ValidatePasswordStrengthWithI18n(password string) (bool, int) {
-	// 密码长度检查
+	// Password length check
 	if len(password) < PasswordMinLength || len(password) > PasswordMaxLength {
 		return false, i18n.CodePasswordTooWeak
 	}
 
-	// 检查是否包含至少一个字母
+	// Check if contains at least one letter
 	hasLetter := false
-	// 检查是否包含至少一个数字
+	// Check if contains at least one digit
 	hasDigit := false
-	// 检查是否包含特殊字符
+	// Check if contains special characters
 	hasSpecial := false
 
 	for _, char := range password {
@@ -87,58 +87,54 @@ func ValidatePasswordStrengthWithI18n(password string) (bool, int) {
 			hasLetter = true
 		case char >= '0' && char <= '9':
 			hasDigit = true
-		case char >= PasswordMinASCII && char <= PasswordMaxASCII: // 可打印ASCII字符范围内的特殊字符
+		case char >= PasswordMinASCII && char <= PasswordMaxASCII: // Special characters within printable ASCII range
 			if !((char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z') || (char >= '0' && char <= '9')) {
 				hasSpecial = true
 			}
 		}
 	}
 
-	// 根据配置检查字母要求
+	// Check letter requirement based on configuration
 	if PasswordRequireLetter && !hasLetter {
 		return false, i18n.CodePasswordTooWeak
 	}
 
-	// 根据配置检查数字要求
+	// Check digit requirement based on configuration
 	if PasswordRequireDigit && !hasDigit {
 		return false, i18n.CodePasswordTooWeak
 	}
 
-	// 根据配置检查特殊字符要求
+	// Check special character requirement based on configuration
 	if PasswordRequireSpecial && !hasSpecial {
 		return false, i18n.CodePasswordTooWeak
 	}
 
-	// 如果不强制要求特殊字符，但推荐包含
+	// If special characters are not required but recommended
 	if !PasswordRequireSpecial && !hasSpecial {
-		logger.Warn("密码建议包含特殊字符以提高安全性")
+		logger.Warn("password is recommended to contain special characters for better security")
 	}
 
 	return true, i18n.CodeSuccess
 }
 
-// ValidatePasswordStrengthDetailed returns detailed validation result
+// ValidatePasswordStrengthDetailed validates password strength and returns detailed result
 func ValidatePasswordStrengthDetailed(password string) PasswordValidationResult {
 	result := PasswordValidationResult{
-		IsValid:   true,
-		ErrorCode: i18n.CodeSuccess,
-		Errors:    make([]string, 0),
+		IsValid: true,
+		Errors:  []string{},
 	}
 
-	// 密码长度检查
+	// Password length check
 	if len(password) < PasswordMinLength {
 		result.IsValid = false
-		result.ErrorCode = i18n.CodePasswordTooWeak
-		result.Errors = append(result.Errors, fmt.Sprintf("密码长度不能少于%d位", PasswordMinLength))
+		result.Errors = append(result.Errors, fmt.Sprintf("password length cannot be less than %d characters", PasswordMinLength))
 	}
 
 	if len(password) > PasswordMaxLength {
 		result.IsValid = false
-		result.ErrorCode = i18n.CodePasswordTooWeak
-		result.Errors = append(result.Errors, fmt.Sprintf("密码长度不能超过%d位", PasswordMaxLength))
+		result.Errors = append(result.Errors, fmt.Sprintf("password length cannot exceed %d characters", PasswordMaxLength))
 	}
 
-	// 检查字符类型
 	hasLetter := false
 	hasDigit := false
 	hasSpecial := false
@@ -156,23 +152,19 @@ func ValidatePasswordStrengthDetailed(password string) PasswordValidationResult 
 		}
 	}
 
-	// 根据配置检查各种要求
 	if PasswordRequireLetter && !hasLetter {
 		result.IsValid = false
-		result.ErrorCode = i18n.CodePasswordTooWeak
-		result.Errors = append(result.Errors, "密码必须包含至少一个字母")
+		result.Errors = append(result.Errors, "password must contain at least one letter")
 	}
 
 	if PasswordRequireDigit && !hasDigit {
 		result.IsValid = false
-		result.ErrorCode = i18n.CodePasswordTooWeak
-		result.Errors = append(result.Errors, "密码必须包含至少一个数字")
+		result.Errors = append(result.Errors, "password must contain at least one digit")
 	}
 
 	if PasswordRequireSpecial && !hasSpecial {
 		result.IsValid = false
-		result.ErrorCode = i18n.CodePasswordTooWeak
-		result.Errors = append(result.Errors, "密码必须包含至少一个特殊字符")
+		result.Errors = append(result.Errors, "password must contain at least one special character")
 	}
 
 	return result

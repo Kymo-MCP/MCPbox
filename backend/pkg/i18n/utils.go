@@ -7,24 +7,24 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Format 格式化错误消息
+// Format formats error message
 func Format(lang SupportedLanguage, code int, args ...interface{}) string {
 	return GetLocalizedMessage(code, lang, args...)
 }
 
-// FormatWithContext 使用上下文格式化错误消息
+// FormatWithContext formats error message with context
 func FormatWithContext(ctx context.Context, code int, args ...interface{}) string {
 	lang := GetLanguageFromContext(ctx)
 	return GetLocalizedMessage(code, lang, args...)
 }
 
-// FormatWithGin 使用 Gin 上下文格式化错误消息
+// FormatWithGin formats error message with Gin context
 func FormatWithGin(c *gin.Context, code int, args ...interface{}) string {
 	lang := GetLanguageFromGin(c)
 	return GetLocalizedMessage(code, lang, args...)
 }
 
-// ValidateMessageTemplates 验证所有语言的消息模板是否完整
+// ValidateMessageTemplates validates if message templates are complete for all languages
 func ValidateMessageTemplates() []string {
 	var missing []string
 

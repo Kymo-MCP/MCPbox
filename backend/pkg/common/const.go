@@ -2,43 +2,43 @@ package common
 
 import "time"
 
-// 全局配置
+// Global configuration constants
 const (
 	DefaultPageSize = 10
 	MaxPageSize     = 100
 
-	AccessTokenExpireTime  = 60 * 60 * 24     // 1天
-	RefreshTokenExpireTime = 60 * 60 * 24 * 7 // 7天
+	AccessTokenExpireTime  = 60 * 60 * 24     // 1 day
+	RefreshTokenExpireTime = 60 * 60 * 24 * 7 // 7 days
 
 	DefaultLanguage    = "zh-CN"
 	DefaultTheme       = "light"
-	AutoLogoutTime     = 30 * 60 // 30分钟
+	AutoLogoutTime     = 30 * 60 // 30 minutes
 	EnableNotification = true
 
-	// 重放攻击时间窗口
+	// Replay attack time window
 	ReplayWindow = 5 * time.Second
-	// 是否启用防重放
+	// Whether to enable anti-replay protection
 	EnableReplay = false
-	// 是否启用防篡改
+	// Whether to enable anti-tampering protection
 	EnableSign = false
 
-	// 密码强度验证配置
-	PasswordMinLength      = 6     // 最小长度
-	PasswordMaxLength      = 128   // 最大长度
-	PasswordRequireLetter  = true  // 是否要求包含字母
-	PasswordRequireDigit   = true  // 是否要求包含数字
-	PasswordRequireSpecial = false // 是否要求包含特殊字符（推荐但不强制）
-	PasswordMinASCII       = 32    // 可打印ASCII字符最小值
-	PasswordMaxASCII       = 126   // 可打印ASCII字符最大值
+	// Password strength validation configuration
+	PasswordMinLength      = 6     // Minimum length
+	PasswordMaxLength      = 128   // Maximum length
+	PasswordRequireLetter  = true  // Whether to require letters
+	PasswordRequireDigit   = true  // Whether to require digits
+	PasswordRequireSpecial = false // Whether to require special characters (recommended but not enforced)
+	PasswordMinASCII       = 32    // Minimum printable ASCII character value
+	PasswordMaxASCII       = 126   // Maximum printable ASCII character value
 
-	// 头像上传路径
+	// Avatar upload path
 	AvatarPath = "/avatar"
-	// 图片上传路径
+	// Image upload path
 	ImagesPath = "/images"
-	// 静态资源访问路径前缀
+	// Static resource access path prefix
 	StaticPrefix = "/static"
 
-	// 默认托管镜像地址
+	// Default hosting image address
 	DefatuleHostingImg = "ccr.ccs.tencentyun.com/itqm-private/mcp-hosting"
 
 	SourceServerName = "qm-mcp-server"

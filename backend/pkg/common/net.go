@@ -5,14 +5,14 @@ import (
 	"os"
 )
 
-// GetPublicIP 获取当前服务器的公网IP地址
+// GetPublicIP get current server's public IP address
 func GetPublicIP() (string, error) {
-	// 首先尝试从环境变量获取
+	// First try to get from environment variable
 	if publicIP := os.Getenv("PUBLIC_IP"); publicIP != "" {
 		return publicIP, nil
 	}
 
-	// 如果环境变量中没有，则尝试获取本地IP
+	// If not in environment variable, try to get local IP
 	addrs, err := net.InterfaceAddrs()
 	if err != nil {
 		return "", err
@@ -21,7 +21,7 @@ func GetPublicIP() (string, error) {
 	for _, addr := range addrs {
 		if ipnet, ok := addr.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
 			if ipnet.IP.To4() != nil {
-				// 排除私有IP地址
+				// Exclude private IP addresses
 				if !isPrivateIP(ipnet.IP) {
 					return ipnet.IP.String(), nil
 				}
@@ -29,7 +29,7 @@ func GetPublicIP() (string, error) {
 		}
 	}
 
-	// 如果没有找到公网IP，返回第一个非回环的IPv4地址
+	// If no public IP found, return first non-loopback IPv4 address
 	for _, addr := range addrs {
 		if ipnet, ok := addr.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
 			if ipnet.IP.To4() != nil {
@@ -41,9 +41,9 @@ func GetPublicIP() (string, error) {
 	return "", nil
 }
 
-// isPrivateIP 检查IP是否为私有IP
+// isPrivateIP check if IP is a private IP
 func isPrivateIP(ip net.IP) bool {
-	// 私有IP地址范围
+	// Private IP address ranges
 	privateIPBlocks := []string{
 		"10.0.0.0/8",
 		"172.16.0.0/12",

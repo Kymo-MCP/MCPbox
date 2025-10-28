@@ -26,39 +26,39 @@ func BindAndValidateUniversal(c *gin.Context, req interface{}) error {
 	contentType := c.GetHeader("Content-Type")
 	method := c.Request.Method
 
-	// 参数绑定优先级（从低到高）：Body < Query < RawQuery < URI
-	// 优先级高的参数会覆盖优先级低的同名参数
+	// Parameter binding priority (from low to high): Body < Query < RawQuery < URI
+	// Higher priority parameters will override lower priority parameters with the same name
 
-	// 1. 首先绑定Body参数（优先级最低）
+	// 1. First bind Body parameters (lowest priority)
 	switch {
-	// JSON绑定 - 适用于POST/PUT/PATCH等带JSON body的请求
+	// JSON binding - for POST/PUT/PATCH requests with JSON body
 	case strings.HasPrefix(contentType, "application/json") ||
 		(method == "POST" || method == "PUT" || method == "PATCH") && contentType == "":
 		if err := c.ShouldBindJSON(req); err != nil {
-			// JSON绑定失败不直接返回错误，可能没有JSON body
+			// JSON binding failure doesn't return error directly, might not have JSON body
 		}
 
-	// Form绑定 - 适用于表单提交
+	// Form binding - for form submissions
 	case strings.HasPrefix(contentType, "application/x-www-form-urlencoded") ||
 		strings.HasPrefix(contentType, "multipart/form-data"):
 		if err := c.ShouldBind(req); err != nil {
-			// Form绑定失败不直接返回错误，可能没有Form数据
+			// Form binding failure doesn't return error directly, might not have form data
 		}
 	}
 
-	// 2. 绑定Query参数（次低优先级）
+	// 2. Bind Query parameters (second lowest priority)
 	if err := c.ShouldBindQuery(req); err != nil {
-		// Query参数绑定失败不直接返回错误，继续尝试其他绑定方式
+		// Query parameter binding failure doesn't return error directly, continue with other binding methods
 	}
 
-	// 3. 处理RawQuery参数（次高优先级）
+	// 3. Handle RawQuery parameters (second highest priority)
 	if rawQuery := c.Request.URL.RawQuery; rawQuery != "" {
 		if err := bindRawQuery(c, rawQuery, req); err != nil {
-			// RawQuery绑定失败不直接返回错误，继续尝试其他绑定方式
+			// RawQuery binding failure doesn't return error directly, continue with other binding methods
 		}
 	}
 
-	// 4. 最后绑定URI参数（优先级最高，会覆盖所有同名字段）
+	// 4. Finally bind URI parameters (highest priority, will override all fields with the same name)
 	if len(c.Params) > 0 {
 		if err := c.ShouldBindUri(req); err != nil {
 			GinError(c, i18nresp.CodeInternalError, err.Error())
@@ -84,41 +84,41 @@ func bindRawQuery(c *gin.Context, rawQuery string, req interface{}) error {
 		return nil
 	}
 
-	// 解析原始查询字符串
+	// Parse raw query string
 	values, err := url.ParseQuery(rawQuery)
 	if err != nil {
 		return err
 	}
 
-	// 使用反射设置结构体字段
+	// Use reflection to set struct fields
 	reqValue := reflect.ValueOf(req)
 	if reqValue.Kind() != reflect.Ptr || reqValue.Elem().Kind() != reflect.Struct {
-		return nil // 不是指向结构体的指针，跳过
+		return nil // Not a pointer to struct, skip
 	}
 
 	reqElem := reqValue.Elem()
 	reqType := reqElem.Type()
 
-	// 遍历结构体字段
+	// Iterate through struct fields
 	for i := 0; i < reqElem.NumField(); i++ {
 		field := reqElem.Field(i)
 		fieldType := reqType.Field(i)
 
-		// 跳过不可设置的字段
+		// Skip non-settable fields
 		if !field.CanSet() {
 			continue
 		}
 
-		// 获取字段的标签名（优先使用form标签，然后json标签）
+		// Get field tag name (prioritize form tag, then json tag)
 		fieldName := getFieldName(fieldType)
 		if fieldName == "" {
 			continue
 		}
 
-		// 从查询参数中获取值
+		// Get value from query parameters
 		if queryValues, exists := values[fieldName]; exists && len(queryValues) > 0 {
 			if err := setFieldValue(field, queryValues[0]); err != nil {
-				continue // 设置失败，跳过该字段
+				continue // Setting failed, skip this field
 			}
 		}
 	}
@@ -128,7 +128,7 @@ func bindRawQuery(c *gin.Context, rawQuery string, req interface{}) error {
 
 // getFieldName gets the field name for binding, prioritizing json tag
 func getFieldName(field reflect.StructField) string {
-	// 优先使用form标签
+	// Prioritize form tag
 	if tag := field.Tag.Get("form"); tag != "" {
 		if idx := strings.Index(tag, ","); idx != -1 {
 			return tag[:idx]
@@ -136,7 +136,7 @@ func getFieldName(field reflect.StructField) string {
 		return tag
 	}
 
-	// 其次使用json标签
+	// Then use json tag
 	if tag := field.Tag.Get("json"); tag != "" {
 		if idx := strings.Index(tag, ","); idx != -1 {
 			return tag[:idx]
@@ -144,7 +144,7 @@ func getFieldName(field reflect.StructField) string {
 		return tag
 	}
 
-	// 最后使用字段名的小写形式
+	// Finally use lowercase field name
 	return strings.ToLower(field.Name)
 }
 
@@ -178,13 +178,13 @@ func setFieldValue(field reflect.Value, value string) error {
 			return err
 		}
 	case reflect.Ptr:
-		// 处理指针类型（如 *bool, *int 等）
+		// Handle pointer types (like *bool, *int, etc.)
 		if field.IsNil() {
 			field.Set(reflect.New(field.Type().Elem()))
 		}
 		return setFieldValue(field.Elem(), value)
 	default:
-		return nil // 不支持的类型，跳过
+		return nil // Unsupported type, skip
 	}
 	return nil
 }

@@ -1,0 +1,53 @@
+# Git Commit Message Template
+# 
+# Format: <type>(<scope>): <subject>
+#
+# <body>
+#
+# <footer>
+#
+# Types:
+# - feat: A new feature
+# - fix: A bug fix
+# - docs: Documentation only changes
+# - style: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
+# - refactor: A code change that neither fixes a bug nor adds a feature
+# - perf: A code change that improves performance
+# - test: Adding missing tests or correcting existing tests
+# - build: Changes that affect the build system or external dependencies
+# - ci: Changes to our CI configuration files and scripts
+# - chore: Other changes that don't modify src or test files
+# - revert: Reverts a previous commit
+#
+# Scope (optional):
+# - api: API related changes
+# - auth: Authentication/authorization
+# - db: Database related changes
+# - ui: User interface changes
+# - config: Configuration changes
+# - deps: Dependencies updates
+# - docker: Docker related changes
+# - k8s: Kubernetes related changes
+# - i18n: Internationalization changes
+#
+# Subject:
+# - Use imperative mood ("add" not "added" or "adds")
+# - Don't capitalize first letter
+# - No period at the end
+# - Limit to 50 characters
+#
+# Body (optional):
+# - Explain what and why, not how
+# - Wrap at 72 characters
+# - Use imperative mood
+#
+# Footer (optional):
+# - Reference issues: "Closes #123", "Fixes #456"
+# - Breaking changes: "BREAKING CHANGE: description"
+#
+# Examples:
+# feat(auth): add JWT token validation
+# fix(api): resolve user authentication timeout issue
+# docs(readme): update installation instructions
+# refactor(db): optimize query performance for user lookup
+# chore(deps): update Go modules to latest versions

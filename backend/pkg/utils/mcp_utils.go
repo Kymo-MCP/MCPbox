@@ -8,7 +8,7 @@ import (
 	"unicode"
 )
 
-// McpServerConfig MCP服务配置结构
+// McpServerConfig MCP service configuration structure
 type McpServerConfig struct {
 	Args      []string `json:"args,omitempty"`
 	Command   string   `json:"command,omitempty"`
@@ -17,12 +17,12 @@ type McpServerConfig struct {
 	URL       string   `json:"url,omitempty"`
 }
 
-// McpServersConfig MCP服务器配置根结构
+// McpServersConfig MCP server configuration root structure
 type McpServersConfig struct {
 	McpServers map[string]McpServerConfig `json:"mcpServers"`
 }
 
-// McpValidationResult MCP配置验证结果
+// McpValidationResult MCP configuration validation result
 type McpValidationResult struct {
 	IsValid      bool   `json:"isValid"`
 	ErrorMessage string `json:"errorMessage,omitempty"`
@@ -36,62 +36,62 @@ type McpValidationResult struct {
 	Url          string `json:"url,omitempty"`
 }
 
-// ValidateMcpConfigFromString 从字符串验证MCP配置格式
+// ValidateMcpConfigFromString validate MCP configuration format from string
 func ValidateMcpConfigFromString(configStr string) (*McpValidationResult, error) {
 	return ValidateMcpConfig([]byte(configStr))
 }
 
-// ValidateMcpConfigFromMap 从map验证MCP配置格式
+// ValidateMcpConfigFromMap validate MCP configuration format from map
 func ValidateMcpConfigFromMap(configMap map[string]interface{}) (*McpValidationResult, error) {
 	configData, err := json.Marshal(configMap)
 	if err != nil {
 		return &McpValidationResult{
-			ErrorMessage: fmt.Sprintf("序列化配置失败: %v", err),
+			ErrorMessage: fmt.Sprintf("failed to serialize configuration: %v", err),
 		}, nil
 	}
 	return ValidateMcpConfig(configData)
 }
 
-// ValidateMcpConfig 验证MCP配置格式
+// ValidateMcpConfig validates MCP configuration format
 func ValidateMcpConfig(configData []byte) (*McpValidationResult, error) {
 	result := &McpValidationResult{}
 
-	// 解析JSON数据
+	// Parse JSON data
 	var config McpServersConfig
 	if err := json.Unmarshal(configData, &config); err != nil {
-		result.ErrorMessage = fmt.Sprintf("JSON解析失败: %v", err)
+		result.ErrorMessage = fmt.Sprintf("JSON parsing failed: %v", err)
 		return result, nil
 	}
 
-	// 检查mcpServers字段是否存在
+	// Check if mcpServers field exists
 	if config.McpServers == nil {
-		result.ErrorMessage = "缺少mcpServers字段"
+		result.ErrorMessage = "missing mcpServers field"
 		return result, nil
 	}
 
-	// 检查是否至少有一个服务配置
+	// Check if there is at least one service configuration
 	if len(config.McpServers) == 0 || len(config.McpServers) > 1 {
-		result.ErrorMessage = "mcpServers不能为空，必须包含且仅包含一个服务配置"
+		result.ErrorMessage = "mcpServers cannot be empty and must contain exactly one service configuration"
 		return result, nil
 	}
 
-	// 获取第一个服务名称和配置
+	// Get the first service name and configuration
 	var serviceName string
 	var serviceConfig McpServerConfig
 	for name, cfg := range config.McpServers {
-		// name 校验，必须是大小写字母
+		// Validate name: must be letters
 		if !isValidServiceName(name) {
-			result.ErrorMessage = fmt.Sprintf("无效的服务名称: %s，服务名称必须是大小写字母组成", name)
+			result.ErrorMessage = fmt.Sprintf("invalid service name: %s, service name must consist of letters", name)
 			return result, nil
 		}
 		serviceName = name
 		serviceConfig = cfg
-		break // 只处理第一个服务
+		break // Only process the first service
 	}
 
 	result.ServiceName = serviceName
 
-	// 检查各字段是否存在
+	// Check if fields exist
 	result.HasArgs = len(serviceConfig.Args) > 0
 	result.HasCommand = serviceConfig.Command != ""
 	result.HasType = serviceConfig.Type != ""
@@ -101,11 +101,11 @@ func ValidateMcpConfig(configData []byte) (*McpValidationResult, error) {
 		result.Url = serviceConfig.URL
 	}
 
-	// 协议类型判断逻辑
+	// Determine protocol type logic
 	protocolType := determineProtocolType(serviceConfig)
 	result.ProtocolType = protocolType
 
-	// 验证协议类型是否有效
+	// Validate if protocol type is valid
 	validProtocol := false
 	for _, validT := range []string{model.McpProtocolStdio.String(), model.McpProtocolSSE.String(), model.McpProtocolStreamableHttp.String()} {
 		if protocolType == validT {
@@ -114,24 +114,24 @@ func ValidateMcpConfig(configData []byte) (*McpValidationResult, error) {
 		}
 	}
 	if !validProtocol {
-		result.ErrorMessage = fmt.Sprintf("无效的协议类型: %s，有效值为: %v", protocolType, []string{model.McpProtocolStdio.String(), model.McpProtocolSSE.String(), model.McpProtocolStreamableHttp.String()})
+		result.ErrorMessage = fmt.Sprintf("invalid protocol type: %s, valid values are: %v", protocolType, []string{model.McpProtocolStdio.String(), model.McpProtocolSSE.String(), model.McpProtocolStreamableHttp.String()})
 		return result, nil
 	}
 
-	// 根据协议类型验证必要字段
+	// Validate required fields based on protocol type
 	if err := validateProtocolFields(protocolType, serviceConfig); err != nil {
 		result.ErrorMessage = err.Error()
 		return result, nil
 	}
 
-	// 验证成功
+	// Validation successful
 	result.IsValid = true
 	return result, nil
 }
 
-// determineProtocolType 确定协议类型
+// determineProtocolType determines the protocol type
 func determineProtocolType(config McpServerConfig) string {
-	// 1. 优先检查 type 和 transport 字段
+	// 1. Prioritize checking type and transport fields
 	if config.Type != "" {
 		return config.Type
 	}
@@ -139,7 +139,7 @@ func determineProtocolType(config McpServerConfig) string {
 		return config.Transport
 	}
 
-	// 2. 检查 url 字段
+	// 2. Check url field
 	if config.URL != "" {
 		if strings.Contains(strings.ToLower(config.URL), "sse") {
 			return model.McpProtocolSSE.String()
@@ -147,28 +147,28 @@ func determineProtocolType(config McpServerConfig) string {
 		return model.McpProtocolStreamableHttp.String()
 	}
 
-	// 3. 检查 command 字段
+	// 3. Check command field
 	if config.Command != "" {
 		return model.McpProtocolStdio.String()
 	}
 
-	// 默认返回空字符串表示无法确定
+	// Return empty string by default if unable to determine
 	return ""
 }
 
-// validateProtocolFields 验证协议字段
+// validateProtocolFields validates protocol fields
 func validateProtocolFields(protocolType string, config McpServerConfig) error {
 	switch protocolType {
 	case model.McpProtocolSSE.String(), model.McpProtocolStreamableHttp.String():
 		if config.URL == "" {
-			return fmt.Errorf("%s协议必须包含有效的url字段", protocolType)
+			return fmt.Errorf("%s protocol must contain a valid url field", protocolType)
 		}
 	case model.McpProtocolStdio.String():
 		if config.Command == "" {
-			return fmt.Errorf("%s协议必须包含有效的command字段", protocolType)
+			return fmt.Errorf("%s protocol must contain a valid command field", protocolType)
 		}
 	default:
-		return fmt.Errorf("未知的协议类型: %s", protocolType)
+		return fmt.Errorf("unknown protocol type: %s", protocolType)
 	}
 	return nil
 }
@@ -178,23 +178,20 @@ func isValidServiceName(name string) bool {
 	if len(name) == 0 {
 		return false
 	}
-
-	// Check first character: must be letter or underscore or hyphen
-	firstChar := rune(name[0])
-	if !unicode.IsLetter(firstChar) && firstChar != '_' && firstChar != '-' {
+	// Must start with a letter
+	if !unicode.IsLetter(rune(name[0])) {
 		return false
 	}
-
-	// Check remaining characters: letters, digits, underscore, hyphen
-	for _, char := range name {
-		if !unicode.IsLetter(char) && !unicode.IsDigit(char) && char != '_' && char != '-' {
+	// Can only contain letters, digits, underscores, and hyphens
+	for _, r := range name {
+		if !unicode.IsLetter(r) && !unicode.IsDigit(r) && r != '_' && r != '-' {
 			return false
 		}
 	}
 	return true
 }
 
-// CompareMcpValidationResult 对比两个McpValidationResult是否相等
+// CompareMcpValidationResult compares two McpValidationResult objects
 func CompareMcpValidationResult(a, b *McpValidationResult) bool {
 	if a.IsValid != b.IsValid {
 		return false

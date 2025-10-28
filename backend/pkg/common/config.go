@@ -8,10 +8,10 @@ import (
 	"github.com/spf13/viper"
 )
 
-// ServerConfig 服务器配置
+// ServerConfig server configuration
 type ServerConfig struct {
-	GrpcPort int `mapstructure:"grpcPort"` // gRPC 端口
-	HttpPort int `mapstructure:"httpPort"` // HTTP 端口
+	GrpcPort int `mapstructure:"grpcPort"` // gRPC port
+	HttpPort int `mapstructure:"httpPort"` // HTTP port
 }
 
 type StorageConfig struct {
@@ -38,7 +38,7 @@ type DatabaseConfig struct {
 	Redis RedisConfig `mapstructure:"redis"`
 }
 
-// InitKubernetesConfig 初始化Kubernetes配置
+// InitKubernetesConfig initialize Kubernetes configuration
 type InitKubernetesConfig struct {
 	Namespace             string `mapstructure:"namespace"`
 	DefaultConfigFilePath string `mapstructure:"defaultConfigFilePath"`
@@ -59,13 +59,13 @@ type RedisConfig struct {
 	DB       int    `mapstructure:"db"`
 }
 
-// MarketConfig 市场配置
+// MarketConfig market configuration
 type MarketConfig struct {
-	// 主机地址
+	// Host address
 	Host string `mapstructure:"host"`
-	// 密钥
+	// Secret key
 	SecretKey string `mapstructure:"secretKey"`
-	// 客户UUID
+	// Customer UUID
 	CustomerUuid string `mapstructure:"customerUuid"`
 }
 
@@ -85,30 +85,30 @@ type Service struct {
 	Port int    `mapstructure:"port"`
 }
 
-// findProjectRoot 查找项目根目录
+// findProjectRoot find project root directory
 func findProjectRoot() (string, error) {
-	// 从当前目录开始向上查找
+	// Start searching from current directory upwards
 	dir, err := os.Getwd()
 	if err != nil {
 		return "", fmt.Errorf("failed to get current directory: %v", err)
 	}
 
-	// 最多向上查找 10 层目录
+	// Search up to 10 levels of directories
 	for i := 0; i < 10; i++ {
-		// 检查是否存在 go.mod 文件
+		// Check if go.mod file exists
 		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
 			return dir, nil
 		}
 
-		// 检查是否存在 .git 目录
+		// Check if .git directory exists
 		if _, err := os.Stat(filepath.Join(dir, ".git")); err == nil {
 			return dir, nil
 		}
 
-		// 向上查找
+		// Search upwards
 		parent := filepath.Dir(dir)
 		if parent == dir {
-			break // 已经到达根目录
+			break // Already reached root directory
 		}
 		dir = parent
 	}
@@ -116,52 +116,52 @@ func findProjectRoot() (string, error) {
 	return "", fmt.Errorf("project root not found")
 }
 
-// FindConfigFile 使用 viper 在多个位置查找配置文件
+// FindConfigFile uses viper to find configuration files in multiple locations.
 func FindConfigFile(cfgFileName string) (string, error) {
 	v := viper.New()
 
-	// 设置配置文件名（不包含扩展名）
+	// Set configuration file name (without extension)
 	configName := cfgFileName
 	if ext := filepath.Ext(cfgFileName); ext != "" {
 		configName = cfgFileName[:len(cfgFileName)-len(ext)]
-		v.SetConfigType(ext[1:]) // 去掉点号
+		v.SetConfigType(ext[1:]) // Remove the dot
 	} else {
-		v.SetConfigType("yaml") // 默认类型
+		v.SetConfigType("yaml") // Default type
 	}
 
 	v.SetConfigName(configName)
 
-	// 添加配置文件搜索路径
+	// Add configuration file search paths
 	configPaths := getConfigSearchPaths()
 	for _, path := range configPaths {
 		v.AddConfigPath(path)
 	}
 
-	// 尝试查找配置文件
+	// Try to find configuration file
 	if err := v.ReadInConfig(); err != nil {
-		return "", fmt.Errorf("配置文件未找到，搜索路径: %v, 错误: %v", configPaths, err)
+		return "", fmt.Errorf("configuration file not found, search paths: %v, error: %v", configPaths, err)
 	}
 
 	return v.ConfigFileUsed(), nil
 }
 
-// getConfigSearchPaths 获取配置文件搜索路径列表
+// getConfigSearchPaths get configuration file search path list
 func getConfigSearchPaths() []string {
 	var configPaths []string
 
-	// 环境变量指定的配置根目录
+	// Configuration root directory specified by environment variable
 	if configRoot := os.Getenv("CONFIG_ROOT"); configRoot != "" {
 		configPaths = append(configPaths, configRoot)
 	} else {
 		configPaths = append(configPaths, "/etc/qm-mcp-server")
 	}
 
-	// 项目根目录的 config 文件夹
+	// Config folder in project root directory
 	if projectRoot, err := findProjectRoot(); err == nil {
 		configPaths = append(configPaths, filepath.Join(projectRoot, "config"))
 	}
 
-	// 相对路径
+	// Relative paths
 	configPaths = append(configPaths,
 		"./config",
 		"../config",
@@ -169,7 +169,7 @@ func getConfigSearchPaths() []string {
 		".",
 	)
 
-	// 可执行文件所在目录
+	// Directory where executable file is located
 	if execPath, err := os.Executable(); err == nil {
 		execDir := filepath.Dir(execPath)
 		configPaths = append(configPaths,
@@ -178,7 +178,7 @@ func getConfigSearchPaths() []string {
 		)
 	}
 
-	// 当前工作目录
+	// Current working directory
 	if cwd, err := os.Getwd(); err == nil {
 		configPaths = append(configPaths,
 			cwd,
@@ -189,11 +189,11 @@ func getConfigSearchPaths() []string {
 	return configPaths
 }
 
-// LoadConfigWithViper 使用 viper 加载配置文件到指定结构体
+// LoadConfigWithViper uses viper to load the configuration file into the specified struct.
 func LoadConfigWithViper(cfgFileName string, config interface{}) error {
 	v := viper.New()
 
-	// 设置配置文件名和类型
+	// Set configuration file name and type
 	configName := cfgFileName
 	if ext := filepath.Ext(cfgFileName); ext != "" {
 		configName = cfgFileName[:len(cfgFileName)-len(ext)]
@@ -204,20 +204,20 @@ func LoadConfigWithViper(cfgFileName string, config interface{}) error {
 
 	v.SetConfigName(configName)
 
-	// 添加搜索路径
+	// Add search paths
 	configPaths := getConfigSearchPaths()
 	for _, path := range configPaths {
 		v.AddConfigPath(path)
 	}
 
-	// 读取配置文件
+	// Read configuration file
 	if err := v.ReadInConfig(); err != nil {
-		return fmt.Errorf("读取配置文件失败，搜索路径: %v, 错误: %v", configPaths, err)
+		return fmt.Errorf("failed to read configuration file, search paths: %v, error: %v", configPaths, err)
 	}
 
-	// 解析配置到结构体
+	// Parse configuration to struct
 	if err := v.Unmarshal(config); err != nil {
-		return fmt.Errorf("解析配置文件失败: %v", err)
+		return fmt.Errorf("failed to parse configuration file: %v", err)
 	}
 
 	return nil

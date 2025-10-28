@@ -7,7 +7,7 @@ import (
 	"qm-mcp-server/pkg/database/model"
 )
 
-// convertToInstanceInfo 将数据库模型转换为proto消息
+// ConvertToInstanceInfo converts database model to proto message
 func ConvertToInstanceInfo(instance *model.McpInstance) *instancepb.ListResp_InstanceInfo {
 	accessType, _ := ConvertToProtoAccessType(model.AccessType(instance.AccessType))
 	mcpProtocol, _ := ConvertToProtoMcpProtocol(model.McpProtocol(instance.McpProtocol))
@@ -38,7 +38,7 @@ func ConvertToInstanceInfo(instance *model.McpInstance) *instancepb.ListResp_Ins
 	}
 }
 
-// convertToModelMcpProtocol 将字符串转换为 McpProtocol 枚举值
+// ConvertToModelMcpProtocol converts string to McpProtocol enum value
 func ConvertToModelMcpProtocol(mcpProtocol instancepb.McpProtocol) (model.McpProtocol, error) {
 	switch mcpProtocol {
 	case instancepb.McpProtocol_STDIO:
@@ -52,7 +52,7 @@ func ConvertToModelMcpProtocol(mcpProtocol instancepb.McpProtocol) (model.McpPro
 	}
 }
 
-// convertToProtoMcpProtocol 将 model.McpProtocol 转换为 proto 消息的 McpProtocol
+// ConvertToProtoMcpProtocol converts model.McpProtocol to proto message McpProtocol
 func ConvertToProtoMcpProtocol(mcpProtocol model.McpProtocol) (instancepb.McpProtocol, error) {
 	switch mcpProtocol {
 	case model.McpProtocolStdio:
@@ -66,7 +66,7 @@ func ConvertToProtoMcpProtocol(mcpProtocol model.McpProtocol) (instancepb.McpPro
 	}
 }
 
-// convertToModelSourceType 将字符串转换为 SourceType 枚举值
+// ConvertToModelSourceType converts string to SourceType enum value
 func ConvertToModelSourceType(sourceType instancepb.SourceType) (model.SourceType, error) {
 	switch sourceType {
 	case instancepb.SourceType_MARKET:
@@ -80,7 +80,7 @@ func ConvertToModelSourceType(sourceType instancepb.SourceType) (model.SourceTyp
 	}
 }
 
-// convertToProtoSourceType 将 model.SourceType 转换为 proto 消息的 SourceType
+// ConvertToProtoSourceType converts model.SourceType to proto message SourceType
 func ConvertToProtoSourceType(sourceType model.SourceType) (instancepb.SourceType, error) {
 	switch sourceType {
 	case model.SourceTypeMarket:
@@ -94,7 +94,7 @@ func ConvertToProtoSourceType(sourceType model.SourceType) (instancepb.SourceTyp
 	}
 }
 
-// convertToModelAccessType 将 proto 消息的 AccessType 转换为 model.AccessType
+// ConvertToModelAccessType converts proto message AccessType to model.AccessType
 func ConvertToModelAccessType(accessType instancepb.AccessType) (model.AccessType, error) {
 	switch accessType {
 	case instancepb.AccessType_DIRECT:
@@ -108,7 +108,7 @@ func ConvertToModelAccessType(accessType instancepb.AccessType) (model.AccessTyp
 	}
 }
 
-// convertToProtoAccessType 将 model.AccessType 转换为 proto 消息的 AccessType
+// ConvertToProtoAccessType converts model.AccessType to proto message AccessType
 func ConvertToProtoAccessType(accessType model.AccessType) (instancepb.AccessType, error) {
 	switch accessType {
 	case model.AccessTypeDirect:
@@ -149,7 +149,7 @@ func ConvertProtoTokensToModel(tokens []*instancepb.McpToken) []model.McpToken {
 	return modelTokens
 }
 
-// convertToModelPackageType
+// ConvertToModelPackageType converts proto PackageType to model PackageType
 func ConvertToModelPackageType(packageType codepb.PackageType) (model.PackageType, error) {
 	switch packageType {
 	case codepb.PackageType_PackageTypeTar:
@@ -167,7 +167,7 @@ func ConvertToModelPackageType(packageType codepb.PackageType) (model.PackageTyp
 	}
 }
 
-// convertToProtoPackageType
+// ConvertToProtoPackageType converts model PackageType to proto PackageType
 func ConvertToProtoPackageType(packageType model.PackageType) (codepb.PackageType, error) {
 	switch packageType {
 	case model.PackageTypeTar:

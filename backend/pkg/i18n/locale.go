@@ -8,15 +8,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// SupportedLanguage 支持的语言类型
+// SupportedLanguage supported language type
 type SupportedLanguage string
 
 const (
-	LanguageZhCN SupportedLanguage = "zh-CN" // 中文简体
-	LanguageEnUS SupportedLanguage = "en-US" // 英文
+	LanguageZhCN SupportedLanguage = "zh-CN" // Simplified Chinese
+	LanguageEnUS SupportedLanguage = "en-US" // English
 )
 
-// DefaultLanguage 默认语言
+// DefaultLanguage default language
 const DefaultLanguage = LanguageZhCN
 
 // ContextLanguageKey 上下文中语言的键

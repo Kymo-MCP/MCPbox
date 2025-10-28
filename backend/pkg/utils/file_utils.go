@@ -14,7 +14,7 @@ import (
 	"go.uber.org/zap"
 )
 
-// BuildFileTreeRecursive 递归构建文件树结构
+// BuildFileTreeRecursive recursively builds a file tree structure
 func BuildFileTreeRecursive(currentPath, rootPath, relativePath string) (*code.FileNode, error) {
 	info, err := os.Stat(currentPath)
 	if err != nil {
@@ -40,7 +40,7 @@ func BuildFileTreeRecursive(currentPath, rootPath, relativePath string) (*code.F
 	for _, entry := range entries {
 		childPath := filepath.Join(currentPath, entry.Name())
 
-		// 计算子节点的相对路径
+		// Calculate the relative path of the child node
 		var childRelativePath string
 		if relativePath == "" {
 			childRelativePath = entry.Name()
@@ -50,7 +50,7 @@ func BuildFileTreeRecursive(currentPath, rootPath, relativePath string) (*code.F
 
 		childNode, err := BuildFileTreeRecursive(childPath, rootPath, childRelativePath)
 		if err != nil {
-			continue // 跳过无法访问的文件
+			continue // Skip inaccessible files
 		}
 
 		node.Children = append(node.Children, childNode)
@@ -59,66 +59,66 @@ func BuildFileTreeRecursive(currentPath, rootPath, relativePath string) (*code.F
 	return node, nil
 }
 
-// CreatePackageZip 创建压缩包
+// CreatePackageZip creates a zip package
 func CreatePackageZip(extractedPath, zipFilePath string) error {
-	// 创建压缩包
+	// Create zip package
 	return CreateZipFile(extractedPath, zipFilePath)
 }
 
-// CreateZipFile 创建压缩包文件，存在则覆盖
+// CreateZipFile creates a zip file, overwriting if it exists
 func CreateZipFile(sourcePath, zipFilePath string) error {
-	// 检查目标文件是否存在，如果存在则删除（实现覆盖）
+	// Check if the target file exists, delete if it does (to overwrite)
 	if _, err := os.Stat(zipFilePath); err == nil {
 		if err := os.Remove(zipFilePath); err != nil {
 			return fmt.Errorf("failed to remove existing zip file: %w", err)
 		}
 	}
 
-	// 创建压缩包文件
+	// Create zip file
 	zipFile, err := os.Create(zipFilePath)
 	if err != nil {
 		return fmt.Errorf("failed to create zip file: %w", err)
 	}
 	defer zipFile.Close()
 
-	// 创建 zip writer
+	// Create zip writer
 	zipWriter := zip.NewWriter(zipFile)
 	defer zipWriter.Close()
 
-	// 获取源路径信息
+	// Get source path information
 	sourceInfo, err := os.Stat(sourcePath)
 	if err != nil {
 		return fmt.Errorf("failed to get source info: %w", err)
 	}
 
 	if sourceInfo.IsDir() {
-		// 如果是目录，递归添加所有文件
+		// If it's a directory, recursively add all files
 		return AddDirToZip(zipWriter, sourcePath, "")
 	} else {
-		// 如果是单个文件，直接添加
+		// If it's a single file, add it directly
 		return AddFileToZip(zipWriter, sourcePath, sourceInfo.Name())
 	}
 }
 
-// AddDirToZip 递归添加目录到压缩包
+// AddDirToZip recursively adds a directory to the zip archive
 func AddDirToZip(zipWriter *zip.Writer, dirPath, baseInZip string) error {
 	return filepath.Walk(dirPath, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
 
-		// 计算在压缩包中的相对路径
+		// Calculate the relative path in the zip archive
 		relPath, err := filepath.Rel(dirPath, path)
 		if err != nil {
 			return err
 		}
 
 		zipPath := filepath.Join(baseInZip, relPath)
-		// 统一使用正斜杠作为路径分隔符
+		// Unify path separators to forward slashes
 		zipPath = filepath.ToSlash(zipPath)
 
 		if info.IsDir() {
-			// 创建目录条目
+			// Create directory entry
 			if zipPath != "" && zipPath != "." {
 				_, err := zipWriter.Create(zipPath + "/")
 				return err
@@ -126,27 +126,27 @@ func AddDirToZip(zipWriter *zip.Writer, dirPath, baseInZip string) error {
 			return nil
 		}
 
-		// 添加文件
+		// Add file
 		return AddFileToZip(zipWriter, path, zipPath)
 	})
 }
 
-// AddFileToZip 添加单个文件到压缩包
+// AddFileToZip adds a single file to the zip archive
 func AddFileToZip(zipWriter *zip.Writer, filePath, nameInZip string) error {
-	// 打开源文件
+	// Open source file
 	file, err := os.Open(filePath)
 	if err != nil {
 		return fmt.Errorf("failed to open file %s: %w", filePath, err)
 	}
 	defer file.Close()
 
-	// 在压缩包中创建文件
+	// Create file in zip archive
 	writer, err := zipWriter.Create(nameInZip)
 	if err != nil {
 		return fmt.Errorf("failed to create file in zip: %w", err)
 	}
 
-	// 复制文件内容
+	// Copy file content
 	_, err = io.Copy(writer, file)
 	if err != nil {
 		return fmt.Errorf("failed to copy file content: %w", err)
@@ -155,9 +155,9 @@ func AddFileToZip(zipWriter *zip.Writer, filePath, nameInZip string) error {
 	return nil
 }
 
-// CheckExtractedPathNotEmpty 检查解压路径是否不为空
+// CheckExtractedPathNotEmpty checks if the extracted path is not empty
 func CheckExtractedPathNotEmpty(path string) error {
-	// 检查路径是否存在
+	// Check if path exists
 	info, err := os.Stat(path)
 	if os.IsNotExist(err) {
 		return fmt.Errorf("path does not exist: %s", path)
@@ -166,12 +166,12 @@ func CheckExtractedPathNotEmpty(path string) error {
 		return fmt.Errorf("failed to stat path %s: %w", path, err)
 	}
 
-	// 如果是文件，则认为不为空
+	// If it's a file, it's considered not empty
 	if !info.IsDir() {
 		return nil
 	}
 
-	// 如果是目录，检查是否为空
+	// If it's a directory, check if it's empty
 	entries, err := os.ReadDir(path)
 	if err != nil {
 		return fmt.Errorf("failed to read directory %s: %w", path, err)
@@ -188,7 +188,7 @@ func MkdirP(path string) error {
 		if err := os.MkdirAll(path, os.ModePerm); err != nil {
 			return err
 		}
-		fmt.Printf("创建文件夹: %v \n", path)
+		// fmt.Printf("Created directory: %v \n", path)
 	}
 	return nil
 }
@@ -262,21 +262,21 @@ func GetImageFileExtension(data []byte) string {
 }
 
 func SaveImageFile(data []byte, filePath string) string {
-	// 构建存储目录路径
+	// Construct storage directory path
 	storageDir := filepath.Join(config.GlobalConfig.Storage.StaticPath, "storage")
 
-	// 确保目录存在
+	// Ensure directory exists
 	if err := os.MkdirAll(storageDir, 0755); err != nil {
-		logger.Error("创建存储目录失败", zap.Error(err))
+		logger.Error("Failed to create storage directory", zap.Error(err))
 		return ""
 	}
 
-	// 写入文件
+	// Write file
 	if err := os.WriteFile(filePath, data, 0644); err != nil {
-		logger.Error("写入图片文件失败", zap.Error(err))
+		logger.Error("Failed to write image file", zap.Error(err))
 		return ""
 	}
 
-	logger.Info("图片文件保存成功", zap.String("path", filePath))
+	logger.Info("Image file saved successfully", zap.String("path", filePath))
 	return filePath
 }

@@ -11,56 +11,56 @@ import (
 	"qm-mcp-server/api/market/market"
 )
 
-// CallMarketAPI 通用的市场API调用方法
+// CallMarketAPI general market API call method
 func (c *Client) CallMarketAPI(method, path string, data map[string]interface{}) (int, map[string]string, map[string]interface{}, error) {
-	// 构建完整URL
+	// Build full URL
 	url := c.BuildURL(path)
 
-	// 创建HTTP请求
+	// Create HTTP request
 	httpReq, err := createHTTPRequest(method, url, data)
 	if err != nil {
-		return 0, nil, nil, fmt.Errorf("创建请求失败: %v", err)
+		return 0, nil, nil, fmt.Errorf("failed to create request: %v", err)
 	}
 
-	// 添加认证头
+	// Add authentication headers
 	authHeaders := c.GenerateAuthHeaders()
 	for key, value := range authHeaders {
 		httpReq.Header.Set(key, value)
 	}
 
-	// 设置Content-Type
+	// Set Content-Type
 	if method != "GET" && data != nil {
 		httpReq.Header.Set("Content-Type", "application/json")
 	}
 
-	// 发送请求
+	// Send request
 	client := &http.Client{
 		Timeout: 60 * time.Second,
 	}
 	resp, err := client.Do(httpReq)
 	if err != nil {
-		return 0, nil, nil, fmt.Errorf("请求失败: %v", err)
+		return 0, nil, nil, fmt.Errorf("request failed: %v", err)
 	}
 	defer resp.Body.Close()
 
-	// 读取响应
+	// Read response
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return 0, nil, nil, fmt.Errorf("读取响应失败: %v", err)
+		return 0, nil, nil, fmt.Errorf("failed to read response: %v", err)
 	}
 
-	// 解析响应体
+	// Parse response body
 	var responseBody map[string]interface{}
 	if len(body) > 0 {
 		if err := json.Unmarshal(body, &responseBody); err != nil {
-			// 如果不是JSON格式，将原始内容作为字符串返回
+			// If not JSON format, return raw content as string
 			responseBody = map[string]interface{}{
 				"raw_content": string(body),
 			}
 		}
 	}
 
-	// 构建响应头
+	// Build response headers
 	responseHeaders := make(map[string]string)
 	for key, values := range resp.Header {
 		if len(values) > 0 {
@@ -71,10 +71,10 @@ func (c *Client) CallMarketAPI(method, path string, data map[string]interface{})
 	return resp.StatusCode, responseHeaders, responseBody, nil
 }
 
-// ListServices 获取服务列表
-// /api/mcp/services post 获取服务列表
+// ListServices gets the list of services
+// /api/mcp/services POST - get service list
 func (c *Client) ListServices(req *market.ListRequest) (*market.ListResponse, error) {
-	// 构建请求数据
+	// Build request data
 	requestData := map[string]interface{}{
 		"offset":       0,
 		"type":         "MCP_SERVICE",
@@ -85,47 +85,47 @@ func (c *Client) ListServices(req *market.ListRequest) (*market.ListResponse, er
 		"industryId":   "",
 	}
 
-	// 调用市场API
+	// Call market API
 	_, _, responseBody, err := c.CallMarketAPI("POST", "/market/items", requestData)
 	if err != nil {
 		return nil, err
 	}
 
-	// 转换为pb结构
+	// Convert to pb structure
 	return c.convertToListResponse(responseBody), nil
 }
 
-// GetCategories 获取服务分类
-// /api/mcp/categories get 获取分类列表
+// GetCategories gets service categories
+// /api/mcp/categories GET - get category list
 func (c *Client) GetCategories(req *market.CategoryRequest) (*market.CategoryResponse, error) {
-	// 调用市场API获取分类
+	// Call market API to get categories
 	_, _, responseBody, err := c.CallMarketAPI("GET", "/market/publish/category", nil)
 	if err != nil {
 		return nil, err
 	}
 
-	// 转换为pb结构
+	// Convert to pb structure
 	return c.convertToCategoryResponse(responseBody), nil
 }
 
-// GetServiceDetail 获取服务详情
-// /api/mcp/services/{serviceId} get 获取服务详情
+// GetServiceDetail gets service details
+// /api/mcp/services/{serviceId} GET - get service details
 func (c *Client) GetServiceDetail(req *market.DetailRequest) (*market.DetailResponse, error) {
-	// 调用市场API
+	// Call market API
 	_, _, responseBody, err := c.CallMarketAPI("GET", fmt.Sprintf("/market/mcp/%d", req.Id), nil)
 	if err != nil {
 		return nil, err
 	}
 
-	// 转换为pb结构
+	// Convert to pb structure
 	return c.convertToDetailResponse(responseBody), nil
 }
 
-// convertToListResponse 将qm API响应转换为pb ListResponse结构
+// convertToListResponse converts qm API response to pb ListResponse structure
 func (c *Client) convertToListResponse(response map[string]interface{}) *market.ListResponse {
 	pbResponse := &market.ListResponse{}
 
-	// 优先解析新结构：{"code":200,"message":"操作成功","data":{ "nextOffset":..., "hasMore":..., "items":[...] }}
+	// Prioritize parsing new structure: {"code":200,"message":"Operation successful","data":{ "nextOffset":..., "hasMore":..., "items":[...] }}
 	if data, ok := response["data"].(map[string]interface{}); ok {
 		if items, ok := data["items"].([]interface{}); ok {
 			for _, item := range items {
@@ -137,12 +137,12 @@ func (c *Client) convertToListResponse(response map[string]interface{}) *market.
 			if total, ok := data["total"].(float64); ok {
 				pbResponse.Total = int32(total)
 			} else {
-				// 当未返回总数时，使用当前返回数量作为兜底
+				// If total is not returned, use current count as fallback
 				pbResponse.Total = int32(len(pbResponse.List))
 			}
 			return pbResponse
 		}
-		// 兼容 data 下为 list 的旧结构
+		// Compatible with old structure where data is a list
 		if listData, ok := data["list"].([]interface{}); ok {
 			for _, item := range listData {
 				if serviceMap, ok := item.(map[string]interface{}); ok {
@@ -159,7 +159,7 @@ func (c *Client) convertToListResponse(response map[string]interface{}) *market.
 		}
 	}
 
-	// 兼容最旧结构：根级包含 total 和 list
+	// Compatible with oldest structure: total and list at root level
 	if total, ok := response["total"].(float64); ok {
 		pbResponse.Total = int32(total)
 	}
@@ -175,11 +175,11 @@ func (c *Client) convertToListResponse(response map[string]interface{}) *market.
 	return pbResponse
 }
 
-// convertToListServiceInfo 将map数据转换为pb ListResponse_ServiceInfo结构
+// convertToListServiceInfo converts map data to pb ListResponse_ServiceInfo structure
 func (c *Client) convertToListServiceInfo(data map[string]interface{}) *market.ListResponse_ServiceInfo {
 	serviceInfo := &market.ListResponse_ServiceInfo{}
 
-	// 基础字段转换 - 根据market.proto中的ListResponse_ServiceInfo定义
+	// Basic field conversion - according to ListResponse_ServiceInfo definition in market.proto
 	if id, ok := data["id"].(float64); ok {
 		serviceInfo.Id = int32(id)
 	}
@@ -189,7 +189,7 @@ func (c *Client) convertToListServiceInfo(data map[string]interface{}) *market.L
 	if iconUrl, ok := data["iconUrl"].(string); ok {
 		serviceInfo.IconUrl = iconUrl
 	}
-	// brief 优先读取 brief，若无则尝试用 description 兜底
+	// brief: prioritize reading brief, if not available, try description as fallback
 	if brief, ok := data["brief"].(string); ok {
 		serviceInfo.Brief = brief
 	} else if desc, ok := data["description"].(string); ok {
@@ -199,7 +199,7 @@ func (c *Client) convertToListServiceInfo(data map[string]interface{}) *market.L
 		serviceInfo.TypeId = int32(typeId)
 	}
 
-	// categoryIds 数组字段（兼容不同返回结构：categoryIds 或 categories）
+	// categoryIds array field (compatible with different return structures: categoryIds or categories)
 	if categoryIds, ok := data["categoryIds"].([]interface{}); ok {
 		for _, categoryId := range categoryIds {
 			if id, ok := categoryId.(float64); ok {
@@ -226,7 +226,7 @@ func (c *Client) convertToListServiceInfo(data map[string]interface{}) *market.L
 		}
 	}
 
-	// typeName 若无，尝试从 "type" 映射
+	// typeName: if not available, try mapping from "type"
 	if typeName, ok := data["typeName"].(string); ok {
 		serviceInfo.TypeName = typeName
 	} else if t, ok := data["type"].(string); ok {
@@ -257,14 +257,14 @@ func (c *Client) convertToListServiceInfo(data map[string]interface{}) *market.L
 	return serviceInfo
 }
 
-// convertToCategoryResponse 将qm API响应转换为pb CategoryResponse结构
+// convertToCategoryResponse converts qm API response to pb CategoryResponse structure
 func (c *Client) convertToCategoryResponse(response map[string]interface{}) *market.CategoryResponse {
-	// 创建响应结构
+	// Create response structure
 	categoryResponse := &market.CategoryResponse{
 		List: []*market.CategoryInfo{},
 	}
 
-	// 解析分类数据
+	// Parse category data
 	if data, ok := response["data"]; ok {
 		if dataArray, ok := data.([]interface{}); ok {
 			for _, item := range dataArray {
@@ -281,11 +281,11 @@ func (c *Client) convertToCategoryResponse(response map[string]interface{}) *mar
 	return categoryResponse
 }
 
-// convertToCategoryInfo 将map数据转换为pb CategoryInfo结构
+// convertToCategoryInfo converts map data to pb CategoryInfo structure
 func (c *Client) convertToCategoryInfo(data map[string]interface{}) *market.CategoryInfo {
 	categoryInfo := &market.CategoryInfo{}
 
-	// 转换ID
+	// Convert ID
 	if id, ok := data["id"]; ok {
 		switch v := id.(type) {
 		case float64:
@@ -297,7 +297,7 @@ func (c *Client) convertToCategoryInfo(data map[string]interface{}) *market.Cate
 		}
 	}
 
-	// 转换名称
+	// Convert name
 	if name, ok := data["name"]; ok {
 		if nameStr, ok := name.(string); ok {
 			categoryInfo.Name = nameStr
@@ -307,32 +307,32 @@ func (c *Client) convertToCategoryInfo(data map[string]interface{}) *market.Cate
 	return categoryInfo
 }
 
-// convertToDetailResponse 将qm API响应转换为pb DetailResponse结构
+// convertToDetailResponse converts qm API response to pb DetailResponse structure
 func (c *Client) convertToDetailResponse(response map[string]interface{}) *market.DetailResponse {
 	pbResponse := &market.DetailResponse{}
 
-	// 优先解析新结构：{"code":200,"message":"操作成功","data":{...}}
+	// Prioritize parsing new structure: {"code":200,"message":"Operation successful","data":{...}}
 	if data, ok := response["data"].(map[string]interface{}); ok {
 		pbResponse.Service = c.convertToServiceInfo(data)
 		return pbResponse
 	}
 
-	// 兼容旧结构：转换服务详情
+	// Compatible with old structure: convert service details
 	if serviceData, ok := response["service"].(map[string]interface{}); ok {
 		pbResponse.Service = c.convertToServiceInfo(serviceData)
 	} else {
-		// 如果response直接是服务数据
+		// If response is directly service data
 		pbResponse.Service = c.convertToServiceInfo(response)
 	}
 
 	return pbResponse
 }
 
-// convertToServiceInfo 将map数据转换为pb ServiceInfo结构
+// convertToServiceInfo converts map data to pb ServiceInfo structure
 func (c *Client) convertToServiceInfo(data map[string]interface{}) *market.ServiceInfo {
 	serviceInfo := &market.ServiceInfo{}
 
-	// 基础字段转换 - 根据market.proto中的ServiceInfo定义
+	// Basic field conversion - based on ServiceInfo definition in market.proto
 	if id, ok := data["id"].(float64); ok {
 		serviceInfo.Id = int32(id)
 	}
@@ -340,7 +340,7 @@ func (c *Client) convertToServiceInfo(data map[string]interface{}) *market.Servi
 		serviceInfo.Name = name
 	}
 
-	// categoryIds 数组字段
+	// categoryIds array field
 	if categoryIds, ok := data["categoryIds"].([]interface{}); ok {
 		for _, categoryId := range categoryIds {
 			if id, ok := categoryId.(float64); ok {
@@ -388,11 +388,11 @@ func (c *Client) convertToServiceInfo(data map[string]interface{}) *market.Servi
 	if publishTime, ok := data["publishTime"].(float64); ok {
 		serviceInfo.PublishTime = int64(publishTime)
 	}
-	// status 字段支持字符串和数字类型
+	// status field supports string and numeric types
 	if status, ok := data["status"].(string); ok {
 		serviceInfo.Status = status
 	} else if status, ok := data["status"].(float64); ok {
-		// 如果是数字类型，转换为字符串
+		// If it is a numeric type, convert to string
 		serviceInfo.Status = fmt.Sprintf("%.0f", status)
 	}
 	if subscribeStatus, ok := data["subscribeStatus"].(string); ok {
@@ -402,7 +402,7 @@ func (c *Client) convertToServiceInfo(data map[string]interface{}) *market.Servi
 		serviceInfo.CategoryIdsJson = categoryIdsJson
 	}
 
-	// tools 数组字段转换
+	// tools array field conversion
 	if tools, ok := data["tools"].([]interface{}); ok {
 		for _, tool := range tools {
 			if toolMap, ok := tool.(map[string]interface{}); ok {
@@ -415,7 +415,7 @@ func (c *Client) convertToServiceInfo(data map[string]interface{}) *market.Servi
 					toolInfo.Description = description
 				}
 
-				// params 数组字段转换
+				// params array field conversion
 				if params, ok := toolMap["params"].([]interface{}); ok {
 					for _, param := range params {
 						if paramMap, ok := param.(map[string]interface{}); ok {
@@ -444,21 +444,21 @@ func (c *Client) convertToServiceInfo(data map[string]interface{}) *market.Servi
 	return serviceInfo
 }
 
-// createHTTPRequest 创建HTTP请求
+// createHTTPRequest creates an HTTP request
 func createHTTPRequest(method, url string, data map[string]interface{}) (*http.Request, error) {
 	var body io.Reader
 
 	if method != "GET" && data != nil {
 		jsonData, err := json.Marshal(data)
 		if err != nil {
-			return nil, fmt.Errorf("序列化请求数据失败: %v", err)
+			return nil, fmt.Errorf("failed to serialize request data: %v", err)
 		}
 		body = bytes.NewReader(jsonData)
 	}
 
 	req, err := http.NewRequest(method, url, body)
 	if err != nil {
-		return nil, fmt.Errorf("创建HTTP请求失败: %v", err)
+		return nil, fmt.Errorf("failed to create HTTP request: %v", err)
 	}
 
 	return req, nil

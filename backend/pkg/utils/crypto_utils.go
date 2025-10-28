@@ -18,34 +18,34 @@ const AlgorithmRSA2048 = "RSA-2048"
 
 const KeySize = 2048
 
-// RSAKeyPair RSA密钥对
+// RSAKeyPair RSA key pair
 type RSAKeyPair struct {
 	KeyID      string
-	PublicKey  string // PEM格式
-	PrivateKey string // PEM格式
+	PublicKey  string // PEM format
+	PrivateKey string // PEM format
 	KeySize    int
 	IssuedAt   time.Time
 	ExpiresAt  time.Time
 }
 
-// GenerateRSAKeyPair 生成RSA密钥对
+// GenerateRSAKeyPair generate RSA key pair
 func GenerateRSAKeyPair() (*RSAKeyPair, error) {
-	// 生成私钥
+	// Generate private key
 	privateKey, err := rsa.GenerateKey(rand.Reader, KeySize)
 	if err != nil {
-		return nil, fmt.Errorf("生成RSA私钥失败: %v", err)
+		return nil, fmt.Errorf("failed to generate RSA private key: %v", err)
 	}
 
-	// 编码私钥为PEM格式
+	// Encode private key to PEM format
 	privateKeyPEM, err := encodePrivateKeyToPEM(privateKey)
 	if err != nil {
-		return nil, fmt.Errorf("编码私钥失败: %v", err)
+		return nil, fmt.Errorf("failed to encode private key: %v", err)
 	}
 
-	// 编码公钥为PEM格式
+	// Encode public key to PEM format
 	publicKeyPEM, err := encodePublicKeyToPEM(&privateKey.PublicKey)
 	if err != nil {
-		return nil, fmt.Errorf("编码公钥失败: %v", err)
+		return nil, fmt.Errorf("failed to encode public key: %v", err)
 	}
 
 	now := time.Now()
@@ -61,82 +61,82 @@ func GenerateRSAKeyPair() (*RSAKeyPair, error) {
 	return keyPair, nil
 }
 
-// RSAEncrypt 使用RSA公钥加密数据
+// RSAEncrypt encrypt data using RSA public key
 func RSAEncrypt(data []byte, publicKeyPEM string) (string, error) {
-	// 解析公钥
+	// Parse public key
 	publicKey, err := parsePublicKeyFromPEM(publicKeyPEM)
 	if err != nil {
-		return "", fmt.Errorf("解析公钥失败: %v", err)
+		return "", fmt.Errorf("failed to parse public key: %v", err)
 	}
 
-	// 使用OAEP填充进行加密
+	// Encrypt using OAEP padding
 	ciphertext, err := rsa.EncryptOAEP(sha256.New(), rand.Reader, publicKey, data, nil)
 	if err != nil {
-		return "", fmt.Errorf("RSA加密失败: %v", err)
+		return "", fmt.Errorf("RSA encryption failed: %v", err)
 	}
 
-	// 返回Base64编码的密文
+	// Return Base64 encoded ciphertext
 	return base64.StdEncoding.EncodeToString(ciphertext), nil
 }
 
-// RSADecrypt 使用RSA私钥解密数据
+// RSADecrypt decrypt data using RSA private key
 func RSADecrypt(ciphertext string, privateKeyPEM string) ([]byte, error) {
-	// 解析私钥
+	// Parse private key
 	privateKey, err := parsePrivateKeyFromPEM(privateKeyPEM)
 	if err != nil {
-		return nil, fmt.Errorf("解析私钥失败: %v", err)
+		return nil, fmt.Errorf("failed to parse private key: %v", err)
 	}
 
-	// 使用OAEP填充进行解密
+	// Decrypt using OAEP padding
 	plaintext, err := rsa.DecryptOAEP(sha256.New(), rand.Reader, privateKey, []byte(ciphertext), nil)
 	if err != nil {
-		return nil, fmt.Errorf("RSA解密失败: %v", err)
+		return nil, fmt.Errorf("RSA decryption failed: %v", err)
 	}
 
 	return plaintext, nil
 }
 
-// EncryptPassword 加密密码（包含时间戳验证）
+// EncryptPassword encrypt password (with timestamp validation)
 func EncryptPassword(password string, timestamp int64, publicKeyPEM string) (string, error) {
-	// 构造待加密的数据：密码|时间戳
+	// Construct data to be encrypted: password|timestamp
 	data := fmt.Sprintf("%s|%d", password, timestamp)
 	return RSAEncrypt([]byte(data), publicKeyPEM)
 }
 
-// DecryptPassword 解密密码（包含时间戳验证）
+// DecryptPassword decrypt password (with timestamp validation)
 func DecryptPassword(encryptedPassword string, privateKeyPEM string, maxAge time.Duration) (string, int64, error) {
-	// 解密数据
+	// Decrypt data
 	plaintext, err := RSADecrypt(encryptedPassword, privateKeyPEM)
 	if err != nil {
 		return "", 0, err
 	}
 
-	// 解析密码和时间戳
+	// Parse password and timestamp
 	data := string(plaintext)
 	var password string
 	var timestamp int64
 	n, err := fmt.Sscanf(data, "%s|%d", &password, &timestamp)
 	if err != nil || n != 2 {
-		return "", 0, fmt.Errorf("解析密码数据失败: %v", err)
+		return "", 0, fmt.Errorf("failed to parse password data: %v", err)
 	}
 
-	// 验证时间戳
+	// Validate timestamp
 	if maxAge > 0 {
 		now := time.Now().Unix()
 		if now-timestamp > int64(maxAge.Seconds()) {
-			return "", 0, fmt.Errorf("密码已过期，时间戳: %d, 当前: %d", timestamp, now)
+			return "", 0, fmt.Errorf("password expired, timestamp: %d, current: %d", timestamp, now)
 		}
 	}
 
 	return password, timestamp, nil
 }
 
-// generateKeyID 生成密钥ID
+// generateKeyID generate key ID
 func generateKeyID() string {
 	return fmt.Sprintf("key_%s_%d", uuid.New().String()[:8], time.Now().Unix())
 }
 
-// encodePrivateKeyToPEM 将私钥编码为PEM格式
+// encodePrivateKeyToPEM encode private key to PEM format
 func encodePrivateKeyToPEM(privateKey *rsa.PrivateKey) (string, error) {
 	privateKeyBytes, err := x509.MarshalPKCS8PrivateKey(privateKey)
 	if err != nil {
@@ -151,7 +151,7 @@ func encodePrivateKeyToPEM(privateKey *rsa.PrivateKey) (string, error) {
 	return string(privateKeyPEM), nil
 }
 
-// encodePublicKeyToPEM 将公钥编码为PEM格式
+// encodePublicKeyToPEM encode public key to PEM format
 func encodePublicKeyToPEM(publicKey *rsa.PublicKey) (string, error) {
 	publicKeyBytes, err := x509.MarshalPKIXPublicKey(publicKey)
 	if err != nil {
@@ -166,11 +166,11 @@ func encodePublicKeyToPEM(publicKey *rsa.PublicKey) (string, error) {
 	return string(publicKeyPEM), nil
 }
 
-// parsePrivateKeyFromPEM 从PEM格式解析私钥
+// parsePrivateKeyFromPEM parse private key from PEM format
 func parsePrivateKeyFromPEM(privateKeyPEM string) (*rsa.PrivateKey, error) {
 	block, _ := pem.Decode([]byte(privateKeyPEM))
 	if block == nil {
-		return nil, fmt.Errorf("无效的PEM格式私钥")
+		return nil, fmt.Errorf("invalid PEM format private key")
 	}
 
 	privateKey, err := x509.ParsePKCS8PrivateKey(block.Bytes)
@@ -180,17 +180,17 @@ func parsePrivateKeyFromPEM(privateKeyPEM string) (*rsa.PrivateKey, error) {
 
 	rsaPrivateKey, ok := privateKey.(*rsa.PrivateKey)
 	if !ok {
-		return nil, fmt.Errorf("不是RSA私钥")
+		return nil, fmt.Errorf("not an RSA private key")
 	}
 
 	return rsaPrivateKey, nil
 }
 
-// parsePublicKeyFromPEM 从PEM格式解析公钥
+// parsePublicKeyFromPEM parse public key from PEM format
 func parsePublicKeyFromPEM(publicKeyPEM string) (*rsa.PublicKey, error) {
 	block, _ := pem.Decode([]byte(publicKeyPEM))
 	if block == nil {
-		return nil, fmt.Errorf("无效的PEM格式公钥")
+		return nil, fmt.Errorf("invalid PEM format public key")
 	}
 
 	publicKey, err := x509.ParsePKIXPublicKey(block.Bytes)
@@ -200,81 +200,81 @@ func parsePublicKeyFromPEM(publicKeyPEM string) (*rsa.PublicKey, error) {
 
 	rsaPublicKey, ok := publicKey.(*rsa.PublicKey)
 	if !ok {
-		return nil, fmt.Errorf("不是RSA公钥")
+		return nil, fmt.Errorf("not an RSA public key")
 	}
 
 	return rsaPublicKey, nil
 }
 
-// GetPublicKeyBase64 获取公钥的Base64编码（用于传输）
+// GetPublicKeyBase64 get Base64 encoded public key (for transmission)
 func GetPublicKeyBase64(publicKeyPEM string) string {
 	return base64.StdEncoding.EncodeToString([]byte(publicKeyPEM))
 }
 
-// ParsePublicKeyFromBase64 从Base64编码解析公钥
+// ParsePublicKeyFromBase64 parse public key from Base64 encoding
 func ParsePublicKeyFromBase64(publicKeyBase64 string) (string, error) {
 	publicKeyBytes, err := base64.StdEncoding.DecodeString(publicKeyBase64)
 	if err != nil {
-		return "", fmt.Errorf("Base64解码失败: %v", err)
+		return "", fmt.Errorf("Base64 decoding failed: %v", err)
 	}
 	return string(publicKeyBytes), nil
 }
 
-// GenerateRandomSalt 生成随机盐值
+// GenerateRandomSalt generate random salt value
 func GenerateRandomSalt(length int) (string, error) {
 	if length <= 0 {
-		length = 32 // 默认32字节
+		length = 32 // default 32 bytes
 	}
 
 	salt := make([]byte, length)
 	_, err := rand.Read(salt)
 	if err != nil {
-		return "", fmt.Errorf("生成随机盐值失败: %v", err)
+		return "", fmt.Errorf("failed to generate random salt: %v", err)
 	}
 
-	// 返回Base64编码的盐值
+	// Return Base64 encoded salt
 	return base64.StdEncoding.EncodeToString(salt), nil
 }
 
-// HashPasswordWithSalt 使用盐值哈希密码
+// HashPasswordWithSalt hash password with salt
 func HashPasswordWithSalt(password, salt string) (string, error) {
-	// 将密码和盐值组合
+	// Combine password and salt
 	saltedPassword := password + salt
 
-	// 使用SHA256哈希
+	// Use SHA256 hash
 	hash := sha256.Sum256([]byte(saltedPassword))
 
-	// 返回Base64编码的哈希值
+	// Return Base64 encoded hash
 	return base64.StdEncoding.EncodeToString(hash[:]), nil
 }
 
-// VerifyPasswordWithSalt 验证带盐值的密码
+// VerifyPasswordWithSalt verify password with salt
 func VerifyPasswordWithSalt(password, salt, hashedPassword string) bool {
-	// 使用相同的方式哈希输入的密码
+	// Hash the input password in the same way
 	computedHash, err := HashPasswordWithSalt(password, salt)
 	if err != nil {
 		return false
 	}
 
-	// 比较哈希值
+	// Compare hashes
 	return computedHash == hashedPassword
 }
 
-// GeneratePublicKeyFromPrivateKey 从私钥生成公钥
+// GeneratePublicKeyFromPrivateKey generate public key from private key
 func GeneratePublicKeyFromPrivateKey(privateKeyPEM string) (string, error) {
-	// 解析私钥
+	// Parse private key
 	privateKey, err := parsePrivateKeyFromPEM(privateKeyPEM)
 	if err != nil {
-		return "", fmt.Errorf("解析私钥失败: %v", err)
+		return "", fmt.Errorf("failed to parse private key: %v", err)
 	}
 
-	// 从私钥提取公钥
+	// Extract public key from private key
 	publicKey := &privateKey.PublicKey
 
-	// 编码公钥为PEM格式
+	// Encode public key to PEM format
 	publicKeyPEM, err := encodePublicKeyToPEM(publicKey)
 	if err != nil {
-		return "", fmt.Errorf("编码公钥失败: %v", err)
+		return "", fmt.Errorf("failed to encode public key: %v", err)
 	}
 
 	return publicKeyPEM, nil

@@ -7,19 +7,19 @@ import (
 	"time"
 )
 
-// Client 市场客户端
+// Client market client
 type Client struct {
 	config *common.MarketConfig
 }
 
-// NewClient 创建新的市场客户端
+// NewClient creates a new market client
 func NewClient(config *common.MarketConfig) *Client {
 	return &Client{
 		config: config,
 	}
 }
 
-// NewClientFromGlobalConfig 从全局配置创建市场客户端
+// NewClientFromGlobalConfig creates a market client from global configuration
 func NewClientFromGlobalConfig(config *common.MarketConfig) *Client {
 	if config == nil {
 		return nil
@@ -27,12 +27,12 @@ func NewClientFromGlobalConfig(config *common.MarketConfig) *Client {
 	return NewClient(config)
 }
 
-// GetConfig 获取配置
+// GetConfig retrieves the client configuration
 func (c *Client) GetConfig() *common.MarketConfig {
 	return c.config
 }
 
-// GenerateAuthHeaders 生成认证头信息
+// GenerateAuthHeaders generates authentication headers
 func (c *Client) GenerateAuthHeaders() map[string]string {
 	timestampStr := strconv.FormatInt(time.Now().UnixMilli(), 10)
 	signature := GenerateSignature(c.config.CustomerUuid, timestampStr, c.config.SecretKey)
@@ -45,12 +45,12 @@ func (c *Client) GenerateAuthHeaders() map[string]string {
 	}
 }
 
-// GetBaseURL 获取基础URL
+// GetBaseURL retrieves the base URL
 func (c *Client) GetBaseURL() string {
 	return c.config.Host
 }
 
-// BuildURL 构建完整URL
+// BuildURL builds the full URL
 func (c *Client) BuildURL(path string) string {
 	return fmt.Sprintf("%s%s", c.config.Host, path)
 }

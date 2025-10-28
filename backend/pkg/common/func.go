@@ -49,18 +49,18 @@ func SetKubeConfig(byteCfg []byte) *rest.Config {
 		return nil
 	}
 
-	// 先解析 kubeconfig 结构
+	// First parse kubeconfig structure
 	clientConfig, err := clientcmd.Load(byteCfg)
 	if err != nil {
 		fmt.Printf("Failed to load kubeconfig: %v\n", err)
 		return nil
 	}
 
-	// 检查并修复 current-context 问题
+	// Check and fix current-context issues
 	if clientConfig.CurrentContext != "" {
-		// 检查 current-context 是否存在于 contexts 中
+		// Check if current-context exists in contexts
 		if _, exists := clientConfig.Contexts[clientConfig.CurrentContext]; !exists {
-			// 如果不存在，尝试使用第一个可用的 context
+			// If not exists, try to use the first available context
 			for contextName := range clientConfig.Contexts {
 				clientConfig.CurrentContext = contextName
 				fmt.Printf("Fixed current-context from '%s' to '%s'\n", clientConfig.CurrentContext, contextName)
@@ -69,7 +69,7 @@ func SetKubeConfig(byteCfg []byte) *rest.Config {
 		}
 	}
 
-	// 处理 server URL 中的反引号问题
+	// Handle backtick issues in server URL
 	for clusterName, cluster := range clientConfig.Clusters {
 		if strings.HasPrefix(cluster.Server, "`") && strings.HasSuffix(cluster.Server, "`") {
 			cluster.Server = strings.Trim(cluster.Server, "`")
@@ -78,14 +78,14 @@ func SetKubeConfig(byteCfg []byte) *rest.Config {
 		}
 	}
 
-	// 重新序列化修复后的配置
+	// Re-serialize the fixed configuration
 	fixedConfig, err := clientcmd.Write(*clientConfig)
 	if err != nil {
 		fmt.Printf("Failed to serialize fixed kubeconfig: %v\n", err)
 		return nil
 	}
 
-	// 使用修复后的配置创建 REST config
+	// Create REST config using the fixed configuration
 	config, err := clientcmd.RESTConfigFromKubeConfig(fixedConfig)
 	if err != nil {
 		fmt.Printf("Failed to create REST config: %v\n", err)

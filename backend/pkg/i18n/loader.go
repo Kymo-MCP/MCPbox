@@ -17,13 +17,13 @@ func init() {
 	InitMessageLoader()
 }
 
-// MessageLoader 消息加载器
+// MessageLoader message loader
 type MessageLoader struct {
 	messages map[SupportedLanguage]map[int]string
 	mu       sync.RWMutex
 }
 
-// NewMessageLoader 创建新的消息加载器
+// NewMessageLoader creates a new message loader
 func NewMessageLoader() *MessageLoader {
 	return &MessageLoader{
 		messages: make(map[SupportedLanguage]map[int]string),

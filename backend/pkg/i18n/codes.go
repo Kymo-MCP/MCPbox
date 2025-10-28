@@ -1,11 +1,11 @@
 package i18n
 
-// 错误码定义
+// Error code definitions
 const (
-	// 成功
+	// Success
 	CodeSuccess = 0
 
-	// 通用错误 (1000-1999)
+	// General errors (1000-1999)
 	CodeBadRequest            = 1000
 	CodeUnauthorized          = 1001
 	CodeForbidden             = 1002

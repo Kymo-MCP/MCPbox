@@ -20,13 +20,13 @@ import (
 	"go.uber.org/zap"
 )
 
-// CodePackageManager 代码包管理器
+// CodePackageManager manages code packages.
 type CodePackageManager struct {
 	config     *common.CodeConfig
 	pathPrefix string
 }
 
-// NewCodePackageManager 创建代码包管理器实例
+// NewCodePackageManager creates a new CodePackageManager instance.
 func NewCodePackageManager(codeConfig *common.CodeConfig, pathPrefix string) *CodePackageManager {
 	return &CodePackageManager{
 		config:     codeConfig,
@@ -34,7 +34,7 @@ func NewCodePackageManager(codeConfig *common.CodeConfig, pathPrefix string) *Co
 	}
 }
 
-// PackageInfo 包信息结构
+// PackageInfo represents information about a code package.
 type PackageInfo struct {
 	PackageID     string
 	PackagePath   string
@@ -45,15 +45,15 @@ type PackageInfo struct {
 	PackageType   model.PackageType
 }
 
-// UploadAndExtractPackage 上传并解压代码包
+// UploadAndExtractPackage uploads and extracts a code package.
 func (m *CodePackageManager) UploadAndExtractPackage(file multipart.File, header *multipart.FileHeader) (*PackageInfo, error) {
-	// 记录上传开始信息
+	// Log upload start information
 	logger.Info("Starting code package upload",
 		zap.String("filename", header.Filename),
 		zap.Int64("fileSize", header.Size),
 		zap.Int("configMaxSizeMB", m.config.Upload.MaxFileSize))
 
-	// 验证文件类型
+	// Validate file type
 	packageType, err := m.validateFileType(header.Filename)
 	if err != nil {
 		logger.Error("File type validation failed",
@@ -62,7 +62,7 @@ func (m *CodePackageManager) UploadAndExtractPackage(file multipart.File, header
 		return nil, err
 	}
 
-	// 验证文件大小
+	// Validate file size
 	if err := m.validateFileSize(header.Size); err != nil {
 		logger.Error("File size validation failed",
 			zap.String("filename", header.Filename),
@@ -72,32 +72,32 @@ func (m *CodePackageManager) UploadAndExtractPackage(file multipart.File, header
 		return nil, err
 	}
 
-	// 生成包ID
+	// Generate package ID
 	packageID := uuid.New().String()
 
-	// 创建包目录结构
+	// Create package directory structure
 	packageDir, err := m.createPackageDirectory(packageID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create package directory: %v", err)
 	}
 
-	// 保存原始压缩包
+	// Save original compressed package
 	originalPath, err := m.saveOriginalPackage(file, packageDir, header.Filename)
 	if err != nil {
-		// 清理目录
+		// Clean up directory
 		os.RemoveAll(packageDir)
 		return nil, fmt.Errorf("failed to save original package: %v", err)
 	}
 
-	// 解压包到同级目录
+	// Extract package to the same level directory
 	extractedPath, err := m.extractPackage(originalPath, packageDir, packageType)
 	if err != nil {
-		// 清理目录
+		// Clean up directory
 		os.RemoveAll(packageDir)
 		return nil, fmt.Errorf("failed to extract package: %v", err)
 	}
 
-	// 转换为相对于配置根路径的相对路径
+	// Convert to relative paths based on the configured root path
 	relPackagePath, _ := m.ToRelativePath(packageDir)
 	relOriginalPath, _ := m.ToRelativePath(originalPath)
 	relExtractedPath, _ := m.ToRelativePath(extractedPath)
@@ -120,7 +120,7 @@ func (m *CodePackageManager) UploadAndExtractPackage(file multipart.File, header
 	return packageInfo, nil
 }
 
-// validateFileType 验证文件类型
+// validateFileType validates the file type
 func (m *CodePackageManager) validateFileType(filename string) (model.PackageType, error) {
 	allowedExtensions := m.config.Upload.AllowedExtensions
 	filename = strings.ToLower(filename)
@@ -138,18 +138,18 @@ func (m *CodePackageManager) validateFileType(filename string) (model.PackageTyp
 	return "", fmt.Errorf("unsupported file type, allowed extensions: %v", allowedExtensions)
 }
 
-// validateFileSize 验证文件大小
+// validateFileSize validates the file size.
 func (m *CodePackageManager) validateFileSize(size int64) error {
-	maxSize := int64(m.config.Upload.MaxFileSize) * 1024 * 1024 // 转换为字节
+	maxSize := int64(m.config.Upload.MaxFileSize) * 1024 * 1024 // Convert to bytes
 	if size > maxSize {
 		return fmt.Errorf("file size %d bytes exceeds maximum allowed size %d MB", size, m.config.Upload.MaxFileSize)
 	}
 	return nil
 }
 
-// createPackageDirectory 创建包目录
+// createPackageDirectory creates the package directory.
 func (m *CodePackageManager) createPackageDirectory(packageID string) (string, error) {
-	// 根据配置创建目录结构：root_path/package-{id}
+	// Create directory structure based on configuration: root_path/package-{id}
 	packageDirName := fmt.Sprintf("package-%s", packageID)
 	packageDir := filepath.Join(m.pathPrefix, packageDirName)
 
@@ -160,9 +160,9 @@ func (m *CodePackageManager) createPackageDirectory(packageID string) (string, e
 	return packageDir, nil
 }
 
-// saveOriginalPackage 保存原始压缩包
+// saveOriginalPackage saves the original compressed package.
 func (m *CodePackageManager) saveOriginalPackage(file multipart.File, packageDir, filename string) (string, error) {
-	// 重置文件指针到开始位置
+	// Reset file pointer to the beginning
 	file.Seek(0, 0)
 
 	originalPath := filepath.Join(packageDir, filename)
@@ -179,26 +179,26 @@ func (m *CodePackageManager) saveOriginalPackage(file multipart.File, packageDir
 	return originalPath, nil
 }
 
-// extractPackage 解压包到同级目录
+// extractPackage extracts the package to the same level directory.
 func (m *CodePackageManager) extractPackage(originalPath, packageDir string, packageType model.PackageType) (string, error) {
-	// 记录解压开始时间
+	// Log extraction start time
 	startTime := time.Now()
 	logger.Info("Starting package extraction",
 		zap.String("originalPath", originalPath),
 		zap.String("packageType", string(packageType)))
 
-	// 获取压缩包文件名（不含扩展名）作为解压目录名
+	// Get the compressed package filename (without extension) as the extraction directory name
 	originalFileName := filepath.Base(originalPath)
 	var extractDirName string
 
-	// 根据不同的压缩包类型去除相应的扩展名
+	// Remove corresponding extension based on different compressed package types
 	switch packageType {
 	case model.PackageTypeTar:
 		extractDirName = strings.TrimSuffix(originalFileName, ".tar")
 	case model.PackageTypeZip:
 		extractDirName = strings.TrimSuffix(originalFileName, ".zip")
 	case model.PackageTypeTarGz:
-		// 处理 .tar.gz 和 .gz 扩展名
+		// Handle .tar.gz and .gz extensions
 		if strings.HasSuffix(originalFileName, ".tar.gz") {
 			extractDirName = strings.TrimSuffix(originalFileName, ".tar.gz")
 		} else {
@@ -209,7 +209,7 @@ func (m *CodePackageManager) extractPackage(originalPath, packageDir string, pac
 	case model.PackageTypeMcpb:
 		extractDirName = strings.TrimSuffix(originalFileName, ".mcpb")
 	default:
-		// 默认情况下，去除最后一个点后的扩展名
+		// By default, remove the extension after the last dot
 		if dotIndex := strings.LastIndex(originalFileName, "."); dotIndex != -1 {
 			extractDirName = originalFileName[:dotIndex]
 		} else {
@@ -217,7 +217,7 @@ func (m *CodePackageManager) extractPackage(originalPath, packageDir string, pac
 		}
 	}
 
-	// 创建以压缩包文件名命名的解压目录
+	// Create extraction directory named after the compressed package filename
 	extractedDir := filepath.Join(packageDir, extractDirName)
 	if err := os.MkdirAll(extractedDir, 0755); err != nil {
 		return "", fmt.Errorf("failed to create extracted directory: %v", err)
@@ -248,7 +248,7 @@ func (m *CodePackageManager) extractPackage(originalPath, packageDir string, pac
 		return "", fmt.Errorf("unsupported package type: %s", packageType)
 	}
 
-	// 记录解压结束时间和耗时
+	// Log extraction end time and duration
 	elapsed := time.Since(startTime)
 	logger.Info("Package extraction completed",
 		zap.String("extractedDir", extractedDir),
@@ -257,7 +257,7 @@ func (m *CodePackageManager) extractPackage(originalPath, packageDir string, pac
 	return extractedDir, nil
 }
 
-// extractTarFile 解压tar文件
+// extractTarFile extracts a tar file.
 func (m *CodePackageManager) extractTarFile(src, destPath string) error {
 	logger.Info("Starting tar file extraction", zap.String("src", src), zap.String("destPath", destPath))
 
@@ -267,7 +267,7 @@ func (m *CodePackageManager) extractTarFile(src, destPath string) error {
 	}
 	defer file.Close()
 
-	// 尝试作为gzip压缩的tar文件处理
+	// Try to handle as a gzip compressed tar file
 	var tarReader *tar.Reader
 	if strings.HasSuffix(strings.ToLower(src), ".gz") {
 		logger.Info("Detected gzip compressed tar file")
@@ -294,7 +294,7 @@ func (m *CodePackageManager) extractTarFile(src, destPath string) error {
 
 		target := filepath.Join(destPath, header.Name)
 
-		// 安全检查：防止路径遍历攻击
+		// Security check: prevent path traversal attacks
 		if !strings.HasPrefix(target, destPath) {
 			logger.Warn("Skipping file due to path traversal check", zap.String("path", header.Name))
 			continue
@@ -310,7 +310,7 @@ func (m *CodePackageManager) extractTarFile(src, destPath string) error {
 				logger.Info("Extraction progress", zap.Int("files_processed", fileCount))
 			}
 		case tar.TypeReg:
-			// 确保父目录存在
+			// Ensure parent directory exists
 			if err := os.MkdirAll(filepath.Dir(target), 0755); err != nil {
 				return fmt.Errorf("failed to create parent directory: %v", err)
 			}
@@ -336,7 +336,7 @@ func (m *CodePackageManager) extractTarFile(src, destPath string) error {
 	return nil
 }
 
-// extractTarGzFile 解压tar.gz文件
+// extractTarGzFile extracts a tar.gz file.
 func (m *CodePackageManager) extractTarGzFile(src, destPath string) error {
 	logger.Info("Starting tar.gz file extraction", zap.String("src", src), zap.String("destPath", destPath))
 
@@ -366,7 +366,7 @@ func (m *CodePackageManager) extractTarGzFile(src, destPath string) error {
 
 		target := filepath.Join(destPath, header.Name)
 
-		// 安全检查：防止路径遍历攻击
+		// Security check: prevent path traversal attacks
 		if !strings.HasPrefix(target, destPath) {
 			logger.Warn("Skipping file due to path traversal check", zap.String("path", header.Name))
 			continue
@@ -382,7 +382,7 @@ func (m *CodePackageManager) extractTarGzFile(src, destPath string) error {
 				logger.Info("Extraction progress", zap.Int("files_processed", fileCount))
 			}
 		case tar.TypeReg:
-			// 确保父目录存在
+			// Ensure parent directory exists
 			if err := os.MkdirAll(filepath.Dir(target), 0755); err != nil {
 				return fmt.Errorf("failed to create parent directory: %v", err)
 			}
@@ -408,23 +408,23 @@ func (m *CodePackageManager) extractTarGzFile(src, destPath string) error {
 	return nil
 }
 
-// extractDxtFile 解压dxt文件（使用zip格式）
+// extractDxtFile extracts a dxt file (using zip format).
 func (m *CodePackageManager) extractDxtFile(src, destPath string) error {
 	logger.Info("Starting dxt file extraction (using zip format)", zap.String("src", src), zap.String("destPath", destPath))
 
-	// dxt 文件使用 zip 格式，直接调用 extractZipFile
+	// DXT files use zip format, directly call extractZipFile
 	return m.extractZipFile(src, destPath)
 }
 
-// extractMcpbFile 解压mcpb文件（使用zip格式）
+// extractMcpbFile extracts an mcpb file (using zip format).
 func (m *CodePackageManager) extractMcpbFile(src, destPath string) error {
 	logger.Info("Starting mcpb file extraction (using zip format)", zap.String("src", src), zap.String("destPath", destPath))
 
-	// mcpb 文件使用 zip 格式，直接调用 extractZipFile
+	// MCPB files use zip format, directly call extractZipFile
 	return m.extractZipFile(src, destPath)
 }
 
-// extractZipFile 解压zip文件
+// extractZipFile extracts a zip file.
 func (m *CodePackageManager) extractZipFile(src, destPath string) error {
 	logger.Info("Starting zip file extraction", zap.String("src", src), zap.String("destPath", destPath))
 
@@ -441,7 +441,7 @@ func (m *CodePackageManager) extractZipFile(src, destPath string) error {
 	for _, file := range reader.File {
 		target := filepath.Join(destPath, file.Name)
 
-		// 安全检查：防止路径遍历攻击
+		// Security check: prevent path traversal attacks
 		if !strings.HasPrefix(target, destPath) {
 			logger.Warn("Skipping file due to path traversal check", zap.String("path", file.Name))
 			continue
@@ -461,7 +461,7 @@ func (m *CodePackageManager) extractZipFile(src, destPath string) error {
 			continue
 		}
 
-		// 确保父目录存在
+		// Ensure parent directory exists
 		if err := os.MkdirAll(filepath.Dir(target), 0755); err != nil {
 			return fmt.Errorf("failed to create parent directory: %v", err)
 		}
@@ -499,21 +499,21 @@ func (m *CodePackageManager) extractZipFile(src, destPath string) error {
 	return nil
 }
 
-// toRelativePath 将绝对路径转换为相对于配置根路径的相对路径
+// toRelativePath converts an absolute path to a relative path based on the configured root path.
 func (m *CodePackageManager) ToRelativePath(absolutePath string) (string, error) {
-	// 获取配置根路径的绝对路径
+	// Get the absolute path of the configured root path
 	absRootPath, err := filepath.Abs(m.pathPrefix)
 	if err != nil {
 		return absolutePath, err
 	}
 
-	// 获取目标路径的绝对路径
+	// Get the absolute path of the target path
 	absTargetPath, err := filepath.Abs(absolutePath)
 	if err != nil {
 		return absolutePath, err
 	}
 
-	// 计算相对路径
+	// Calculate the relative path
 	relPath, err := filepath.Rel(absRootPath, absTargetPath)
 	if err != nil {
 		return absolutePath, err
@@ -522,20 +522,20 @@ func (m *CodePackageManager) ToRelativePath(absolutePath string) (string, error)
 	return relPath, nil
 }
 
-// toAbsolutePath 将相对路径转换为绝对路径
+// toAbsolutePath converts a relative path to an absolute path.
 func (m *CodePackageManager) ToAbsolutePath(relativePath string) (string, error) {
-	// 如果已经是绝对路径，直接返回
+	// If it's already an absolute path, return directly
 	if filepath.IsAbs(relativePath) {
 		return relativePath, nil
 	}
 
-	// 获取配置根路径的绝对路径
+	// Get the absolute path of the configured root path
 	absRootPath, err := filepath.Abs(m.pathPrefix)
 	if err != nil {
 		return "", err
 	}
 
-	// 拼接得到绝对路径
+	// Join to get the absolute path
 	absolutePath := filepath.Join(absRootPath, relativePath)
 	return absolutePath, nil
 }
@@ -556,8 +556,8 @@ func (m *CodePackageManager) DeletePackage(packagePath string) error {
 
 	// Remove the entire package directory
 	if err := os.RemoveAll(absPackagePath); err != nil {
-		logger.Error("Failed to remove package directory", 
-			zap.String("path", absPackagePath), 
+		logger.Error("Failed to remove package directory",
+			zap.String("path", absPackagePath),
 			zap.Error(err))
 		return fmt.Errorf("failed to remove package directory: %v", err)
 	}
