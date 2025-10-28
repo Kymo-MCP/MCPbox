@@ -9,7 +9,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-// Config 表示配置结构
+// Config represents configuration structure
 type Config struct {
 	ServiceName string                `mapstructure:"-"`
 	VersionInfo *version.VersionInfo  `mapstructure:"-"`
@@ -21,13 +21,13 @@ type Config struct {
 	Secret      string                `mapstructure:"secret"`
 }
 
-// JWTConfig JWT配置
+// JWTConfig JWT configuration
 type JWTConfig struct {
 	Secret  string `mapstructure:"secret"`
 	Expires int    `mapstructure:"expires"`
 }
 
-// ServerConfig 服务器配置
+// ServerConfig server configuration
 type ServerConfig struct {
 	GrpcPort int `mapstructure:"grpcPort"`
 	HttpPort int `mapstructure:"httpPort"`
@@ -37,38 +37,38 @@ var GlobalConfig *Config
 var serviceName = "authz"
 var cfgFileName = "authz.yaml"
 
-// GetConfig 获取全局配置
+// GetConfig gets global configuration
 func GetConfig() *Config {
 	return GlobalConfig
 }
 
-// Load 加载配置文件
+// Load loads configuration file
 func Load() error {
 	v := viper.New()
 	v.SetConfigType("yaml")
 
-	// 如果未指定配置文件路径，尝试自动查找
+	// If configuration file path is not specified, try to find it automatically
 	var err error
 	configPath, err := common.FindConfigFile(cfgFileName)
 	if err != nil {
 		return err
 	}
 
-	// 设置配置文件路径
+	// Set configuration file path
 	v.SetConfigFile(configPath)
 
-	// 读取配置文件
+	// Read configuration file
 	if err := v.ReadInConfig(); err != nil {
 		return fmt.Errorf("failed to read config file: %v", err)
 	}
 
-	// 解析配置
+	// Parse configuration
 	var config Config
 	if err := v.Unmarshal(&config); err != nil {
 		return fmt.Errorf("failed to parse config file: %v", err)
 	}
 
-	// 追加 Version 信息
+	// Append version information
 	config.ServiceName = serviceName
 	config.VersionInfo = version.GetVersionInfo()
 

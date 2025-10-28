@@ -10,54 +10,54 @@ import (
 	"qm-mcp-server/pkg/logger"
 )
 
-// UserRoleRepo 用户角色关联仓库接口
+// UserRoleRepo user role association repository interface
 type UserRoleRepo interface {
-	// GetUserRoles 查询用户角色关联
+	// GetUserRoles query user role associations
 	GetUserRoles(ctx context.Context, userId, roleId uint) ([]*model.SysUsersRoles, error)
-	// AddUserRole 添加用户角色关联
+	// AddUserRole add user role association
 	AddUserRole(ctx context.Context, userId, roleId uint) (*model.SysUsersRoles, error)
-	// DeleteUserRole 删除用户角色关联
+	// DeleteUserRole delete user role association
 	DeleteUserRole(ctx context.Context, userId, roleId uint) error
-	// BatchAddUserRoles 批量添加用户角色关联
+	// BatchAddUserRoles batch add user role associations
 	BatchAddUserRoles(ctx context.Context, userRoles []*model.SysUsersRoles) error
-	// GetRoleIdsByUserId 根据用户ID获取角色ID列表
+	// GetRoleIdsByUserId get role ID list by user ID
 	GetRoleIdsByUserId(ctx context.Context, userId uint) ([]uint, error)
-	// GetUserIdsByRoleId 根据角色ID获取用户ID列表
+	// GetUserIdsByRoleId get user ID list by role ID
 	GetUserIdsByRoleId(ctx context.Context, roleId uint) ([]uint, error)
-	// DeleteByUserId 删除用户的所有角色关联
+	// DeleteByUserId delete all role associations of user
 	DeleteByUserId(ctx context.Context, userId uint) error
-	// DeleteByRoleId 删除角色的所有用户关联
+	// DeleteByRoleId delete all user associations of role
 	DeleteByRoleId(ctx context.Context, roleId uint) error
 }
 
-// UserRoleUseCase 用户角色关联业务逻辑
+// UserRoleUseCase user role association business logic
 type UserRoleUseCase struct {
 	userRoleRepo UserRoleRepo
 }
 
-// NewUserRoleUseCase 创建用户角色关联业务逻辑实例
+// NewUserRoleUseCase create user role association business logic instance
 func NewUserRoleUseCase(userRoleRepo UserRoleRepo) *UserRoleUseCase {
 	return &UserRoleUseCase{
 		userRoleRepo: userRoleRepo,
 	}
 }
 
-// GetUserRoles 查询用户角色关联
+// GetUserRoles query user role associations
 func (uc *UserRoleUseCase) GetUserRoles(ctx context.Context, userId, roleId uint) ([]*model.SysUsersRoles, error) {
-	logger.Info("查询用户角色关联",
+	logger.Info("query user role associations",
 		zap.Uint("userId", userId),
 		zap.Uint("roleId", roleId))
 
 	userRoles, err := uc.userRoleRepo.GetUserRoles(ctx, userId, roleId)
 	if err != nil {
-		logger.Error("查询用户角色关联失败",
+		logger.Error("query user role associations failed",
+			zap.Error(err),
 			zap.Uint("userId", userId),
-			zap.Uint("roleId", roleId),
-			zap.Error(err))
-		return nil, fmt.Errorf("查询用户角色关联失败: %v", err)
+			zap.Uint("roleId", roleId))
+		return nil, fmt.Errorf("query user role associations failed: %v", err)
 	}
 
-	logger.Info("查询用户角色关联成功",
+	logger.Info("query user role associations success",
 		zap.Uint("userId", userId),
 		zap.Uint("roleId", roleId),
 		zap.Int("count", len(userRoles)))
@@ -65,200 +65,199 @@ func (uc *UserRoleUseCase) GetUserRoles(ctx context.Context, userId, roleId uint
 	return userRoles, nil
 }
 
-// AddUserRole 添加用户角色关联
+// AddUserRole add user role association
 func (uc *UserRoleUseCase) AddUserRole(ctx context.Context, userId, roleId uint) (*model.SysUsersRoles, error) {
-	logger.Info("添加用户角色关联",
+	logger.Info("add user role association",
 		zap.Uint("userId", userId),
 		zap.Uint("roleId", roleId))
 
-	// 验证参数
+	// Validate parameters
 	if userId == 0 {
-		return nil, fmt.Errorf("用户ID不能为空")
+		return nil, fmt.Errorf("user ID cannot be empty")
 	}
 	if roleId == 0 {
-		return nil, fmt.Errorf("角色ID不能为空")
+		return nil, fmt.Errorf("role ID cannot be empty")
 	}
 
-	// 检查是否已存在关联
+	// Check if association already exists
 	existingRoles, err := uc.userRoleRepo.GetUserRoles(ctx, userId, roleId)
 	if err != nil {
-		logger.Error("检查用户角色关联失败",
+		logger.Error("check user role association failed",
+			zap.Error(err),
 			zap.Uint("userId", userId),
-			zap.Uint("roleId", roleId),
-			zap.Error(err))
-		return nil, fmt.Errorf("检查用户角色关联失败: %v", err)
+			zap.Uint("roleId", roleId))
+		return nil, fmt.Errorf("check user role association failed: %v", err)
 	}
 
 	if len(existingRoles) > 0 {
-		return nil, fmt.Errorf("用户角色关联已存在")
+		return nil, fmt.Errorf("user role association already exists")
 	}
 
 	userRole, err := uc.userRoleRepo.AddUserRole(ctx, userId, roleId)
 	if err != nil {
-		logger.Error("添加用户角色关联失败",
+		logger.Error("add user role association failed",
+			zap.Error(err),
 			zap.Uint("userId", userId),
-			zap.Uint("roleId", roleId),
-			zap.Error(err))
-		return nil, fmt.Errorf("添加用户角色关联失败: %v", err)
+			zap.Uint("roleId", roleId))
+		return nil, fmt.Errorf("add user role association failed: %v", err)
 	}
 
-	logger.Info("添加用户角色关联成功",
+	logger.Info("add user role association success",
 		zap.Uint("userId", userId),
 		zap.Uint("roleId", roleId))
 
 	return userRole, nil
 }
 
-// DeleteUserRole 删除用户角色关联
+// DeleteUserRole delete user role association
 func (uc *UserRoleUseCase) DeleteUserRole(ctx context.Context, userId, roleId uint) error {
-	logger.Info("删除用户角色关联",
+	logger.Info("delete user role association",
 		zap.Uint("userId", userId),
 		zap.Uint("roleId", roleId))
 
-	// 验证参数
+	// Validate parameters
 	if userId == 0 {
-		return fmt.Errorf("用户ID不能为空")
+		return fmt.Errorf("user ID cannot be empty")
 	}
 	if roleId == 0 {
-		return fmt.Errorf("角色ID不能为空")
+		return fmt.Errorf("role ID cannot be empty")
 	}
 
 	err := uc.userRoleRepo.DeleteUserRole(ctx, userId, roleId)
 	if err != nil {
-		logger.Error("删除用户角色关联失败",
+		logger.Error("delete user role association failed",
+			zap.Error(err),
 			zap.Uint("userId", userId),
-			zap.Uint("roleId", roleId),
-			zap.Error(err))
-		return fmt.Errorf("删除用户角色关联失败: %v", err)
+			zap.Uint("roleId", roleId))
+		return fmt.Errorf("delete user role association failed: %v", err)
 	}
 
-	logger.Info("删除用户角色关联成功",
+	logger.Info("delete user role association success",
 		zap.Uint("userId", userId),
 		zap.Uint("roleId", roleId))
 
 	return nil
 }
 
-// BatchAddUserRoles 批量添加用户角色关联
+// BatchAddUserRoles batch add user role associations
 func (uc *UserRoleUseCase) BatchAddUserRoles(ctx context.Context, userRoles []*model.SysUsersRoles) error {
-	logger.Info("批量添加用户角色关联", zap.Int("count", len(userRoles)))
+	logger.Info("batch add user role associations", zap.Int("count", len(userRoles)))
 
-	// 验证参数
+	// Validate parameters
 	if len(userRoles) == 0 {
-		return fmt.Errorf("用户角色关联列表不能为空")
+		return fmt.Errorf("user role association list cannot be empty")
 	}
 
-	// 验证每个关联
+	// Validate each association
 	for i, userRole := range userRoles {
 		if userRole.UserID == 0 {
-			return fmt.Errorf("第%d个用户角色关联的用户ID不能为空", i+1)
+			return fmt.Errorf("user ID of the %d-th user role association cannot be empty", i+1)
 		}
 		if userRole.RoleID == 0 {
-			return fmt.Errorf("第%d个用户角色关联的角色ID不能为空", i+1)
+			return fmt.Errorf("role ID of the %d-th user role association cannot be empty", i+1)
 		}
 	}
 
 	err := uc.userRoleRepo.BatchAddUserRoles(ctx, userRoles)
 	if err != nil {
-		logger.Error("批量添加用户角色关联失败",
-			zap.Int("count", len(userRoles)),
+		logger.Error("batch add user role associations failed",
 			zap.Error(err))
-		return fmt.Errorf("批量添加用户角色关联失败: %v", err)
+		return fmt.Errorf("batch add user role associations failed: %v", err)
 	}
 
-	logger.Info("批量添加用户角色关联成功", zap.Int("count", len(userRoles)))
+	logger.Info("batch add user role associations success", zap.Int("count", len(userRoles)))
 
 	return nil
 }
 
-// GetRoleIdsByUserId 根据用户ID获取角色ID列表
+// GetRoleIdsByUserId get role ID list by user ID
 func (uc *UserRoleUseCase) GetRoleIdsByUserId(ctx context.Context, userId uint) ([]uint, error) {
-	logger.Info("获取用户角色ID列表", zap.Uint("userId", userId))
+	logger.Info("get user role ID list", zap.Uint("userId", userId))
 
-	// 验证参数
+	// Validate parameters
 	if userId == 0 {
-		return nil, fmt.Errorf("用户ID不能为空")
+		return nil, fmt.Errorf("user ID cannot be empty")
 	}
 
 	roleIds, err := uc.userRoleRepo.GetRoleIdsByUserId(ctx, userId)
 	if err != nil {
-		logger.Error("获取用户角色ID列表失败",
-			zap.Uint("userId", userId),
-			zap.Error(err))
-		return nil, fmt.Errorf("获取用户角色ID列表失败: %v", err)
+		logger.Error("get user role ID list failed",
+			zap.Error(err),
+			zap.Uint("userId", userId))
+		return nil, fmt.Errorf("get user role ID list failed: %v", err)
 	}
 
-	logger.Info("获取用户角色ID列表成功",
+	logger.Info("get user role ID list success",
 		zap.Uint("userId", userId),
 		zap.Int("count", len(roleIds)))
 
 	return roleIds, nil
 }
 
-// GetUserIdsByRoleId 根据角色ID获取用户ID列表
+// GetUserIdsByRoleId get user ID list by role ID
 func (uc *UserRoleUseCase) GetUserIdsByRoleId(ctx context.Context, roleId uint) ([]uint, error) {
-	logger.Info("获取角色用户ID列表", zap.Uint("roleId", roleId))
+	logger.Info("get role user ID list", zap.Uint("roleId", roleId))
 
-	// 验证参数
+	// Validate parameters
 	if roleId == 0 {
-		return nil, fmt.Errorf("角色ID不能为空")
+		return nil, fmt.Errorf("role ID cannot be empty")
 	}
 
 	userIds, err := uc.userRoleRepo.GetUserIdsByRoleId(ctx, roleId)
 	if err != nil {
-		logger.Error("获取角色用户ID列表失败",
-			zap.Uint("roleId", roleId),
-			zap.Error(err))
-		return nil, fmt.Errorf("获取角色用户ID列表失败: %v", err)
+		logger.Error("get role user ID list failed",
+			zap.Error(err),
+			zap.Uint("roleId", roleId))
+		return nil, fmt.Errorf("get role user ID list failed: %v", err)
 	}
 
-	logger.Info("获取角色用户ID列表成功",
+	logger.Info("get role user ID list success",
 		zap.Uint("roleId", roleId),
 		zap.Int("count", len(userIds)))
 
 	return userIds, nil
 }
 
-// DeleteByUserId 删除用户的所有角色关联
+// DeleteByUserId delete all role associations of user
 func (uc *UserRoleUseCase) DeleteByUserId(ctx context.Context, userId uint) error {
-	logger.Info("删除用户所有角色关联", zap.Uint("userId", userId))
+	logger.Info("delete all role associations of user", zap.Uint("userId", userId))
 
-	// 验证参数
+	// Validate parameters
 	if userId == 0 {
-		return fmt.Errorf("用户ID不能为空")
+		return fmt.Errorf("user ID cannot be empty")
 	}
 
 	err := uc.userRoleRepo.DeleteByUserId(ctx, userId)
 	if err != nil {
-		logger.Error("删除用户所有角色关联失败",
-			zap.Uint("userId", userId),
-			zap.Error(err))
-		return fmt.Errorf("删除用户所有角色关联失败: %v", err)
+		logger.Error("delete all role associations of user failed",
+			zap.Error(err),
+			zap.Uint("userId", userId))
+		return fmt.Errorf("delete all role associations of user failed: %v", err)
 	}
 
-	logger.Info("删除用户所有角色关联成功", zap.Uint("userId", userId))
+	logger.Info("delete all role associations of user success", zap.Uint("userId", userId))
 
 	return nil
 }
 
-// DeleteByRoleId 删除角色的所有用户关联
+// DeleteByRoleId delete all user associations of role
 func (uc *UserRoleUseCase) DeleteByRoleId(ctx context.Context, roleId uint) error {
-	logger.Info("删除角色所有用户关联", zap.Uint("roleId", roleId))
+	logger.Info("delete all user associations of role", zap.Uint("roleId", roleId))
 
-	// 验证参数
+	// Validate parameters
 	if roleId == 0 {
-		return fmt.Errorf("角色ID不能为空")
+		return fmt.Errorf("role ID cannot be empty")
 	}
 
 	err := uc.userRoleRepo.DeleteByRoleId(ctx, roleId)
 	if err != nil {
-		logger.Error("删除角色所有用户关联失败",
-			zap.Uint("roleId", roleId),
-			zap.Error(err))
-		return fmt.Errorf("删除角色所有用户关联失败: %v", err)
+		logger.Error("delete all user associations of role failed",
+			zap.Error(err),
+			zap.Uint("roleId", roleId))
+		return fmt.Errorf("delete all user associations of role failed: %v", err)
 	}
 
-	logger.Info("删除角色所有用户关联成功", zap.Uint("roleId", roleId))
+	logger.Info("delete all user associations of role success", zap.Uint("roleId", roleId))
 
 	return nil
 }

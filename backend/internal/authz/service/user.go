@@ -21,55 +21,55 @@ import (
 	"qm-mcp-server/pkg/utils"
 )
 
-// UserService 用户HTTP服务
+// UserService user HTTP service
 type UserService struct {
 	userBiz *biz.UserBiz
 }
 
-// NewUserService 创建用户服务实例
+// NewUserService creates user service instance
 func NewUserService() *UserService {
 	return &UserService{
 		userBiz: biz.NewUserBiz(),
 	}
 }
 
-// CreateUser 创建用户
+// CreateUser creates user
 func (s *UserService) CreateUser(c *gin.Context) {
 	var req user.CreateUserRequest
 	if err := common.BindAndValidate(c, &req); err != nil {
 		return
 	}
 
-	// 转换请求为模型
+	// Convert request to model
 	userModel := s.convertCreateRequestToModel(&req)
 
-	// 如果提供了密码，进行哈希处理
+	// If password is provided, hash it
 	if req.Password != "" {
 		if err := s.userBiz.SetUserPassword(c.Request.Context(), userModel, req.Password); err != nil {
-			logger.Error("设置用户密码失败", zap.Error(err))
-			common.GinError(c, i18nresp.CodeInternalError, "设置用户密码失败")
+			logger.Error("Failed to set user password", zap.Error(err))
+			common.GinError(c, i18nresp.CodeInternalError, "Failed to set user password")
 			return
 		}
 	}
 
-	// 创建用户
+	// Create user
 	if err := s.userBiz.CreateUser(c.Request.Context(), userModel); err != nil {
-		logger.Error("创建用户失败", zap.Error(err))
+		logger.Error("Failed to create user", zap.Error(err))
 		common.GinError(c, i18nresp.CodeInternalError, err.Error())
 		return
 	}
 
-	// 返回创建的用户信息
+	// Return created user information
 	response := s.convertModelToProto(userModel)
 	common.GinSuccess(c, response)
 }
 
-// UpdateUser 更新用户
+// UpdateUser updates user
 func (s *UserService) UpdateUser(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.ParseUint(idStr, 10, 32)
 	if err != nil {
-		common.GinError(c, i18nresp.CodeInternalError, "无效的用户ID")
+		common.GinError(c, i18nresp.CodeInternalError, "Invalid user ID")
 		return
 	}
 
@@ -78,41 +78,41 @@ func (s *UserService) UpdateUser(c *gin.Context) {
 		return
 	}
 
-	// 获取现有用户
+	// Get existing user
 	existingUser, err := s.userBiz.GetUserById(c.Request.Context(), uint(id))
 	if err != nil {
-		logger.Error("获取用户失败", zap.Error(err))
+		logger.Error("Failed to get user", zap.Error(err))
 		common.GinError(c, i18nresp.CodeInternalError, err.Error())
 		return
 	}
 
-	// 更新模型
+	// Update model
 	s.updateModelFromRequest(existingUser, &req)
 
-	// 更新用户
+	// Update user
 	if err := s.userBiz.UpdateUser(c.Request.Context(), existingUser); err != nil {
-		logger.Error("更新用户失败", zap.Error(err))
+		logger.Error("Failed to update user", zap.Error(err))
 		common.GinError(c, i18nresp.CodeInternalError, err.Error())
 		return
 	}
 
-	// 返回更新后的用户信息
+	// Return updated user information
 	userProto := s.convertModelToProto(existingUser)
 	common.GinSuccess(c, userProto)
 }
 
-// GetUserById 根据ID获取用户
+// GetUserById gets user by ID
 func (s *UserService) GetUserById(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.ParseUint(idStr, 10, 32)
 	if err != nil {
-		common.GinError(c, i18nresp.CodeInternalError, "无效的用户ID")
+		common.GinError(c, i18nresp.CodeInternalError, "Invalid user ID")
 		return
 	}
 
 	userModel, err := s.userBiz.GetUserById(c.Request.Context(), uint(id))
 	if err != nil {
-		logger.Error("获取用户失败", zap.Error(err))
+		logger.Error("Failed to get user", zap.Error(err))
 		common.GinError(c, i18nresp.CodeInternalError, err.Error())
 		return
 	}
@@ -121,32 +121,32 @@ func (s *UserService) GetUserById(c *gin.Context) {
 	common.GinSuccess(c, userProto)
 }
 
-// DeleteUser 删除用户
+// DeleteUser deletes user
 func (s *UserService) DeleteUser(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.ParseUint(idStr, 10, 32)
 	if err != nil {
-		common.GinError(c, i18nresp.CodeInternalError, "无效的用户ID")
+		common.GinError(c, i18nresp.CodeInternalError, "Invalid user ID")
 		return
 	}
 
 	if err := s.userBiz.DeleteUser(c.Request.Context(), uint(id)); err != nil {
-		logger.Error("删除用户失败", zap.Error(err))
+		logger.Error("Failed to delete user", zap.Error(err))
 		common.GinError(c, i18nresp.CodeInternalError, err.Error())
 		return
 	}
 
-	common.GinSuccess(c, gin.H{"message": "用户删除成功"})
+	common.GinSuccess(c, gin.H{"message": "User deleted successfully"})
 }
 
-// ListUsers 获取用户列表
+// ListUsers gets user list
 func (s *UserService) ListUsers(c *gin.Context) {
 	var req user.ListUsersRequest
 	if err := common.BindAndValidate(c, &req); err != nil {
 		return
 	}
 
-	// 设置默认分页参数
+	// Set default pagination parameters
 	if req.PageInfo.Page <= 0 {
 		req.PageInfo.Page = 1
 	}
@@ -157,7 +157,7 @@ func (s *UserService) ListUsers(c *gin.Context) {
 		req.PageInfo.Size = 100
 	}
 
-	// 构建查询参数
+	// Build query parameters
 	params := &biz.ListUsersParams{
 		Page:     int(req.PageInfo.Page),
 		PageSize: int(req.PageInfo.Size),
@@ -165,7 +165,7 @@ func (s *UserService) ListUsers(c *gin.Context) {
 		DeptId:   uint(req.Query.DeptId),
 	}
 
-	// 处理状态参数
+	// Handle status parameter
 	switch req.Query.Status {
 	case user.UserStatus_UserStatusEnabled:
 		enabled := true
@@ -175,15 +175,15 @@ func (s *UserService) ListUsers(c *gin.Context) {
 		params.Enabled = &enabled
 	}
 
-	// 获取用户列表
+	// Get user list
 	users, total, err := s.userBiz.ListUsers(c.Request.Context(), params)
 	if err != nil {
-		logger.Error("获取用户列表失败", zap.Error(err))
+		logger.Error("Failed to get user list", zap.Error(err))
 		common.GinError(c, i18nresp.CodeInternalError, err.Error())
 		return
 	}
 
-	// 转换为响应格式
+	// Convert to response format
 	userProtos := make([]*user.SysUser, len(users))
 	for i, u := range users {
 		userProtos[i] = s.convertModelToProto(u)
@@ -203,7 +203,7 @@ func (s *UserService) ListUsers(c *gin.Context) {
 	common.GinSuccess(c, response)
 }
 
-// convertCreateRequestToModel 将创建请求转换为模型
+// convertCreateRequestToModel converts create request to model
 func (s *UserService) convertCreateRequestToModel(req *user.CreateUserRequest) *model.SysUser {
 	userModel := &model.SysUser{}
 	userModel.SetUsername(req.Username)
@@ -222,16 +222,16 @@ func (s *UserService) convertCreateRequestToModel(req *user.CreateUserRequest) *
 		userModel.SetEnabled(false)
 	}
 
-	// 处理密码
+	// Handle password
 	if req.Password != "" {
-		// 这里应该调用密码加密逻辑
-		userModel.SetPassword(req.Password) // 临时直接设置，实际应该加密
+		// This should call password encryption logic
+		userModel.SetPassword(req.Password) // Temporary direct setting, should be encrypted in practice
 	}
 
 	return userModel
 }
 
-// updateModelFromRequest 从更新请求更新模型
+// updateModelFromRequest updates model from update request
 func (s *UserService) updateModelFromRequest(userModel *model.SysUser, req *user.UpdateUserRequest) {
 	if req.FullName != "" {
 		userModel.SetNickName(req.FullName)
@@ -254,21 +254,21 @@ func (s *UserService) updateModelFromRequest(userModel *model.SysUser, req *user
 	}
 }
 
-// GetCurrentUser 获取当前用户信息
+// GetCurrentUser gets current user information
 func (s *UserService) GetCurrentUser(c *gin.Context) {
-	// TODO: 从JWT token中获取用户ID
-	// 这里暂时返回错误，需要实现JWT中间件后才能获取当前用户
-	common.GinError(c, i18nresp.CodeInternalError, "获取当前用户功能暂未实现")
+	// TODO: Get user ID from JWT token
+	// This temporarily returns an error, need to implement JWT middleware to get current user
+	common.GinError(c, i18nresp.CodeInternalError, "Get current user feature not implemented yet")
 }
 
-// GetUserPermissions 获取用户权限
+// GetUserPermissions gets user permissions
 func (s *UserService) GetUserPermissions(c *gin.Context) {
 	var req user.GetUserPermissionsRequest
 	if err := common.BindAndValidate(c, &req); err != nil {
 		return
 	}
 
-	// TODO: 实现获取用户权限逻辑
+	// TODO: Implement get user permissions logic
 	_ = req.UserId
 	permissions := []*user.PermissionTreeNode{}
 
@@ -279,7 +279,7 @@ func (s *UserService) GetUserPermissions(c *gin.Context) {
 	common.GinSuccess(c, response)
 }
 
-// UpdatePassword 更新用户密码
+// UpdatePassword updates user password
 func (s *UserService) UpdatePassword(c *gin.Context) {
 	var req user.UpdatePasswordRequest
 	if err := common.BindAndValidate(c, &req); err != nil {
@@ -288,7 +288,7 @@ func (s *UserService) UpdatePassword(c *gin.Context) {
 
 	userId := c.GetInt64("userId")
 
-	// 基本参数验证
+	// Basic parameter validation
 	if userId <= 0 {
 		common.GinError(c, i18nresp.CodeUserIDInvalid, "")
 		return
@@ -309,28 +309,28 @@ func (s *UserService) UpdatePassword(c *gin.Context) {
 		return
 	}
 
-	// 验证新密码和确认密码是否一致
+	// Verify new password and confirm password match
 	if req.NewPassword != req.ConfirmPassword {
 		common.GinError(c, i18nresp.CodePasswordMismatch, "")
 		return
 	}
 
-	// 验证新密码强度
+	// Verify new password strength
 	if isValid, errorCode := common.ValidatePasswordStrengthWithI18n(req.NewPassword); !isValid {
 		common.GinError(c, errorCode, "")
 		return
 	}
 
-	// 验证新密码不能与旧密码相同
+	// Verify new password can't be the same as old password
 	if req.OldPassword == req.NewPassword {
 		common.GinError(c, i18nresp.CodePasswordSameAsOld, "")
 		return
 	}
 
-	// 使用业务层的UpdatePassword方法进行密码更新
+	// Use business layer's UpdatePassword method for password update
 	if err := s.userBiz.UpdatePassword(c.Request.Context(), uint(userId), req.OldPassword, req.NewPassword); err != nil {
-		logger.Error("更新密码失败", zap.Error(err), zap.Int64("userId", userId))
-		// 根据错误类型返回相应的错误码
+		logger.Error("Failed to update password", zap.Error(err), zap.Int64("userId", userId))
+		// Return corresponding error code based on error type
 		if strings.Contains(err.Error(), "旧密码不正确") || strings.Contains(err.Error(), "old password") {
 			common.GinError(c, i18nresp.CodeOldPasswordIncorrect, "")
 		} else if strings.Contains(err.Error(), "用户不存在") || strings.Contains(err.Error(), "user not found") {
@@ -345,14 +345,14 @@ func (s *UserService) UpdatePassword(c *gin.Context) {
 	common.GinSuccess(c, response)
 }
 
-// UpdateAvatar 更新用户头像
+// UpdateAvatar updates user avatar
 func (s *UserService) UpdateAvatar(c *gin.Context) {
 	userId := c.GetInt64("userId")
 	if userId <= 0 {
 		common.GinError(c, i18nresp.CodeUserIDInvalid, "")
 		return
 	}
-	// 获取上传的文件
+	// Get uploaded file
 	imageFile, err := c.FormFile("image")
 	if err != nil {
 		logger.Error("Failed to get image file", zap.Error(err))
@@ -360,7 +360,7 @@ func (s *UserService) UpdateAvatar(c *gin.Context) {
 		return
 	}
 
-	// 打开文件
+	// Open file
 	file, err := imageFile.Open()
 	if err != nil {
 		logger.Error("Failed to open image file", zap.Error(err))
@@ -369,7 +369,7 @@ func (s *UserService) UpdateAvatar(c *gin.Context) {
 	}
 	defer file.Close()
 
-	// 读取文件内容
+	// Read file content
 	imageData, err := io.ReadAll(file)
 	if err != nil {
 		logger.Error("Failed to read image file", zap.Error(err))
@@ -377,14 +377,14 @@ func (s *UserService) UpdateAvatar(c *gin.Context) {
 		return
 	}
 
-	// 验证图片类型
+	// Validate image type
 	if !utils.IsValidImageType(imageData) {
 		logger.Error("Invalid image type")
 		common.GinError(c, i18nresp.CodeInternalError, "Unsupported image type")
 		return
 	}
 
-	// 验证文件大小 (5MB限制)
+	// Validate file size (5MB limit)
 	maxSize := int64(5 * 1024 * 1024)
 	if int64(len(imageData)) > maxSize {
 		logger.Error("Image file too large", zap.Int("size", len(imageData)))
@@ -392,28 +392,28 @@ func (s *UserService) UpdateAvatar(c *gin.Context) {
 		return
 	}
 
-	// 获取用户信息
+	// Get user information
 	userModel, err := s.userBiz.GetUserById(c.Request.Context(), uint(userId))
 	if err != nil {
-		logger.Error("获取用户失败", zap.Error(err))
+		logger.Error("Failed to get user", zap.Error(err))
 		common.GinError(c, i18nresp.CodeInternalError, err.Error())
 		return
 	}
 
-	// 生成文件名
+	// Generate file name
 	ext := utils.GetImageFileExtension(imageData)
 	if ext == "" {
 		ext = "jpg"
 	}
 	fileName := fmt.Sprintf("%d.%s", userId, ext)
-	// 构建存储路径
+	// Build storage path
 	storageDir := filepath.Join(config.GlobalConfig.Storage.StaticPath, strings.Trim(common.AvatarPath, "/"))
 	if err := os.MkdirAll(storageDir, 0755); err != nil {
 		logger.Error("Failed to create storage directory", zap.Error(err))
 		common.GinError(c, i18nresp.CodeInternalError, "Failed to create storage directory")
 		return
 	}
-	// 保存文件
+	// Save file
 	filePath := filepath.Join(storageDir, fileName)
 	if err := os.WriteFile(filePath, imageData, 0644); err != nil {
 		logger.Error("Failed to save image file", zap.Error(err))
@@ -421,12 +421,12 @@ func (s *UserService) UpdateAvatar(c *gin.Context) {
 		return
 	}
 
-	// 更新头像路径
+	// Update avatar path
 	imagePath := filepath.Join(common.StaticPrefix, common.AvatarPath, fileName)
 	userModel.AvatarPath = &imagePath
 
 	if err := s.userBiz.UpdateUser(c.Request.Context(), userModel); err != nil {
-		logger.Error("更新头像失败", zap.Error(err))
+		logger.Error("Failed to update avatar", zap.Error(err))
 		common.GinError(c, i18nresp.CodeInternalError, err.Error())
 		return
 	}
@@ -439,7 +439,7 @@ func (s *UserService) UpdateAvatar(c *gin.Context) {
 	common.GinSuccess(c, resp)
 }
 
-// convertModelToProto 将模型转换为Proto
+// convertModelToProto converts model to Proto
 func (s *UserService) convertModelToProto(userModel *model.SysUser) *user.SysUser {
 	userProto := &user.SysUser{
 		Id:       int64(userModel.UserID),

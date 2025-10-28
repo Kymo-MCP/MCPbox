@@ -14,46 +14,46 @@ import (
 	"qm-mcp-server/pkg/logger"
 )
 
-// DeptService 部门HTTP服务
+// DeptService department HTTP service
 type DeptService struct {
 	deptData *biz.DeptData
 }
 
-// NewDeptService 创建部门服务实例
+// NewDeptService creates department service instance
 func NewDeptService() *DeptService {
 	return &DeptService{
 		deptData: biz.NewDeptData(nil),
 	}
 }
 
-// CreateDept 创建部门
+// CreateDept creates department
 func (s *DeptService) CreateDept(c *gin.Context) {
 	var req dept.CreateDeptRequest
 	if err := common.BindAndValidate(c, &req); err != nil {
 		return
 	}
 
-	// 转换请求到模型
+	// Convert request to model
 	deptModel := s.convertCreateRequestToModel(&req)
 
-	// 创建部门
+	// Create department
 	if err := s.deptData.CreateDept(c.Request.Context(), deptModel); err != nil {
-		logger.Error("创建部门失败", zap.Error(err))
-		common.GinError(c, i18nresp.CodeInternalError, "创建部门失败")
+		logger.Error("Failed to create department", zap.Error(err))
+		common.GinError(c, i18nresp.CodeInternalError, "Failed to create department")
 		return
 	}
 
-	// 返回创建的部门信息
+	// Return created department information
 	deptProto := s.convertModelToProto(deptModel)
 	common.GinSuccess(c, deptProto)
 }
 
-// UpdateDept 更新部门
+// UpdateDept updates department
 func (s *DeptService) UpdateDept(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.ParseUint(idStr, 10, 32)
 	if err != nil {
-		common.GinError(c, i18nresp.CodeInternalError, "无效的部门ID")
+		common.GinError(c, i18nresp.CodeInternalError, "Invalid department ID")
 		return
 	}
 
@@ -62,42 +62,42 @@ func (s *DeptService) UpdateDept(c *gin.Context) {
 		return
 	}
 
-	// 获取现有部门
+	// Get existing department
 	existingDept, err := s.deptData.GetDeptByID(c.Request.Context(), uint(id))
 	if err != nil {
-		logger.Error("获取部门失败", zap.Error(err))
-		common.GinError(c, i18nresp.CodeInternalError, "部门不存在")
+		logger.Error("Failed to get department", zap.Error(err))
+		common.GinError(c, i18nresp.CodeInternalError, "Department not found")
 		return
 	}
 
-	// 更新模型
+	// Update model
 	s.updateModelFromRequest(existingDept, &req)
 
-	// 更新部门
+	// Update department
 	if err := s.deptData.UpdateDept(c.Request.Context(), existingDept); err != nil {
-		logger.Error("更新部门失败", zap.Error(err))
-		common.GinError(c, i18nresp.CodeInternalError, "更新部门失败")
+		logger.Error("Failed to update department", zap.Error(err))
+		common.GinError(c, i18nresp.CodeInternalError, "Failed to update department")
 		return
 	}
 
-	// 返回更新后的部门信息
+	// Return updated department information
 	deptProto := s.convertModelToProto(existingDept)
 	common.GinSuccess(c, deptProto)
 }
 
-// GetDeptById 根据ID获取部门
+// GetDeptById gets department by ID
 func (s *DeptService) GetDeptById(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.ParseUint(idStr, 10, 32)
 	if err != nil {
-		common.GinError(c, i18nresp.CodeInternalError, "无效的部门ID")
+		common.GinError(c, i18nresp.CodeInternalError, "Invalid department ID")
 		return
 	}
 
 	deptModel, err := s.deptData.GetDeptByID(c.Request.Context(), uint(id))
 	if err != nil {
-		logger.Error("获取部门失败", zap.Error(err))
-		common.GinError(c, i18nresp.CodeInternalError, "部门不存在")
+		logger.Error("Failed to get department", zap.Error(err))
+		common.GinError(c, i18nresp.CodeInternalError, "Department not found")
 		return
 	}
 
@@ -105,34 +105,34 @@ func (s *DeptService) GetDeptById(c *gin.Context) {
 	common.GinSuccess(c, deptProto)
 }
 
-// DeleteDept 删除部门
+// DeleteDept deletes department
 func (s *DeptService) DeleteDept(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.ParseUint(idStr, 10, 32)
 	if err != nil {
-		common.GinError(c, i18nresp.CodeInternalError, "无效的部门ID")
+		common.GinError(c, i18nresp.CodeInternalError, "Invalid department ID")
 		return
 	}
 
 	if err := s.deptData.DeleteDept(c.Request.Context(), uint(id)); err != nil {
-		logger.Error("删除部门失败", zap.Error(err))
-		common.GinError(c, i18nresp.CodeInternalError, "删除部门失败")
+		logger.Error("Failed to delete department", zap.Error(err))
+		common.GinError(c, i18nresp.CodeInternalError, "Failed to delete department")
 		return
 	}
 
 	common.GinSuccess(c, nil)
 }
 
-// GetDeptTree 获取部门树形结构
+// GetDeptTree gets department tree structure
 func (s *DeptService) GetDeptTree(c *gin.Context) {
 	deptTree, err := s.deptData.GetDeptTree(c.Request.Context())
 	if err != nil {
-		logger.Error("获取部门树失败", zap.Error(err))
-		common.GinError(c, i18nresp.CodeInternalError, "获取部门树失败")
+		logger.Error("Failed to get department tree", zap.Error(err))
+		common.GinError(c, i18nresp.CodeInternalError, "Failed to get department tree")
 		return
 	}
 
-	// 转换为Proto格式
+	// Convert to Proto format
 	treeProto := make([]*dept.SysDept, 0, len(deptTree))
 	for _, d := range deptTree {
 		treeProto = append(treeProto, s.convertModelToProto(d))
@@ -141,14 +141,14 @@ func (s *DeptService) GetDeptTree(c *gin.Context) {
 	common.GinSuccess(c, treeProto)
 }
 
-// ListDepts 获取部门列表
+// ListDepts gets department list
 func (s *DeptService) ListDepts(c *gin.Context) {
 	var req dept.ListDeptsRequest
 	if err := common.BindAndValidateQuery(c, &req); err != nil {
 		return
 	}
 
-	// 转换状态参数
+	// Convert status parameter
 	var status *bool
 	if req.Status != 0 {
 		enabled := req.Status == 1
@@ -157,12 +157,12 @@ func (s *DeptService) ListDepts(c *gin.Context) {
 
 	deptList, err := s.deptData.GetDeptList(c.Request.Context(), req.Name, status)
 	if err != nil {
-		logger.Error("获取部门列表失败", zap.Error(err))
-		common.GinError(c, i18nresp.CodeInternalError, "获取部门列表失败")
+		logger.Error("Failed to get department list", zap.Error(err))
+		common.GinError(c, i18nresp.CodeInternalError, "Failed to get department list")
 		return
 	}
 
-	// 转换为Proto格式
+	// Convert to Proto format
 	listProto := make([]*dept.SysDept, 0, len(deptList))
 	for _, d := range deptList {
 		listProto = append(listProto, s.convertModelToProto(d))
@@ -171,14 +171,14 @@ func (s *DeptService) ListDepts(c *gin.Context) {
 	common.GinSuccess(c, listProto)
 }
 
-// PageDepts 分页获取部门列表
+// PageDepts gets department list with pagination
 func (s *DeptService) PageDepts(c *gin.Context) {
 	var req dept.PageDeptsRequest
 	if err := common.BindAndValidate(c, &req); err != nil {
 		return
 	}
 
-	// 转换状态参数
+	// Convert status parameter
 	var status *bool
 	if req.Query != nil && req.Query.Status != 0 {
 		enabled := req.Query.Status == 1
@@ -192,12 +192,12 @@ func (s *DeptService) PageDepts(c *gin.Context) {
 
 	deptList, err := s.deptData.GetDeptList(c.Request.Context(), name, status)
 	if err != nil {
-		logger.Error("获取部门列表失败", zap.Error(err))
-		common.GinError(c, i18nresp.CodeInternalError, "获取部门列表失败")
+		logger.Error("Failed to get department list", zap.Error(err))
+		common.GinError(c, i18nresp.CodeInternalError, "Failed to get department list")
 		return
 	}
 
-	// 简单分页处理（实际应该在数据层实现）
+	// Simple pagination handling (should be implemented in data layer)
 	page := int(req.Query.Page)
 	size := int(req.Query.Size)
 	if page <= 0 {
@@ -219,13 +219,13 @@ func (s *DeptService) PageDepts(c *gin.Context) {
 		deptList = deptList[start:end]
 	}
 
-	// 转换为Proto格式
+	// Convert to Proto format
 	listProto := make([]*dept.SysDept, 0, len(deptList))
 	for _, d := range deptList {
 		listProto = append(listProto, s.convertModelToProto(d))
 	}
 
-	// 构建分页响应
+	// Build pagination response
 	pageInfo := &dept.PageInfo{
 		TotalElements:    total,
 		TotalPages:       int32((total + int64(size) - 1) / int64(size)),
@@ -245,7 +245,7 @@ func (s *DeptService) PageDepts(c *gin.Context) {
 	common.GinSuccess(c, response)
 }
 
-// convertCreateRequestToModel 将创建请求转换为模型
+// convertCreateRequestToModel converts create request to model
 func (s *DeptService) convertCreateRequestToModel(req *dept.CreateDeptRequest) *model.SysDept {
 	deptModel := &model.SysDept{}
 	deptModel.Name = req.Dept.Name
@@ -265,7 +265,7 @@ func (s *DeptService) convertCreateRequestToModel(req *dept.CreateDeptRequest) *
 	return deptModel
 }
 
-// updateModelFromRequest 从更新请求更新模型
+// updateModelFromRequest updates model from update request
 func (s *DeptService) updateModelFromRequest(deptModel *model.SysDept, req *dept.UpdateDeptRequest) {
 	if req.Dept.Name != "" {
 		deptModel.Name = req.Dept.Name
@@ -284,7 +284,7 @@ func (s *DeptService) updateModelFromRequest(deptModel *model.SysDept, req *dept
 	}
 }
 
-// convertModelToProto 将模型转换为Proto
+// convertModelToProto converts model to Proto
 func (s *DeptService) convertModelToProto(deptModel *model.SysDept) *dept.SysDept {
 	deptProto := &dept.SysDept{
 		Id:   int64(deptModel.DeptID),

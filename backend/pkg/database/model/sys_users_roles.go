@@ -4,34 +4,34 @@ import (
 	"fmt"
 )
 
-// SysUsersRoles 用户角色关联表模型
+// SysUsersRoles user role association table model
 type SysUsersRoles struct {
 	UserID uint `gorm:"column:user_id;primaryKey;not null;comment:用户ID" json:"userId"`
 	RoleID uint `gorm:"column:role_id;primaryKey;not null;comment:角色ID" json:"roleId"`
 }
 
-// TableName 返回表名
+// TableName returns table name
 func (SysUsersRoles) TableName() string {
 	return "sys_users_roles"
 }
 
-// ValidateForCreate 创建前验证
+// ValidateForCreate validates before creation
 func (ur *SysUsersRoles) ValidateForCreate() error {
 	if ur.UserID == 0 {
-		return fmt.Errorf("用户ID不能为空")
+		return fmt.Errorf("user ID cannot be empty")
 	}
 	if ur.RoleID == 0 {
-		return fmt.Errorf("角色ID不能为空")
+		return fmt.Errorf("role ID cannot be empty")
 	}
 	return nil
 }
 
-// ValidateForUpdate 更新前验证
+// ValidateForUpdate validates before update
 func (ur *SysUsersRoles) ValidateForUpdate() error {
 	return ur.ValidateForCreate()
 }
 
-// Clone 克隆对象
+// Clone clones object
 func (ur *SysUsersRoles) Clone() *SysUsersRoles {
 	if ur == nil {
 		return nil
@@ -42,32 +42,32 @@ func (ur *SysUsersRoles) Clone() *SysUsersRoles {
 	}
 }
 
-// GetUserID 获取用户ID
+// GetUserID gets user ID
 func (ur *SysUsersRoles) GetUserID() uint {
 	return ur.UserID
 }
 
-// GetRoleID 获取角色ID
+// GetRoleID gets role ID
 func (ur *SysUsersRoles) GetRoleID() uint {
 	return ur.RoleID
 }
 
-// SetUserID 设置用户ID
+// SetUserID sets user ID
 func (ur *SysUsersRoles) SetUserID(userID uint) {
 	ur.UserID = userID
 }
 
-// SetRoleID 设置角色ID
+// SetRoleID sets role ID
 func (ur *SysUsersRoles) SetRoleID(roleID uint) {
 	ur.RoleID = roleID
 }
 
-// IsValid 检查关联是否有效
+// IsValid checks if association is valid
 func (ur *SysUsersRoles) IsValid() bool {
 	return ur.UserID > 0 && ur.RoleID > 0
 }
 
-// String 返回字符串表示
+// String returns string representation
 func (ur *SysUsersRoles) String() string {
 	return fmt.Sprintf("SysUsersRoles{UserID: %d, RoleID: %d}", ur.UserID, ur.RoleID)
 }

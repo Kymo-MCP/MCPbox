@@ -27,32 +27,32 @@ import (
 	"go.uber.org/zap"
 )
 
-// App 应用程序结构体
+// App application structure
 type App struct {
-	// config 配置
+	// config configuration
 	config *cfg.Config
 
-	// logger 日志记录器
+	// logger logger
 	logger *zap.Logger
 
-	// scheduler 调度器
+	// scheduler scheduler
 	scheduler scheduler.Scheduler
 
-	// taskManager 任务管理器
+	// taskManager task manager
 	taskManager task.TaskManager
 
-	// httpServer HTTP服务器
+	// httpServer HTTP server
 	httpServer *http.Server
 
-	// ginEngine Gin 引擎
+	// ginEngine Gin engine
 	ginEngine *gin.Engine
 
-	// shutdownCtx 关闭上下文
+	// shutdownCtx shutdown context
 	shutdownCtx    context.Context
 	shutdownCancel context.CancelFunc
 }
 
-// New 创建新的应用程序实例
+// New creates new application instance
 func New() (*App, error) {
 	// 加载全局配置
 	cfg, err := cfg.Load()

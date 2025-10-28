@@ -8,13 +8,13 @@ import (
 	"qm-mcp-server/pkg/database/repository/mysql"
 )
 
-// DeptData 部门数据访问层
+// DeptData department data access layer
 type DeptData struct {
 	ctx  context.Context
 	repo *mysql.SysDeptRepository
 }
 
-// NewDeptData 创建部门数据访问层实例
+// NewDeptData creates department data access layer instance
 func NewDeptData(ctx context.Context) *DeptData {
 	return &DeptData{
 		ctx:  ctx,
@@ -22,45 +22,45 @@ func NewDeptData(ctx context.Context) *DeptData {
 	}
 }
 
-// CreateDept 创建部门
+// CreateDept creates department
 func (d *DeptData) CreateDept(ctx context.Context, dept *model.SysDept) error {
 	return d.repo.Create(ctx, dept)
 }
 
-// UpdateDept 更新部门
+// UpdateDept updates department
 func (d *DeptData) UpdateDept(ctx context.Context, dept *model.SysDept) error {
 	return d.repo.Update(ctx, dept)
 }
 
-// DeleteDept 删除部门
+// DeleteDept deletes department
 func (d *DeptData) DeleteDept(ctx context.Context, id uint) error {
 	return d.repo.Delete(ctx, id)
 }
 
-// GetDeptByID 根据ID获取部门
+// GetDeptByID gets department by ID
 func (d *DeptData) GetDeptByID(ctx context.Context, id uint) (*model.SysDept, error) {
 	return d.repo.FindByID(ctx, id)
 }
 
-// GetDeptTree 获取部门树形结构
+// GetDeptTree gets department tree structure
 func (d *DeptData) GetDeptTree(ctx context.Context) ([]*model.SysDept, error) {
-	// 获取所有部门
+	// Get all departments
 	allDepts, err := d.repo.FindAll(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get all departments: %v", err)
 	}
 
-	// 构建树形结构
+	// Build tree structure
 	return d.buildDeptTree(allDepts, 0), nil
 }
 
-// GetDeptList 获取部门列表
+// GetDeptList gets department list
 func (d *DeptData) GetDeptList(ctx context.Context, name string, status *bool) ([]*model.SysDept, error) {
 	if name != "" {
-		// 使用名称查找，如果没有找到则返回空列表
+		// Search by name, return empty list if not found
 		dept, err := d.repo.FindByName(ctx, name)
 		if err != nil {
-			return []*model.SysDept{}, nil // 没找到返回空列表而不是错误
+			return []*model.SysDept{}, nil // Return empty list instead of error when not found
 		}
 		return []*model.SysDept{dept}, nil
 	}
@@ -72,17 +72,17 @@ func (d *DeptData) GetDeptList(ctx context.Context, name string, status *bool) (
 	return d.repo.FindAll(ctx)
 }
 
-// buildDeptTree 构建部门树形结构
+// buildDeptTree builds department tree structure
 func (d *DeptData) buildDeptTree(allDepts []*model.SysDept, parentID uint) []*model.SysDept {
 	var tree []*model.SysDept
 
 	for _, dept := range allDepts {
 		if dept.PID != nil && *dept.PID == parentID {
-			// 递归构建子部门
+			// Recursively build child departments
 			children := d.buildDeptTree(allDepts, dept.DeptID)
 			if len(children) > 0 {
-				// 这里需要根据实际的模型结构来设置子部门
-				// 由于 SysDept 模型可能没有 Children 字段，我们先返回扁平结构
+				// Here we need to set child departments based on actual model structure
+				// Since SysDept model may not have Children field, we return flat structure for now
 			}
 			tree = append(tree, dept)
 		}

@@ -14,220 +14,187 @@ import (
 	"qm-mcp-server/pkg/logger"
 )
 
-// RoleService 角色HTTP服务
+// RoleService role HTTP service
 type RoleService struct {
 	roleData *biz.RoleData
 }
 
-// NewRoleService 创建角色服务实例
+// NewRoleService creates role service instance
 func NewRoleService() *RoleService {
 	return &RoleService{
 		roleData: biz.NewRoleData(nil),
 	}
 }
 
-// CreateRole 创建角色
+// CreateRole creates role
 func (s *RoleService) CreateRole(c *gin.Context) {
 	var req role.CreateRoleRequest
 	if err := common.BindAndValidate(c, &req); err != nil {
 		return
 	}
 
-	// 检查角色名称是否已存在
+	// Check if role name already exists
 	existingRole, err := s.roleData.GetRoleByName(c.Request.Context(), req.Name)
 	if err == nil && existingRole != nil {
-		common.GinError(c, i18nresp.CodeInternalError, "角色名称已存在")
+		common.GinError(c, i18nresp.CodeInternalError, "role name already exists")
 		return
 	}
 
-	// 转换请求到模型
+	// Convert request to model
 	roleModel := s.convertCreateRequestToModel(&req)
 
-	// 创建角色
+	// Create role
 	if err := s.roleData.CreateRole(c.Request.Context(), roleModel); err != nil {
-		logger.Error("创建角色失败", zap.Error(err))
-		common.GinError(c, i18nresp.CodeInternalError, "创建角色失败")
+		logger.Error("create role failed", zap.Error(err))
+		common.GinError(c, i18nresp.CodeInternalError, "create role failed")
 		return
 	}
 
-	// 返回创建的角色信息
-	roleProto := s.convertModelToProto(roleModel)
-	response := &role.CreateRoleResponse{
-		Role: roleProto,
-	}
+	// Return created role information
+	response := s.convertModelToProto(roleModel)
 	common.GinSuccess(c, response)
 }
 
-// UpdateRole 更新角色
+// UpdateRole updates role
 func (s *RoleService) UpdateRole(c *gin.Context) {
-	idStr := c.Param("id")
-	id, err := strconv.ParseUint(idStr, 10, 32)
-	if err != nil {
-		common.GinError(c, i18nresp.CodeInternalError, "无效的角色ID")
-		return
-	}
-
 	var req role.UpdateRoleRequest
 	if err := common.BindAndValidate(c, &req); err != nil {
 		return
 	}
 
-	// 获取现有角色
-	existingRole, err := s.roleData.GetRoleByID(c.Request.Context(), uint(id))
+	idStr := c.Param("id")
+	id, err := strconv.ParseUint(idStr, 10, 32)
 	if err != nil {
-		logger.Error("获取角色失败", zap.Error(err))
-		common.GinError(c, i18nresp.CodeInternalError, "角色不存在")
+		common.GinError(c, i18nresp.CodeInternalError, "invalid role ID")
+		return
+	}
+	req.Id = int64(id)
+
+	// Get existing role
+	existingRole, err := s.roleData.GetRoleByID(c.Request.Context(), uint(req.Id))
+	if err != nil {
+		logger.Error("get role failed", zap.Error(err))
+		common.GinError(c, i18nresp.CodeInternalError, "role does not exist")
 		return
 	}
 
-	// 更新模型
+	// Update model
 	s.updateModelFromRequest(existingRole, &req)
 
-	// 更新角色
+	// Update role
 	if err := s.roleData.UpdateRole(c.Request.Context(), existingRole); err != nil {
-		logger.Error("更新角色失败", zap.Error(err))
-		common.GinError(c, i18nresp.CodeInternalError, "更新角色失败")
+		logger.Error("update role failed", zap.Error(err))
+		common.GinError(c, i18nresp.CodeInternalError, "update role failed")
 		return
 	}
 
-	// 返回更新后的角色信息
-	roleProto := s.convertModelToProto(existingRole)
-	response := &role.UpdateRoleResponse{
-		Role: roleProto,
-	}
+	// Return updated role information
+	response := s.convertModelToProto(existingRole)
 	common.GinSuccess(c, response)
 }
 
-// GetRoleById 根据ID获取角色
+// GetRoleById gets role by ID
 func (s *RoleService) GetRoleById(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.ParseUint(idStr, 10, 32)
 	if err != nil {
-		common.GinError(c, i18nresp.CodeInternalError, "无效的角色ID")
+		common.GinError(c, i18nresp.CodeInternalError, "invalid role ID")
 		return
 	}
 
 	roleModel, err := s.roleData.GetRoleByID(c.Request.Context(), uint(id))
 	if err != nil {
-		logger.Error("获取角色失败", zap.Error(err))
-		common.GinError(c, i18nresp.CodeInternalError, "角色不存在")
+		logger.Error("get role failed", zap.Error(err))
+		common.GinError(c, i18nresp.CodeInternalError, "role does not exist")
 		return
 	}
 
-	roleProto := s.convertModelToProto(roleModel)
-	response := &role.GetRoleByIdResponse{
-		Role: roleProto,
-	}
+	response := s.convertModelToProto(roleModel)
 	common.GinSuccess(c, response)
 }
 
-// DeleteRole 删除角色
+// DeleteRole deletes role
 func (s *RoleService) DeleteRole(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.ParseUint(idStr, 10, 32)
 	if err != nil {
-		common.GinError(c, i18nresp.CodeInternalError, "无效的角色ID")
+		common.GinError(c, i18nresp.CodeInternalError, "invalid role ID")
 		return
 	}
 
 	if err := s.roleData.DeleteRole(c.Request.Context(), uint(id)); err != nil {
-		logger.Error("删除角色失败", zap.Error(err))
-		common.GinError(c, i18nresp.CodeInternalError, "删除角色失败")
+		logger.Error("delete role failed", zap.Error(err))
+		common.GinError(c, i18nresp.CodeInternalError, "delete role failed")
 		return
 	}
 
-	common.GinSuccess(c, &role.DeleteRoleResponse{})
+	common.GinSuccess(c, gin.H{"message": "delete successful"})
 }
 
-// ListRoles 分页获取角色列表
+// ListRoles gets role list with pagination
 func (s *RoleService) ListRoles(c *gin.Context) {
 	var req role.ListRolesRequest
 	if err := common.BindAndValidate(c, &req); err != nil {
 		return
 	}
 
-	// 转换查询参数
-	var name string
-	var level *int
-	if req.Query != nil {
-		name = req.Query.Blurry
+	// Convert query parameters
+	pageNum := int(req.PageInfo.Page)
+	pageSize := int(req.PageInfo.Size)
+	if pageNum <= 0 {
+		pageNum = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 10
 	}
 
-	roleList, err := s.roleData.GetRoleList(c.Request.Context(), name, level)
+	roles, total, err := s.roleData.GetRoleListWithPagination(c.Request.Context(), pageNum, pageSize, req.Query.Blurry, nil)
 	if err != nil {
-		logger.Error("获取角色列表失败", zap.Error(err))
-		common.GinError(c, i18nresp.CodeInternalError, "获取角色列表失败")
+		logger.Error("get role list failed", zap.Error(err))
+		common.GinError(c, i18nresp.CodeInternalError, "get role list failed")
 		return
 	}
 
-	// 简单分页处理（实际应该在数据层实现）
-	page := int(1)
-	size := int(10)
-	if req.PageInfo != nil {
-		if req.PageInfo.Page > 0 {
-			page = int(req.PageInfo.Page)
-		}
-		if req.PageInfo.Size > 0 {
-			size = int(req.PageInfo.Size)
-		}
+	// Convert to Proto format
+	var protoRoles []*role.SysRole
+	for _, r := range roles {
+		protoRoles = append(protoRoles, s.convertModelToProto(r))
 	}
 
-	total := int64(len(roleList))
-	start := (page - 1) * size
-	end := start + size
-
-	if start >= len(roleList) {
-		roleList = []*model.SysRole{}
-	} else if end > len(roleList) {
-		roleList = roleList[start:]
-	} else {
-		roleList = roleList[start:end]
-	}
-
-	// 转换为Proto格式
-	listProto := make([]*role.SysRole, 0, len(roleList))
-	for _, r := range roleList {
-		listProto = append(listProto, s.convertModelToProto(r))
-	}
-
-	// 构建分页响应
-	pageInfo := &role.PageInfo{
-		Page:  int32(page),
-		Size:  int32(size),
-		Total: total,
-		Pages: int32((total + int64(size) - 1) / int64(size)),
-	}
-
-	pageData := &role.PageSysRole{
-		Roles:    listProto,
-		PageInfo: pageInfo,
-	}
-
+	// Build pagination response
 	response := &role.ListRolesResponse{
-		Data: pageData,
+		Data: &role.PageSysRole{
+			Roles: protoRoles,
+			PageInfo: &role.PageInfo{
+				Page:  int32(pageNum),
+				Size:  int32(pageSize),
+				Total: total,
+				Pages: int32((total + int64(pageSize) - 1) / int64(pageSize)),
+			},
+		},
 	}
 
 	common.GinSuccess(c, response)
 }
 
-// GetRolePermissions 获取角色权限
+// GetRolePermissions gets role permissions
 func (s *RoleService) GetRolePermissions(c *gin.Context) {
-	roleIdStr := c.Param("roleId")
-	roleId, err := strconv.ParseUint(roleIdStr, 10, 32)
+	idStr := c.Param("id")
+	id, err := strconv.ParseUint(idStr, 10, 32)
 	if err != nil {
-		common.GinError(c, i18nresp.CodeInternalError, "无效的角色ID")
+		common.GinError(c, i18nresp.CodeInternalError, "invalid role ID")
 		return
 	}
 
-	// 获取角色权限
-	permissions, err := s.roleData.GetRolePermissions(c.Request.Context(), uint(roleId))
+	// Get role permissions
+	permissions, err := s.roleData.GetRolePermissions(c.Request.Context(), uint(id))
 	if err != nil {
-		logger.Error("获取角色权限失败", zap.Error(err))
-		common.GinError(c, i18nresp.CodeInternalError, "获取角色权限失败")
+		logger.Error("get role permissions failed", zap.Error(err))
+		common.GinError(c, i18nresp.CodeInternalError, "get role permissions failed")
 		return
 	}
 
-	// 转换为权限树格式
+	// Convert to permission tree format
 	permissionTree := s.convertPermissionsToTree(permissions)
 
 	response := &role.GetRolePermissionsResponse{
@@ -237,7 +204,7 @@ func (s *RoleService) GetRolePermissions(c *gin.Context) {
 	common.GinSuccess(c, response)
 }
 
-// convertCreateRequestToModel 将创建请求转换为模型
+// convertCreateRequestToModel converts create request to model
 func (s *RoleService) convertCreateRequestToModel(req *role.CreateRoleRequest) *model.SysRole {
 	roleModel := &model.SysRole{
 		Name: req.Name,
@@ -255,7 +222,7 @@ func (s *RoleService) convertCreateRequestToModel(req *role.CreateRoleRequest) *
 	return roleModel
 }
 
-// updateModelFromRequest 从更新请求更新模型
+// updateModelFromRequest updates model from update request
 func (s *RoleService) updateModelFromRequest(roleModel *model.SysRole, req *role.UpdateRoleRequest) {
 	roleModel.Name = req.Name
 
@@ -273,17 +240,17 @@ func (s *RoleService) updateModelFromRequest(roleModel *model.SysRole, req *role
 	}
 }
 
-// convertPermissionsToTree 将权限字符串列表转换为权限树结构
+// convertPermissionsToTree converts permission string list to permission tree structure
 func (s *RoleService) convertPermissionsToTree(permissions []string) []*role.PermissionTreeNode {
 	permissionTree := make([]*role.PermissionTreeNode, 0, len(permissions))
 
-	// 为每个权限字符串创建一个权限树节点
+	// Create a permission tree node for each permission string
 	for i, perm := range permissions {
 		node := &role.PermissionTreeNode{
-			Id:     int64(i + 1), // 临时ID，实际应该从权限表获取
+			Id:     int64(i + 1), // Temporary ID, should be obtained from permission table
 			Name:   perm,
 			Code:   perm,
-			Type:   1, // 默认类型
+			Type:   1, // Default type
 			Status: "enabled",
 			Hidden: false,
 		}
@@ -293,7 +260,7 @@ func (s *RoleService) convertPermissionsToTree(permissions []string) []*role.Per
 	return permissionTree
 }
 
-// convertModelToProto 将模型转换为Proto
+// convertModelToProto converts model to Proto
 func (s *RoleService) convertModelToProto(roleModel *model.SysRole) *role.SysRole {
 	roleProto := &role.SysRole{
 		Id:   int64(roleModel.RoleID),
@@ -308,7 +275,7 @@ func (s *RoleService) convertModelToProto(roleModel *model.SysRole) *role.SysRol
 		roleProto.Sort = int32(*roleModel.Level)
 	}
 
-	// 默认状态为启用
+	// Default status is enabled
 	roleProto.Status = role.RoleStatus_RoleStatusEnabled
 
 	if roleModel.CreateTime != nil {

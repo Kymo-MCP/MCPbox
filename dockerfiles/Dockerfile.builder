@@ -104,3 +104,4 @@ RUN echo "Step 11: Build completed successfully" >> /var/log/build/build.log && 
     echo "- pnpm: $(pnpm --version)" >> /var/log/build/build.log
 
 # docker build -t 77kymo/builder:v1 -f Dockerfile.builder .
+# docker build -t ccr.ccs.tencentyun.com/itqm-private/builder:v1 -f Dockerfile.builder .

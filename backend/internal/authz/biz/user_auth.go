@@ -16,20 +16,20 @@ import (
 	"qm-mcp-server/pkg/redis"
 )
 
-// AuthUseCase 认证业务逻辑
+// AuthUseCase authentication business logic
 type AuthUseCase struct {
 	userBiz    *UserBiz
 	logger     *zap.Logger
 	jwtManager jwt.Manager
 }
 
-// NewAuthUseCase 创建认证业务逻辑实例
+// NewAuthUseCase creates authentication business logic instance
 func NewAuthUseCase() *AuthUseCase {
 	uc := &AuthUseCase{
 		logger:  logger.L().Logger,
 		userBiz: NewUserBiz(),
 	}
-	// 初始化JWT管理器
+	// Initialize JWT manager
 	jwtConfig := &jwt.Config{
 		Secret:  config.GetConfig().Secret,
 		Expires: time.Duration(common.AccessTokenExpireTime) * time.Second,
@@ -38,14 +38,14 @@ func NewAuthUseCase() *AuthUseCase {
 	return uc
 }
 
-// LoginData 登录返回数据
+// LoginData login return data
 type LoginData struct {
 	Token        string    `json:"token"`
 	RefreshToken string    `json:"refreshToken"`
 	UserInfo     *UserInfo `json:"userInfo"`
 }
 
-// UserInfo 用户信息
+// UserInfo user information
 type UserInfo struct {
 	UserID    int64    `json:"userId"`
 	Username  string   `json:"username"`
@@ -59,20 +59,20 @@ type UserInfo struct {
 	RoleNames []string `json:"roleNames"`
 }
 
-// TokenData token刷新返回数据
+// TokenData token refresh return data
 type TokenData struct {
 	Token        string `json:"token"`
 	RefreshToken string `json:"refreshToken"`
 }
 
-// ValidateResult token验证结果
+// ValidateResult token validation result
 type ValidateResult struct {
 	Valid     bool       `json:"valid"`
 	UserInfo  *UserInfo  `json:"userInfo"`
 	LoginInfo *LoginInfo `json:"loginInfo"`
 }
 
-// LoginInfo 登录信息
+// LoginInfo login information
 type LoginInfo struct {
 	LoginTime time.Time `json:"loginTime"`
 	LoginIP   string    `json:"loginIp"`
@@ -80,7 +80,7 @@ type LoginInfo struct {
 	ExpiresAt time.Time `json:"expiresAt"`
 }
 
-// Login 用户登录
+// Login user login
 func (uc *AuthUseCase) Login(
 	ctx context.Context,
 	username string,
@@ -89,56 +89,56 @@ func (uc *AuthUseCase) Login(
 	clientIP string,
 	userAgent string,
 ) (*LoginData, error) {
-	uc.logger.Info("开始用户登录验证", zap.String("username", username))
+	uc.logger.Info("Start user login verification", zap.String("username", username))
 
-	// 查找用户
+	// Find user
 	user, err := mysql.SysUserRepo.FindByUsername(ctx, username)
 	if err != nil {
-		uc.logger.Error("查找用户失败", zap.String("username", username), zap.Error(err))
+		uc.logger.Error("Failed to find user", zap.String("username", username), zap.Error(err))
 		return nil, fmt.Errorf("%s", i18n.FormatWithContext(ctx, i18n.CodeUsernameOrPasswordIncorrect))
 	}
 
-	// 检查用户状态
+	// Check user status
 	if !user.IsEnabled() {
-		uc.logger.Warn("用户已禁用", zap.String("username", username))
+		uc.logger.Warn("User is disabled", zap.String("username", username))
 		return nil, fmt.Errorf("%s", i18n.FormatWithContext(ctx, i18n.CodeUserDisabledError))
 	}
 
-	// 验证密码
+	// Verify password
 	if user.Password == nil {
-		uc.logger.Error("用户密码为空", zap.String("username", username))
+		uc.logger.Error("User password is empty", zap.String("username", username))
 		return nil, fmt.Errorf("%s", i18n.FormatWithContext(ctx, i18n.CodeUsernameOrPasswordIncorrect))
 	}
 
-	// 双重密码验证
+	// Double password verification
 	if err := uc.userBiz.VerifyPassword(plainPassword, *user.Salt, *user.Password); err != nil {
-		uc.logger.Error("密码验证失败", zap.String("username", username), zap.Error(err))
+		uc.logger.Error("Password verification failed", zap.String("username", username), zap.Error(err))
 		return nil, fmt.Errorf("%s", i18n.FormatWithContext(ctx, i18n.CodeUsernameOrPasswordIncorrect))
 	}
 
-	// 生成token和refreshToken
+	// Generate token and refreshToken
 	userDisplayName := ""
 	if user.Username != nil {
 		userDisplayName = *user.Username
 	}
 	token, err := uc.jwtManager.GenerateToken(int64(user.UserID), userDisplayName)
 	if err != nil {
-		uc.logger.Error("生成JWT token失败", zap.Error(err))
+		uc.logger.Error("Failed to generate JWT token", zap.Error(err))
 		return nil, fmt.Errorf("%s", i18n.FormatWithContext(ctx, i18n.CodeLoginFailure))
 	}
 
 	refreshToken, err := uc.jwtManager.GenerateRefreshToken()
 	if err != nil {
-		uc.logger.Error("生成refreshToken失败", zap.Error(err))
+		uc.logger.Error("Failed to generate refreshToken", zap.Error(err))
 		return nil, fmt.Errorf("%s", i18n.FormatWithContext(ctx, i18n.CodeLoginFailure))
 	}
 
-	// 设置过期时间
+	// Set expiration time
 	now := time.Now()
-	tokenExpiry := now.Add(common.AccessTokenExpireTime * time.Second)    // 24小时
-	refreshExpiry := now.Add(common.RefreshTokenExpireTime * time.Second) // 7天
+	tokenExpiry := now.Add(common.AccessTokenExpireTime * time.Second)    // 24 hours
+	refreshExpiry := now.Add(common.RefreshTokenExpireTime * time.Second) // 7 days
 
-	// 创建用户会话记录
+	// Create user session record
 	userSession := &redis.UserSession{
 		SessionID:        redis.GenerateSessionID(user.UserID, clientIP, userAgent),
 		UserID:           user.UserID,
@@ -152,13 +152,13 @@ func (uc *AuthUseCase) Login(
 		UpdateTime:       &now,
 	}
 
-	// 保存新会话到Redis（支持多浏览器会话）
+	// Save new session to Redis (support multi-browser sessions)
 	if err := redis.SaveUserSession(userSession); err != nil {
-		uc.logger.Error("保存会话失败", zap.Error(err))
+		uc.logger.Error("Failed to save session", zap.Error(err))
 		return nil, fmt.Errorf("%s", i18n.FormatWithContext(ctx, i18n.CodeLoginFailure))
 	}
 
-	// 构造用户信息
+	// Construct user information
 	avatar := ""
 	if user.AvatarPath != nil {
 		avatar = *user.AvatarPath
@@ -169,7 +169,7 @@ func (uc *AuthUseCase) Login(
 		if dept, derr := mysql.SysDeptRepo.FindByID(ctx, deptID); derr == nil && dept != nil {
 			deptName = dept.Name
 		} else if derr != nil {
-			uc.logger.Warn("查询部门名称失败", zap.Uint("deptId", deptID), zap.Error(derr))
+			uc.logger.Warn("Failed to query department name", zap.Uint("deptId", deptID), zap.Error(derr))
 		}
 	}
 	roleIDs := []uint{}
@@ -181,11 +181,11 @@ func (uc *AuthUseCase) Login(
 				if role, ferr := mysql.SysRoleRepo.FindByID(ctx, rid); ferr == nil && role != nil {
 					roleNames = append(roleNames, role.Name)
 				} else if ferr != nil {
-					uc.logger.Warn("查询角色失败", zap.Uint("roleId", rid), zap.Error(ferr))
+					uc.logger.Warn("Failed to query role", zap.Uint("roleId", rid), zap.Error(ferr))
 				}
 			}
 		} else {
-			uc.logger.Warn("查询用户角色ID失败", zap.Uint("userId", user.UserID), zap.Error(rerr))
+			uc.logger.Warn("Failed to query user role IDs", zap.Uint("userId", user.UserID), zap.Error(rerr))
 		}
 	}
 
@@ -208,52 +208,52 @@ func (uc *AuthUseCase) Login(
 		UserInfo:     userInfo,
 	}
 
-	uc.logger.Info("用户登录成功", zap.String("username", username), zap.Uint("userId", user.UserID))
+	uc.logger.Info("User login successful", zap.String("username", username), zap.Uint("userId", user.UserID))
 	return loginData, nil
 }
 
-// Logout 用户退出
+// Logout user logout
 func (uc *AuthUseCase) Logout(ctx context.Context, userID int64, token string) error {
-	uc.logger.Info("用户退出", zap.Int64("userId", userID), zap.String("token", token[:10]+"..."))
+	uc.logger.Info("User logout", zap.Int64("userId", userID), zap.String("token", token[:10]+"..."))
 
-	// 删除会话记录
+	// Delete session record
 	if err := redis.DeleteUserSessionByToken(token); err != nil {
-		uc.logger.Error("删除会话失败", zap.Error(err))
+		uc.logger.Error("Failed to delete session", zap.Error(err))
 		return fmt.Errorf("%s", i18n.FormatWithContext(ctx, i18n.CodeLogoutFailure))
 	}
 
-	uc.logger.Info("用户退出成功", zap.Int64("userId", userID))
+	uc.logger.Info("User logout successful", zap.Int64("userId", userID))
 	return nil
 }
 
-// RefreshToken 刷新token
+// RefreshToken refresh token
 func (uc *AuthUseCase) RefreshToken(ctx context.Context, refreshToken string) (*TokenData, error) {
-	uc.logger.Info("刷新token请求")
+	uc.logger.Info("Refresh token request")
 
-	// 查找refreshToken记录
+	// Find refreshToken record
 	sessionRecord, err := redis.GetUserSessionByRefreshToken(refreshToken)
 	if err != nil {
-		uc.logger.Error("查找refreshToken失败", zap.Error(err))
+		uc.logger.Error("Failed to find refreshToken", zap.Error(err))
 		return nil, fmt.Errorf("%s", i18n.FormatWithContext(ctx, i18n.CodeRefreshTokenInvalid))
 	}
 	if sessionRecord == nil {
-		uc.logger.Warn("refreshToken不存在")
+		uc.logger.Warn("RefreshToken does not exist")
 		return nil, fmt.Errorf("%s", i18n.FormatWithContext(ctx, i18n.CodeRefreshTokenInvalid))
 	}
 
-	// 检查refreshToken是否过期
+	// Check if refreshToken is expired
 	if sessionRecord.RefreshExpiresAt != nil && time.Now().After(*sessionRecord.RefreshExpiresAt) {
-		uc.logger.Warn("refreshToken已过期")
-		// 清理过期会话
+		uc.logger.Warn("RefreshToken has expired")
+		// Clean up expired session
 		redis.DeleteUserSession(sessionRecord.SessionID)
 		return nil, fmt.Errorf("%s", i18n.FormatWithContext(ctx, i18n.CodeRefreshTokenExpired))
 	}
 
-	// 生成新的token和refreshToken
-	// 获取用户信息用于生成JWT token
+	// Generate new token and refreshToken
+	// Get user information for generating JWT token
 	user, err := mysql.SysUserRepo.FindByID(ctx, sessionRecord.UserID)
 	if err != nil {
-		uc.logger.Error("查找用户失败", zap.Uint("userId", sessionRecord.UserID), zap.Error(err))
+		uc.logger.Error("Failed to find user", zap.Uint("userId", sessionRecord.UserID), zap.Error(err))
 		return nil, fmt.Errorf("%s", i18n.FormatWithContext(ctx, i18n.CodeRefreshFailure))
 	}
 
@@ -264,25 +264,25 @@ func (uc *AuthUseCase) RefreshToken(ctx context.Context, refreshToken string) (*
 
 	newToken, err := uc.jwtManager.GenerateToken(int64(user.UserID), userDisplayName)
 	if err != nil {
-		uc.logger.Error("生成新JWT token失败", zap.Error(err))
-		return nil, fmt.Errorf("生成新token失败: %w", err)
+		uc.logger.Error("Failed to generate new JWT token", zap.Error(err))
+		return nil, fmt.Errorf("Failed to generate new token: %w", err)
 	}
 
 	newRefreshToken, err := uc.jwtManager.GenerateRefreshToken()
 	if err != nil {
-		uc.logger.Error("生成新refresh token失败", zap.Error(err))
-		return nil, fmt.Errorf("生成新refresh token失败: %w", err)
+		uc.logger.Error("Failed to generate new refresh token", zap.Error(err))
+		return nil, fmt.Errorf("Failed to generate new refresh token: %w", err)
 	}
 
-	// 删除旧会话
+	// Delete old session
 	if err := redis.DeleteUserSession(sessionRecord.SessionID); err != nil {
-		uc.logger.Warn("删除旧会话失败", zap.Error(err))
+		uc.logger.Warn("Failed to delete old session", zap.Error(err))
 	}
 
-	// 创建新会话
+	// Create new session
 	now := time.Now()
-	tokenExpiry := now.Add(common.AccessTokenExpireTime * time.Second)    // 24小时
-	refreshExpiry := now.Add(common.RefreshTokenExpireTime * time.Second) // 7天
+	tokenExpiry := now.Add(common.AccessTokenExpireTime * time.Second)    // 24 hours
+	refreshExpiry := now.Add(common.RefreshTokenExpireTime * time.Second) // 7 days
 
 	newSession := &redis.UserSession{
 		SessionID:        redis.GenerateSessionID(sessionRecord.UserID, sessionRecord.LoginIP, sessionRecord.UserAgent),
@@ -298,8 +298,8 @@ func (uc *AuthUseCase) RefreshToken(ctx context.Context, refreshToken string) (*
 	}
 
 	if err := redis.SaveUserSession(newSession); err != nil {
-		uc.logger.Error("保存新会话失败", zap.Error(err))
-		return nil, fmt.Errorf("刷新失败，请重试")
+		uc.logger.Error("Failed to save new session", zap.Error(err))
+		return nil, fmt.Errorf("Refresh failed, please try again")
 	}
 
 	tokenData := &TokenData{
@@ -307,50 +307,50 @@ func (uc *AuthUseCase) RefreshToken(ctx context.Context, refreshToken string) (*
 		RefreshToken: newRefreshToken,
 	}
 
-	uc.logger.Info("token刷新成功", zap.Uint("userId", sessionRecord.UserID))
+	uc.logger.Info("Token refresh successful", zap.Uint("userId", sessionRecord.UserID))
 	return tokenData, nil
 }
 
-// ValidateToken 验证token
+// ValidateToken validate token
 func (uc *AuthUseCase) ValidateToken(ctx context.Context, token string) (*ValidateResult, error) {
-	uc.logger.Debug("验证JWT token请求")
+	uc.logger.Debug("Validate JWT token request")
 
-	// 验证JWT token
+	// Validate JWT token
 	claims, err := uc.jwtManager.ValidateToken(token)
 	if err != nil {
-		uc.logger.Error("JWT token验证失败", zap.Error(err))
+		uc.logger.Error("JWT token validation failed", zap.Error(err))
 		return &ValidateResult{Valid: false}, nil
 	}
 
-	// 检查token是否在Redis中存在且有效
+	// Check if token exists and is valid in Redis
 	sessionRecord, err := redis.GetUserSessionByToken(token)
 	if err != nil || sessionRecord == nil {
-		uc.logger.Warn("token在Redis中无效或已过期")
+		uc.logger.Warn("Token is invalid or expired in Redis")
 		return &ValidateResult{Valid: false}, nil
 	}
 
-	// 检查会话是否过期
+	// Check if session is expired
 	if sessionRecord.ExpiresAt != nil && time.Now().After(*sessionRecord.ExpiresAt) {
-		uc.logger.Warn("会话已过期")
-		// 清理过期会话
+		uc.logger.Warn("Session has expired")
+		// Clean up expired session
 		redis.DeleteUserSession(sessionRecord.SessionID)
 		return &ValidateResult{Valid: false}, nil
 	}
 
-	// 获取用户信息
+	// Get user information
 	user, err := mysql.SysUserRepo.FindByID(ctx, uint(claims.UserID))
 	if err != nil {
-		uc.logger.Error("查找用户失败", zap.Int64("userId", claims.UserID), zap.Error(err))
+		uc.logger.Error("Failed to find user", zap.Int64("userId", claims.UserID), zap.Error(err))
 		return &ValidateResult{Valid: false}, nil
 	}
 
-	// 检查用户状态
+	// Check user status
 	if !user.IsEnabled() {
-		uc.logger.Warn("用户已禁用", zap.Uint("userId", user.UserID))
+		uc.logger.Warn("User is disabled", zap.Uint("userId", user.UserID))
 		return &ValidateResult{Valid: false}, nil
 	}
 
-	// 构造用户信息
+	// Construct user information
 	avatar := ""
 	if user.AvatarPath != nil {
 		avatar = *user.AvatarPath
@@ -361,7 +361,7 @@ func (uc *AuthUseCase) ValidateToken(ctx context.Context, token string) (*Valida
 		if dept, derr := mysql.SysDeptRepo.FindByID(ctx, deptID); derr == nil && dept != nil {
 			deptName = dept.Name
 		} else if derr != nil {
-			uc.logger.Warn("查询部门名称失败", zap.Uint("deptId", deptID), zap.Error(derr))
+			uc.logger.Warn("Failed to query department name", zap.Uint("deptId", deptID), zap.Error(derr))
 		}
 	}
 	roleIDs := []uint{}
@@ -373,11 +373,11 @@ func (uc *AuthUseCase) ValidateToken(ctx context.Context, token string) (*Valida
 				if role, ferr := mysql.SysRoleRepo.FindByID(ctx, rid); ferr == nil && role != nil {
 					roleNames = append(roleNames, role.Name)
 				} else if ferr != nil {
-					uc.logger.Warn("查询角色失败", zap.Uint("roleId", rid), zap.Error(ferr))
+					uc.logger.Warn("Failed to query role", zap.Uint("roleId", rid), zap.Error(ferr))
 				}
 			}
 		} else {
-			uc.logger.Warn("查询用户角色ID失败", zap.Uint("userId", user.UserID), zap.Error(rerr))
+			uc.logger.Warn("Failed to query user role IDs", zap.Uint("userId", user.UserID), zap.Error(rerr))
 		}
 	}
 
@@ -394,15 +394,15 @@ func (uc *AuthUseCase) ValidateToken(ctx context.Context, token string) (*Valida
 		RoleNames: roleNames,
 	}
 
-	// 构造登录信息
+	// Construct login information
 	loginInfo := &LoginInfo{
-		LoginTime: claims.ExpiresAt.Time, // 从JWT claims获取过期时间
-		LoginIP:   "",                    // 默认值
-		UserAgent: "",                    // 默认值
-		ExpiresAt: claims.ExpiresAt.Time, // 从JWT claims获取过期时间
+		LoginTime: claims.ExpiresAt.Time, // Get expiration time from JWT claims
+		LoginIP:   "",                    // Default value
+		UserAgent: "",                    // Default value
+		ExpiresAt: claims.ExpiresAt.Time, // Get expiration time from JWT claims
 	}
 
-	// 使用会话记录中的登录信息
+	// Use login information from session record
 	if sessionRecord.CreateTime != nil {
 		loginInfo.LoginTime = *sessionRecord.CreateTime
 	}
@@ -418,28 +418,28 @@ func (uc *AuthUseCase) ValidateToken(ctx context.Context, token string) (*Valida
 		LoginInfo: loginInfo,
 	}
 
-	uc.logger.Debug("token验证成功", zap.Uint("userId", user.UserID))
+	uc.logger.Debug("Token validation successful", zap.Uint("userId", user.UserID))
 	return result, nil
 }
 
-// UserInfo
+// GetUserInfo gets user information
 func (uc *AuthUseCase) GetUserInfo(ctx context.Context, userID uint) (*UserInfo, error) {
-	uc.logger.Debug("获取用户信息请求")
+	uc.logger.Debug("Get user information request")
 
-	// 获取用户信息
+	// Get user information
 	user, err := mysql.SysUserRepo.FindByID(ctx, userID)
 	if err != nil {
-		uc.logger.Error("查找用户失败", zap.Uint("userId", userID), zap.Error(err))
-		return nil, fmt.Errorf("查找用户失败: %w", err)
+		uc.logger.Error("Failed to find user", zap.Uint("userId", userID), zap.Error(err))
+		return nil, fmt.Errorf("Failed to find user: %w", err)
 	}
 
-	// 检查用户状态
+	// Check user status
 	if !user.IsEnabled() {
-		uc.logger.Warn("用户已禁用", zap.Uint("userId", user.UserID))
-		return nil, fmt.Errorf("用户已禁用")
+		uc.logger.Warn("User is disabled", zap.Uint("userId", user.UserID))
+		return nil, fmt.Errorf("User is disabled")
 	}
 
-	// 构造用户信息
+	// Construct user information
 	avatar := ""
 	if user.AvatarPath != nil {
 		avatar = *user.AvatarPath
@@ -450,7 +450,7 @@ func (uc *AuthUseCase) GetUserInfo(ctx context.Context, userID uint) (*UserInfo,
 		if dept, derr := mysql.SysDeptRepo.FindByID(ctx, deptID); derr == nil && dept != nil {
 			deptName = dept.Name
 		} else if derr != nil {
-			uc.logger.Warn("查询部门名称失败", zap.Uint("deptId", deptID), zap.Error(derr))
+			uc.logger.Warn("Failed to query department name", zap.Uint("deptId", deptID), zap.Error(derr))
 		}
 	}
 	roleIDs := []uint{}
@@ -462,11 +462,11 @@ func (uc *AuthUseCase) GetUserInfo(ctx context.Context, userID uint) (*UserInfo,
 				if role, ferr := mysql.SysRoleRepo.FindByID(ctx, rid); ferr == nil && role != nil {
 					roleNames = append(roleNames, role.Name)
 				} else if ferr != nil {
-					uc.logger.Warn("查询角色失败", zap.Uint("roleId", rid), zap.Error(ferr))
+					uc.logger.Warn("Failed to query role", zap.Uint("roleId", rid), zap.Error(ferr))
 				}
 			}
 		} else {
-			uc.logger.Warn("查询用户角色ID失败", zap.Uint("userId", user.UserID), zap.Error(rerr))
+			uc.logger.Warn("Failed to query user role IDs", zap.Uint("userId", user.UserID), zap.Error(rerr))
 		}
 	}
 

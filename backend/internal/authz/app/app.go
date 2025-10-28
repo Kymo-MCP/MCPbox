@@ -22,7 +22,7 @@ import (
 	"qm-mcp-server/pkg/redis"
 )
 
-// App 应用程序结构
+// App application structure
 type App struct {
 	config     *config.Config
 	logger     *zap.Logger
@@ -30,19 +30,19 @@ type App struct {
 	ginEngine  *gin.Engine
 }
 
-// New 创建应用程序实例
+// New creates application instance
 func New() *App {
-	// 加载配置
+	// Load configuration
 	if err := config.Load(); err != nil {
 		return nil
 	}
 
-	// 初始化日志
+	// Initialize logger
 	if err := logger.Init(config.GlobalConfig.Log.Level, config.GlobalConfig.Log.Format); err != nil {
 		return nil
 	}
 
-	// 打印配置信息
+	// Print configuration information
 	logger.Debug("Version info", zap.String("version", fmt.Sprintf("%+v", config.GlobalConfig.VersionInfo)))
 
 	return &App{
@@ -51,19 +51,19 @@ func New() *App {
 	}
 }
 
-// Initialize 初始化应用程序
+// Initialize initializes the application
 func (a *App) Initialize() error {
-	// 初始化Redis
+	// Initialize Redis
 	if err := redis.Init(&config.GlobalConfig.Database.Redis); err != nil {
 		return fmt.Errorf("failed to initialize redis: %w", err)
 	}
 
-	// 初始化数据库
+	// Initialize database
 	if err := dbpkg.Init(&a.config.Database); err != nil {
 		return fmt.Errorf("failed to initialize database: %w", err)
 	}
 
-	// 设置 HTTP 服务器
+	// Setup HTTP server
 	if err := a.setupHTTPServer(); err != nil {
 		return fmt.Errorf("failed to setup HTTP server: %w", err)
 	}
@@ -72,21 +72,21 @@ func (a *App) Initialize() error {
 	return nil
 }
 
-// setupHTTPServer 设置 HTTP 服务器
+// setupHTTPServer sets up HTTP server
 func (a *App) setupHTTPServer() error {
-	// 设置Gin模式
+	// Set Gin mode
 	gin.SetMode(gin.DebugMode)
 
-	// 创建Gin引擎
+	// Create Gin engine
 	a.ginEngine = gin.New()
 
-	// 设置中间件
+	// Setup middleware
 	a.setupMiddleware()
 
-	// 设置路由
+	// Setup routes
 	a.setupRoutes()
 
-	// 创建HTTP服务器
+	// Create HTTP server
 	a.httpServer = &http.Server{
 		Addr:    fmt.Sprintf(":%d", a.config.Server.HttpPort),
 		Handler: a.ginEngine,
@@ -96,41 +96,41 @@ func (a *App) setupHTTPServer() error {
 	return nil
 }
 
-// setupMiddleware 设置中间件
+// setupMiddleware sets up middleware
 func (a *App) setupMiddleware() {
-	// 添加中间件
+	// Add middleware
 	a.ginEngine.Use(gin.Recovery())
 	a.ginEngine.Use(middleware.RequestResponseLoggingMiddleware())
 
-	// 添加跨域处理
+	// Add CORS handling
 	a.ginEngine.Use(middleware.CORSMiddleware([]string{"*"}))
 
-	// 添加国际化中间件
+	// Add internationalization middleware
 	a.ginEngine.Use(middleware.I18nMiddleware())
 
-	// 添加安全中间件
+	// Add security middleware
 	a.ginEngine.Use(middleware.SecurityMiddleware(config.GlobalConfig.Secret))
 
-	// 添加认证中间件
+	// Add authentication middleware
 	a.ginEngine.Use(middleware.AuthTokenMiddleware(config.GlobalConfig.Secret))
 }
 
-// setupRoutes 设置路由
+// setupRoutes sets up routes
 func (a *App) setupRoutes() {
-	// 创建服务实例
+	// Create service instances
 	userService := service.NewUserService()
 
 	userAuthService := service.NewUserAuthService()
 
-	// 健康检查
+	// Health check
 	a.ginEngine.GET("/health", func(c *gin.Context) {
 		common.GinSuccess(c, map[string]string{"status": "ok"})
 	})
 
-	// API版本前缀
+	// API version prefix
 	authzGroup := a.ginEngine.Group(common.GetAuthzRoutePrefix())
 
-	// 用户相关路由
+	// User related routes
 	userGroup := authzGroup.Group("/users")
 	{
 		userGroup.POST("", userService.CreateUser)
@@ -144,32 +144,32 @@ func (a *App) setupRoutes() {
 		userGroup.PUT("/update-avatar", userService.UpdateAvatar)
 	}
 
-	// 认证相关路由 - 更新为使用UserAuthService
+	// Authentication related routes - updated to use UserAuthService
 
 	{
-		// 用户登录
+		// User login
 		authzGroup.POST("/login", userAuthService.Login)
 
-		// 用户退出
+		// User logout
 		authzGroup.POST("/logout", userAuthService.Logout)
 
-		// 获取用户配置
+		// Get user configuration
 		authzGroup.GET("/user-info", userAuthService.GetUserInfo)
 
-		// 刷新Token
+		// Refresh Token
 		authzGroup.POST("/refresh", userAuthService.RefreshToken)
 
-		// 校验Token
+		// Validate Token
 		authzGroup.POST("/validate", userAuthService.ValidateToken)
 
-		// 获取加密密钥
+		// Get encryption key
 		authzGroup.POST("/encryption-key", userAuthService.GetEncryptionKey)
 	}
 }
 
-// Run 运行应用程序
+// Run runs the application
 func (a *App) Run() error {
-	// 启动 HTTP 服务器
+	// Start HTTP server
 	logger.Info("Starting HTTP server", zap.Int("port", a.config.Server.HttpPort))
 	go func() {
 		if err := a.httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
@@ -177,23 +177,23 @@ func (a *App) Run() error {
 		}
 	}()
 
-	// 等待中断信号
+	// Wait for interrupt signal
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 
 	logger.Info("Shutting down authz service...")
 
-	// 优雅关闭
+	// Graceful shutdown
 	return a.Shutdown()
 }
 
-// Shutdown 优雅关闭应用程序
+// Shutdown gracefully shuts down the application
 func (a *App) Shutdown() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 
-	// 关闭 HTTP 服务器
+	// Shutdown HTTP server
 	if a.httpServer != nil {
 		logger.Info("Shutting down HTTP server...")
 		if err := a.httpServer.Shutdown(ctx); err != nil {
@@ -203,7 +203,7 @@ func (a *App) Shutdown() error {
 		}
 	}
 
-	// 关闭数据库连接
+	// Close database connection
 	if err := mysql.Close(); err != nil {
 		logger.Error("Failed to close database", zap.Error(err))
 		return err

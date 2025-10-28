@@ -1,3 +1,9 @@
+FROM ccr.ccs.tencentyun.com/itqm-private/builder:v1 AS builder
+
+COPY ../ /app
+
+RUN cd /app && make build-frontend
+
 FROM node:20-alpine
 
 # 设置apk源
@@ -17,7 +23,7 @@ RUN mkdir -p /app
 WORKDIR /app
 
 # 复制项目代码
-COPY ../frontend/dist /app/
+COPY --from=builder /app/frontend/dist /app/
 
 # 暴露端口
 EXPOSE 3000

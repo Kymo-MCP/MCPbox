@@ -12,12 +12,12 @@ export default defineConfig({
     host: '0.0.0.0',
     proxy: {
       '/api/authz': {
-        target: 'http://192.168.6.91:8082',
+        target: 'http://localhost:8082',
         changeOrigin: true,
         rewrite: (path: string) => path.replace(/^\/api/, ''),
       },
       '/api': {
-        target: 'http://192.168.6.91:8081',
+        target: 'http://localhost:8081',
         changeOrigin: true,
         rewrite: (path: string) => path.replace(/^\/api/, ''),
       },

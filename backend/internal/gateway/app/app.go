@@ -17,23 +17,23 @@ import (
 	"go.uber.org/zap"
 )
 
-// App 应用程序结构体
+// App application structure
 type App struct {
-	// config 配置
+	// config configuration
 	config *config.Config
 
-	// logger 日志记录器
+	// logger logger
 	logger *zap.Logger
 
-	// httpServer HTTP服务器
+	// httpServer HTTP server
 	httpServer *http.Server
 
-	// shutdownCtx 关闭上下文
+	// shutdownCtx shutdown context
 	shutdownCtx    context.Context
 	shutdownCancel context.CancelFunc
 }
 
-// New 创建新的应用程序实例
+// New creates new application instance
 func New() (*App, error) {
 	// 加载全局配置
 	err := config.Load()

@@ -13,7 +13,7 @@ import (
 	"qm-mcp-server/pkg/logger"
 )
 
-// App 应用程序结构
+// App application structure
 type App struct {
 	config          *config.InitConfig
 	logger          *zap.Logger
@@ -22,18 +22,18 @@ type App struct {
 	mcpTemplateList []*model.McpTemplate
 }
 
-// New 创建应用程序实例
+// New creates application instance
 func New() *App {
-	// 加载配置
+	// Load configuration
 	if err := config.Load(); err != nil {
 		return nil
 	}
-	// 初始化日志
+	// Initialize logger
 	if err := logger.Init(config.GlobalConfig.Log.Level, config.GlobalConfig.Log.Format); err != nil {
 		return nil
 	}
 
-	// 打印配置信息
+	// Print configuration information
 	logger.Debug("Version info", zap.String("version", fmt.Sprintf("%+v", config.GlobalConfig.VersionInfo)))
 
 	return &App{
@@ -45,7 +45,7 @@ func New() *App {
 	}
 }
 
-// Initialize 初始化应用程序
+// Initialize initializes the application
 func (a *App) Initialize() error {
 	// 初始化数据库
 	if err := dbpkg.Init(&a.config.Database); err != nil {

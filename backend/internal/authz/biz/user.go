@@ -18,7 +18,7 @@ import (
 	"qm-mcp-server/pkg/utils"
 )
 
-// ListUsersParams 用户列表查询参数
+// ListUsersParams user list query parameters
 type ListUsersParams struct {
 	Keyword  string
 	Enabled  *bool
@@ -27,7 +27,7 @@ type ListUsersParams struct {
 	PageSize int
 }
 
-// UserBiz 用户业务逻辑实现
+// UserBiz user business logic implementation
 type UserBiz struct {
 	userRepo     *mysql.SysUserRepository
 	userRoleRepo *mysql.SysUsersRolesRepository
@@ -37,7 +37,7 @@ type UserBiz struct {
 	logger       *zap.Logger
 }
 
-// NewUserBiz 创建用户业务逻辑实例
+// NewUserBiz creates user business logic instance
 func NewUserBiz() *UserBiz {
 	return &UserBiz{
 		userRepo:     mysql.SysUserRepo,
@@ -49,9 +49,9 @@ func NewUserBiz() *UserBiz {
 	}
 }
 
-// CreateUser 创建用户
+// CreateUser creates user
 func (uc *UserBiz) CreateUser(ctx context.Context, user *model.SysUser) error {
-	// 检查用户名是否已存在
+	// Check if username already exists
 	var existingUser model.SysUser
 	err := uc.db.Where("username = ?", user.Username).First(&existingUser).Error
 	if err == nil {
@@ -61,7 +61,7 @@ func (uc *UserBiz) CreateUser(ctx context.Context, user *model.SysUser) error {
 		return fmt.Errorf("%s", i18n.FormatWithContext(ctx, i18n.CodeCreateUserFailure, err))
 	}
 
-	// 检查邮箱是否已存在（如果提供了邮箱）
+	// Check if email already exists (if email is provided)
 	if user.Email != nil && *user.Email != "" {
 		err := uc.db.Where("email = ?", *user.Email).First(&existingUser).Error
 		if err == nil {
@@ -72,7 +72,7 @@ func (uc *UserBiz) CreateUser(ctx context.Context, user *model.SysUser) error {
 		}
 	}
 
-	// 生成随机盐值
+	// Generate random salt
 	if user.Salt == nil || *user.Salt == "" {
 		salt, err := utils.GenerateRandomSalt(32)
 		if err != nil {
@@ -81,12 +81,12 @@ func (uc *UserBiz) CreateUser(ctx context.Context, user *model.SysUser) error {
 		user.Salt = &salt
 	}
 
-	// 设置创建时间
+	// Set creation time
 	now := time.Now()
 	user.CreateTime = &now
 	user.UpdateTime = &now
 
-	// 创建用户
+	// Create user
 	err = uc.db.Create(user).Error
 	if err != nil {
 		return fmt.Errorf("%s", i18n.FormatWithContext(ctx, i18n.CodeCreateUserFailure, err))
@@ -96,192 +96,192 @@ func (uc *UserBiz) CreateUser(ctx context.Context, user *model.SysUser) error {
 	if user.Username != nil {
 		username = *user.Username
 	}
-	uc.logger.Info("用户创建成功", zap.String("username", username), zap.Uint("userID", user.UserID))
+	uc.logger.Info("User created successfully", zap.String("username", username), zap.Uint("userID", user.UserID))
 	return nil
 }
 
-// UpdateUser 更新用户信息
+// UpdateUser updates user information
 func (uc *UserBiz) UpdateUser(ctx context.Context, user *model.SysUser) error {
-	// 设置更新时间
+	// Set update time
 	now := time.Now()
 	user.UpdateTime = &now
 
-	// 更新用户
+	// Update user
 	err := uc.db.Save(user).Error
 	if err != nil {
-		return fmt.Errorf("更新用户失败: %v", err)
+		return fmt.Errorf("Failed to update user: %v", err)
 	}
 
-	uc.logger.Info("用户更新成功", zap.Uint("userId", user.UserID))
+	uc.logger.Info("User updated successfully", zap.Uint("userId", user.UserID))
 	return nil
 }
 
-// GetUserById 根据ID获取用户
+// GetUserById gets user by ID
 func (uc *UserBiz) GetUserById(ctx context.Context, id uint) (*model.SysUser, error) {
 	var user model.SysUser
 	err := uc.db.First(&user, id).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
-			return nil, fmt.Errorf("用户不存在")
+			return nil, fmt.Errorf("User not found")
 		}
-		logger.Error("获取用户失败", zap.Error(err), zap.Uint("userId", id))
-		return nil, fmt.Errorf("获取用户失败: %v", err)
+		logger.Error("Failed to get user", zap.Error(err), zap.Uint("userId", id))
+		return nil, fmt.Errorf("Failed to get user: %v", err)
 	}
 
 	return &user, nil
 }
 
-// DeleteUser 删除用户
+// DeleteUser deletes user
 func (uc *UserBiz) DeleteUser(ctx context.Context, id uint) error {
-	logger.Info("删除用户", zap.Uint("userId", id))
+	logger.Info("Deleting user", zap.Uint("userId", id))
 
-	// 使用事务删除用户及其关联数据
+	// Use transaction to delete user and associated data
 	err := uc.db.Transaction(func(tx *gorm.DB) error {
-		// 先删除用户角色关联
+		// First delete user role associations
 		if err := tx.Where("user_id = ?", id).Delete(&model.SysUsersRoles{}).Error; err != nil {
-			return fmt.Errorf("删除用户角色关联失败: %v", err)
+			return fmt.Errorf("Failed to delete user role associations: %v", err)
 		}
 
-		// 删除用户
+		// Delete user
 		if err := tx.Delete(&model.SysUser{}, id).Error; err != nil {
-			return fmt.Errorf("删除用户失败: %v", err)
+			return fmt.Errorf("Failed to delete user: %v", err)
 		}
 
 		return nil
 	})
 
 	if err != nil {
-		logger.Error("删除用户失败", zap.Error(err))
+		logger.Error("Failed to delete user", zap.Error(err))
 		return err
 	}
 
-	logger.Info("用户删除成功", zap.Uint("userId", id))
+	logger.Info("User deleted successfully", zap.Uint("userId", id))
 	return nil
 }
 
-// ListUsers 获取用户列表
+// ListUsers gets user list
 func (uc *UserBiz) ListUsers(ctx context.Context, params *ListUsersParams) ([]*model.SysUser, int64, error) {
 	var users []*model.SysUser
 	var total int64
 
-	// 构建查询条件
+	// Build query conditions
 	query := uc.db.Model(&model.SysUser{})
 
-	// 关键字搜索
+	// Keyword search
 	if params.Keyword != "" {
 		keyword := strings.TrimSpace(params.Keyword)
 		query = query.Where("username LIKE ? OR nick_name LIKE ? OR email LIKE ?",
 			"%"+keyword+"%", "%"+keyword+"%", "%"+keyword+"%")
 	}
 
-	// 部门筛选
+	// Department filter
 	if params.DeptId > 0 {
 		query = query.Where("dept_id = ?", params.DeptId)
 	}
 
-	// 状态筛选
+	// Status filter
 	if params.Enabled != nil {
 		query = query.Where("enabled = ?", *params.Enabled)
 	}
 
-	// 获取总数
+	// Get total count
 	if err := query.Count(&total).Error; err != nil {
-		return nil, 0, fmt.Errorf("获取用户总数失败: %v", err)
+		return nil, 0, fmt.Errorf("Failed to get user count: %v", err)
 	}
 
-	// 分页查询
+	// Paginated query
 	offset := (params.Page - 1) * params.PageSize
 	if err := query.Offset(offset).Limit(params.PageSize).Order("user_id DESC").Find(&users).Error; err != nil {
-		return nil, 0, fmt.Errorf("获取用户列表失败: %v", err)
+		return nil, 0, fmt.Errorf("Failed to get user list: %v", err)
 	}
 
 	return users, total, nil
 }
 
-// GetUserListWithPagination 分页获取用户列表
+// GetUserListWithPagination gets user list with pagination
 func (uc *UserBiz) GetUserListWithPagination(ctx context.Context, blurry string, deptId uint, status *bool, page, size int) ([]*model.SysUser, int64, error) {
 	var users []*model.SysUser
 	var total int64
 
-	// 构建查询条件
+	// Build query conditions
 	query := uc.db.WithContext(ctx).Model(&model.SysUser{})
 
-	// 模糊搜索
+	// Fuzzy search
 	if blurry != "" {
 		blurry = strings.TrimSpace(blurry)
 		query = query.Where("username LIKE ? OR nickname LIKE ? OR email LIKE ?",
 			"%"+blurry+"%", "%"+blurry+"%", "%"+blurry+"%")
 	}
 
-	// 部门筛选
+	// Department filter
 	if deptId > 0 {
 		query = query.Where("dept_id = ?", deptId)
 	}
 
-	// 状态筛选
+	// Status filter
 	if status != nil {
 		query = query.Where("enabled = ?", *status)
 	}
 
-	// 获取总数
+	// Get total count
 	if err := query.Count(&total).Error; err != nil {
-		logger.Error("获取用户总数失败", zap.Error(err))
-		return nil, 0, fmt.Errorf("获取用户总数失败: %v", err)
+		logger.Error("Failed to get user count", zap.Error(err))
+		return nil, 0, fmt.Errorf("Failed to get user count: %v", err)
 	}
 
-	// 分页查询
+	// Paginated query
 	offset := (page - 1) * size
 	if err := query.Offset(offset).Limit(size).Order("user_id DESC").Find(&users).Error; err != nil {
-		logger.Error("获取用户列表失败", zap.Error(err))
-		return nil, 0, fmt.Errorf("获取用户列表失败: %v", err)
+		logger.Error("Failed to get user list", zap.Error(err))
+		return nil, 0, fmt.Errorf("Failed to get user list: %v", err)
 	}
 
-	// 填充部门和角色信息
+	// Fill department and role information
 	for _, user := range users {
-		// 获取部门信息
+		// Get department information
 		if user.DeptID != nil && *user.DeptID > 0 {
 			dept, err := uc.deptRepo.FindByID(ctx, *user.DeptID)
 			if err == nil && dept != nil {
-				// 注意：model.SysUser结构体中没有Dept字段，这里需要在返回时单独处理
+				// Note: SysUser struct doesn't have Dept field, need to handle separately when returning
 				// user.Dept = dept
 			}
 		}
 
-		// 获取角色信息（注意：SysUser模型中没有Roles字段，需要单独返回）
+		// Get role information (Note: SysUser model doesn't have Roles field, need to return separately)
 		_, err := uc.GetUserRoles(ctx, user.UserID)
 		if err != nil {
-			logger.Error("获取用户角色失败", zap.Error(err))
+			logger.Error("Failed to get user roles", zap.Error(err))
 		}
 	}
 
 	return users, total, nil
 }
 
-// GetCurrentUser 获取当前用户信息
+// GetCurrentUser gets current user information
 func (uc *UserBiz) GetCurrentUser(ctx context.Context, userId uint) (*model.SysUser, error) {
 	return uc.GetUserById(ctx, userId)
 }
 
-// GetUserPermissions 获取用户权限
+// GetUserPermissions gets user permissions
 func (uc *UserBiz) GetUserPermissions(ctx context.Context, userId uint) ([]string, error) {
-	// 1. 获取用户的角色ID列表
+	// 1. Get user's role ID list
 	roleIds, err := uc.userRoleRepo.FindRoleIDsByUserID(ctx, userId)
 	if err != nil {
-		uc.logger.Error("获取用户角色失败", zap.Error(err), zap.Uint("userId", userId))
-		return nil, fmt.Errorf("获取用户角色失败: %v", err)
+		uc.logger.Error("Failed to get user roles", zap.Error(err), zap.Uint("userId", userId))
+		return nil, fmt.Errorf("Failed to get user roles: %v", err)
 	}
 
 	if len(roleIds) == 0 {
-		uc.logger.Info("用户没有分配角色", zap.Uint("userId", userId))
+		uc.logger.Info("User has no assigned roles", zap.Uint("userId", userId))
 		return []string{}, nil
 	}
 
-	// 2. 获取角色信息
+	// 2. Get role information
 	roles := make([]*model.SysRole, 0, len(roleIds))
 	for _, roleId := range roleIds {
 		role, err := uc.roleRepo.FindByID(ctx, roleId)
 		if err != nil {
-			uc.logger.Error("获取角色信息失败", zap.Error(err), zap.Uint("roleId", roleId))
+			uc.logger.Error("Failed to get role information", zap.Error(err), zap.Uint("roleId", roleId))
 			continue
 		}
 		if role != nil {
@@ -289,15 +289,15 @@ func (uc *UserBiz) GetUserPermissions(ctx context.Context, userId uint) ([]strin
 		}
 	}
 
-	// 3. 基于角色生成基础权限列表
+	// 3. Generate basic permission list based on roles
 	permissions := make([]string, 0)
 	for _, role := range roles {
-		// 根据角色名称生成基础权限
+		// Generate basic permissions based on role name
 		if role.Name != "" {
-			// 添加角色基础权限
+			// Add role basic permissions
 			permissions = append(permissions, fmt.Sprintf("role:%s", strings.ToLower(role.Name)))
 
-			// 根据角色名称添加常见权限
+			// Add common permissions based on role name
 			switch strings.ToLower(role.Name) {
 			case "admin", "管理员":
 				permissions = append(permissions,
@@ -319,7 +319,7 @@ func (uc *UserBiz) GetUserPermissions(ctx context.Context, userId uint) ([]strin
 		}
 	}
 
-	// 4. 去重
+	// 4. Remove duplicates
 	permissionSet := make(map[string]bool)
 	for _, perm := range permissions {
 		permissionSet[perm] = true
@@ -330,7 +330,7 @@ func (uc *UserBiz) GetUserPermissions(ctx context.Context, userId uint) ([]strin
 		uniquePermissions = append(uniquePermissions, perm)
 	}
 
-	uc.logger.Info("获取用户权限成功",
+	uc.logger.Info("User permissions retrieved successfully",
 		zap.Uint("userId", userId),
 		zap.Int("roleCount", len(roles)),
 		zap.Int("permissionCount", len(uniquePermissions)),
@@ -339,99 +339,99 @@ func (uc *UserBiz) GetUserPermissions(ctx context.Context, userId uint) ([]strin
 	return uniquePermissions, nil
 }
 
-// UpdatePassword 更新用户密码
+// UpdatePassword updates user password
 func (uc *UserBiz) UpdatePassword(ctx context.Context, userId uint, oldPassword, newPassword string) error {
-	// 获取用户信息
+	// Get user information
 	user, err := uc.GetUserById(ctx, userId)
 	if err != nil {
-		return fmt.Errorf("获取用户信息失败: %v", err)
+		return fmt.Errorf("Failed to get user information: %v", err)
 	}
 
-	// 验证旧密码
+	// Verify old password
 	if user.Password != nil && user.Salt != nil {
-		// 使用盐值验证旧密码
+		// Verify old password with salt
 		if err := uc.verifyPasswordWithSalt(oldPassword, *user.Salt, *user.Password); err != nil {
-			return fmt.Errorf("旧密码不正确")
+			return fmt.Errorf("Old password is incorrect")
 		}
 	} else if user.Password != nil {
-		// 兼容旧的无盐值密码验证
+		// Compatible with old password verification without salt
 		if err := bcrypt.CompareHashAndPassword([]byte(*user.Password), []byte(oldPassword)); err != nil {
-			return fmt.Errorf("旧密码不正确")
+			return fmt.Errorf("Old password is incorrect")
 		}
 	}
 
-	// 确保用户有盐值
+	// Ensure user has salt
 	if user.Salt == nil || *user.Salt == "" {
 		salt, err := utils.GenerateRandomSalt(32)
 		if err != nil {
-			return fmt.Errorf("生成盐值失败: %v", err)
+			return fmt.Errorf("Failed to generate salt: %v", err)
 		}
 		user.Salt = &salt
 	}
 
-	// 使用盐值哈希新密码
+	// Hash new password with salt
 	hashedPassword, err := uc.hashPasswordWithSalt(newPassword, *user.Salt)
 	if err != nil {
-		return fmt.Errorf("新密码哈希失败: %v", err)
+		return fmt.Errorf("Failed to hash new password: %v", err)
 	}
 
-	// 更新密码
+	// Update password
 	user.Password = &hashedPassword
 	now := time.Now()
 	user.PwdResetTime = &now
 
-	// 保存用户
+	// Save user
 	if err := uc.userRepo.Update(ctx, user); err != nil {
-		return fmt.Errorf("更新密码失败: %v", err)
+		return fmt.Errorf("Failed to update password: %v", err)
 	}
 
-	// 删除用户的所有会话，强制重新登录
+	// Delete all user sessions, force re-login
 	if err := redis.DeleteUserSessionsByUserID(userId); err != nil {
-		uc.logger.Warn("删除用户会话失败", zap.Uint("userId", userId), zap.Error(err))
+		uc.logger.Warn("Failed to delete user sessions", zap.Uint("userId", userId), zap.Error(err))
 	}
 
 	return nil
 }
 
-// AssignRolesToUserOld 为用户分配角色（旧版本）
+// AssignRolesToUserOld assigns roles to user (old version)
 func (uc *UserBiz) AssignRolesToUserOld(ctx context.Context, userId uint, roleIds []uint) error {
-	logger.Info("为用户分配角色", zap.Uint("userId", userId), zap.Uints("roleIds", roleIds))
+	logger.Info("Assigning roles to user", zap.Uint("userId", userId), zap.Uints("roleIds", roleIds))
 
-	// 先删除现有的角色关联
+	// First delete existing role associations
 	if err := uc.userRoleRepo.DeleteByUserID(ctx, userId); err != nil {
-		logger.Error("删除用户现有角色失败", zap.Error(err))
-		return fmt.Errorf("删除用户现有角色失败: %v", err)
+		logger.Error("Failed to delete existing user roles", zap.Error(err))
+		return fmt.Errorf("Failed to delete existing user roles: %v", err)
 	}
 
-	// 添加新的角色关联
+	// Add new role associations
 	for _, roleId := range roleIds {
 		userRole := &model.SysUsersRoles{
 			UserID: userId,
 			RoleID: roleId,
 		}
 		if err := uc.userRoleRepo.Create(ctx, userRole); err != nil {
-			logger.Error("创建用户角色关联失败", zap.Error(err))
-			return fmt.Errorf("创建用户角色关联失败: %v", err)
+			logger.Error("Failed to create user role association", zap.Error(err))
+			return fmt.Errorf("Failed to create user role association: %v", err)
 		}
 	}
 
-	logger.Info("用户角色分配成功", zap.Uint("userId", userId))
+	logger.Info("User role assignment successful", zap.Uint("userId", userId))
 	return nil
 }
 
-// GetUserRoles 获取用户角色列表
+// GetUserRoles gets user role list
 func (uc *UserBiz) GetUserRoles(ctx context.Context, userId uint) ([]*model.SysRole, error) {
 	var userRoles []*model.SysUsersRoles
 	if err := uc.db.WithContext(ctx).Where("user_id = ?", userId).Find(&userRoles).Error; err != nil {
-		logger.Error("获取用户角色关联失败", zap.Error(err))
-		return nil, fmt.Errorf("获取用户角色关联失败: %v", err)
+		logger.Error("Failed to get user role associations", zap.Error(err))
+		return nil, fmt.Errorf("Failed to get user role associations: %v", err)
 	}
 
 	var roles []*model.SysRole
 	for _, userRole := range userRoles {
 		role, err := uc.roleRepo.FindByID(ctx, userRole.RoleID)
 		if err != nil {
-			logger.Error("获取角色信息失败", zap.Error(err), zap.Uint("roleId", userRole.RoleID))
+			logger.Error("Failed to get role information", zap.Error(err), zap.Uint("roleId", userRole.RoleID))
 			continue
 		}
 		if role != nil {
@@ -441,116 +441,116 @@ func (uc *UserBiz) GetUserRoles(ctx context.Context, userId uint) ([]*model.SysR
 	return roles, nil
 }
 
-// GetUserDept 获取用户部门信息
+// GetUserDept gets user department information
 func (uc *UserBiz) GetUserDept(ctx context.Context, deptId uint) (*model.SysDept, error) {
 	dept, err := uc.deptRepo.FindByID(ctx, deptId)
 	if err != nil {
-		logger.Error("获取部门信息失败", zap.Error(err), zap.Uint("deptId", deptId))
-		return nil, fmt.Errorf("获取部门信息失败: %v", err)
+		logger.Error("Failed to get department information", zap.Error(err), zap.Uint("deptId", deptId))
+		return nil, fmt.Errorf("Failed to get department information: %v", err)
 	}
 	return dept, nil
 }
 
-// CheckUsernameExists 检查用户名是否存在
+// CheckUsernameExists checks if username exists
 func (uc *UserBiz) CheckUsernameExists(ctx context.Context, username string, excludeId uint) (bool, error) {
 	return uc.userRepo.ExistsByUsername(ctx, username, excludeId)
 }
 
-// CheckEmailExists 检查邮箱是否存在
+// CheckEmailExists checks if email exists
 func (uc *UserBiz) CheckEmailExists(ctx context.Context, email string, excludeId uint) (bool, error) {
 	return uc.userRepo.ExistsByEmail(ctx, email, excludeId)
 }
 
-// AssignRolesToUser 为用户分配角色
+// AssignRolesToUser assigns roles to user
 func (uc *UserBiz) AssignRolesToUser(ctx context.Context, userId uint, roleIds []uint) error {
-	// 先删除用户现有的角色关联
+	// First delete existing user role associations
 	if err := uc.userRoleRepo.DeleteByUserID(ctx, userId); err != nil {
-		uc.logger.Error("删除用户角色关联失败", zap.Error(err), zap.Uint("userId", userId))
-		return fmt.Errorf("删除用户角色关联失败: %v", err)
+		uc.logger.Error("Failed to delete user role associations", zap.Error(err), zap.Uint("userId", userId))
+		return fmt.Errorf("Failed to delete user role associations: %v", err)
 	}
 
-	// 添加新的角色关联
+	// Add new role associations
 	for _, roleId := range roleIds {
 		userRole := &model.SysUsersRoles{
 			UserID: userId,
 			RoleID: roleId,
 		}
 		if err := uc.userRoleRepo.Create(ctx, userRole); err != nil {
-			uc.logger.Error("创建用户角色关联失败", zap.Error(err), zap.Uint("userId", userId), zap.Uint("roleId", roleId))
-			return fmt.Errorf("创建用户角色关联失败: %v", err)
+			uc.logger.Error("Failed to create user role association", zap.Error(err), zap.Uint("userId", userId), zap.Uint("roleId", roleId))
+			return fmt.Errorf("Failed to create user role association: %v", err)
 		}
 	}
 
 	return nil
 }
 
-// hashPasswordWithSalt 使用盐值哈希密码
+// hashPasswordWithSalt hashes password with salt
 func (uc *UserBiz) hashPasswordWithSalt(password, salt string) (string, error) {
-	// 将密码和盐值组合
+	// Combine password and salt
 	saltedPassword := password + salt
 
-	// 使用bcrypt哈希加盐后的密码
+	// Hash salted password with bcrypt
 	hashedBytes, err := bcrypt.GenerateFromPassword([]byte(saltedPassword), bcrypt.DefaultCost)
 	if err != nil {
-		return "", fmt.Errorf("密码哈希失败: %v", err)
+		return "", fmt.Errorf("Password hashing failed: %v", err)
 	}
 	return string(hashedBytes), nil
 }
 
-// verifyPasswordWithSalt 验证带盐值的密码
+// verifyPasswordWithSalt verifies password with salt
 func (uc *UserBiz) verifyPasswordWithSalt(password, salt, hashedPassword string) error {
-	// 将密码和盐值组合
+	// Combine password and salt
 	saltedPassword := password + salt
 
-	// 使用bcrypt验证
+	// Verify with bcrypt
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(saltedPassword))
 }
 
-// VerifyPassword 验证密码
+// VerifyPassword verifies password
 func (uc *UserBiz) VerifyPassword(password, salt, hashedPassword string) error {
 	return uc.verifyPasswordWithSalt(password, salt, hashedPassword)
 }
 
-// EncryptPasswordWithNewAlgorithm 使用新的密码加密算法
+// EncryptPasswordWithNewAlgorithm encrypts password with new algorithm
 func (uc *UserBiz) EncryptPasswordWithNewAlgorithm(password string) (string, error) {
 	hashedBytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		return "", fmt.Errorf("bcrypt加密失败: %v", err)
+		return "", fmt.Errorf("bcrypt encryption failed: %v", err)
 	}
 
 	encryptedPassword := string(hashedBytes)
-	logger.Info("新密码加密完成", zap.String("algorithm", "bcrypt"), zap.Int("cost", bcrypt.DefaultCost))
+	logger.Info("New password encryption completed", zap.String("algorithm", "bcrypt"), zap.Int("cost", bcrypt.DefaultCost))
 	return encryptedPassword, nil
 }
 
-// SetUserPassword 设置用户密码
+// SetUserPassword sets user password
 func (uc *UserBiz) SetUserPassword(ctx context.Context, userModel *model.SysUser, plainPassword string) error {
-	// 确保用户有盐值
+	// Ensure user has salt
 	if userModel.Salt == nil || *userModel.Salt == "" {
 		salt, err := utils.GenerateRandomSalt(32)
 		if err != nil {
-			return fmt.Errorf("生成盐值失败: %v", err)
+			return fmt.Errorf("Failed to generate salt: %v", err)
 		}
 		userModel.Salt = &salt
 	}
 
-	// 使用盐值哈希密码
+	// Hash password with salt
 	hashedPassword, err := uc.hashPasswordWithSalt(plainPassword, *userModel.Salt)
 	if err != nil {
-		return fmt.Errorf("密码哈希失败: %v", err)
+		return fmt.Errorf("Password hashing failed: %v", err)
 	}
 
-	// 设置密码
+	// Set password
 	userModel.Password = &hashedPassword
 	now := time.Now()
 	userModel.PwdResetTime = &now
 
-	// 保存用户
+	// Save user
 	if err := uc.userRepo.Update(ctx, userModel); err != nil {
-		logger.Error("用户密码设置失败", zap.Error(err), zap.Uint("userId", userModel.UserID))
-		return fmt.Errorf("用户密码设置失败: %v", err)
+		logger.Error("Failed to set user password", zap.Error(err), zap.Uint("userId", userModel.UserID))
+		return fmt.Errorf("Failed to set user password: %v", err)
 	}
 
-	logger.Info("用户密码设置完成", zap.Uint("userId", userModel.UserID))
+	logger.Info("User password set successfully", zap.Uint("userId", userModel.UserID))
 	return nil
 }

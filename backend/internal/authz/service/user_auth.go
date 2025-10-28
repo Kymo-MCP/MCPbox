@@ -16,14 +16,14 @@ import (
 	"qm-mcp-server/pkg/utils"
 )
 
-// UserAuthService 用户认证HTTP服务
+// UserAuthService user authentication HTTP service
 type UserAuthService struct {
 	authUseCase *biz.AuthUseCase
 	userBiz     *biz.UserBiz
 	logger      zap.Logger
 }
 
-// NewUserAuthService 创建用户认证服务实例
+// NewUserAuthService creates user authentication service instance
 func NewUserAuthService() *UserAuthService {
 	return &UserAuthService{
 		authUseCase: biz.NewAuthUseCase(),
@@ -32,37 +32,37 @@ func NewUserAuthService() *UserAuthService {
 	}
 }
 
-// Login 用户登录
+// Login user login
 func (s *UserAuthService) Login(c *gin.Context) {
 	var req user_auth.LoginRequest
 	if err := common.BindAndValidate(c, &req); err != nil {
 		return
 	}
 
-	// 获取客户端IP和User-Agent
+	// Get client IP and User-Agent
 	clientIP := c.ClientIP()
 	userAgent := c.GetHeader("User-Agent")
 
-	// 解密密码
+	// Decrypt password
 	var plainPassword string
 	var err error
 
 	if req.KeyId != "" && req.EncryptedPassword != "" {
-		// 使用RSA解密密码
+		// Use RSA to decrypt password
 		plainPassword, err = s.decryptPasswordWithRSA(req.KeyId, req.EncryptedPassword)
 		if err != nil {
-			s.logger.Error("RSA解密密码失败", zap.Error(err), zap.String("keyId", req.KeyId))
-			common.GinError(c, i18nresp.CodeInternalError, "用户名或密码错误")
+			s.logger.Error("RSA password decryption failed", zap.Error(err), zap.String("keyId", req.KeyId))
+			common.GinError(c, i18nresp.CodeInternalError, "username or password incorrect")
 			return
 		}
-		s.logger.Info("成功解密登录密码", zap.String("keyId", req.KeyId), zap.String("username", req.Username))
+		s.logger.Info("successfully decrypted login password", zap.String("keyId", req.KeyId), zap.String("username", req.Username))
 	} else {
-		s.logger.Error("缺少密钥ID或加密密码", zap.String("username", req.Username))
-		common.GinError(c, i18nresp.CodeInternalError, "缺少必要的加密参数")
+		s.logger.Error("missing key ID or encrypted password", zap.String("username", req.Username))
+		common.GinError(c, i18nresp.CodeInternalError, "missing required encryption parameters")
 		return
 	}
 
-	// 执行登录
+	// Execute login
 	loginData, err := s.authUseCase.Login(
 		c.Request.Context(),
 		req.Username,
@@ -72,12 +72,12 @@ func (s *UserAuthService) Login(c *gin.Context) {
 		userAgent,
 	)
 	if err != nil {
-		logger.Error("用户登录失败", zap.Error(err), zap.String("username", req.Username))
-		common.GinError(c, i18nresp.CodeInternalError, "登录失败: "+err.Error())
+		logger.Error("user login failed", zap.Error(err), zap.String("username", req.Username))
+		common.GinError(c, i18nresp.CodeInternalError, "login failed: "+err.Error())
 		return
 	}
 
-	// 转换响应数据
+	// Convert response data
 	response := &user_auth.LoginResponse{
 		Token:        loginData.Token,
 		RefreshToken: loginData.RefreshToken,
@@ -99,39 +99,39 @@ func (s *UserAuthService) Login(c *gin.Context) {
 	common.GinSuccess(c, response)
 }
 
-// Logout 用户登出
+// Logout user logout
 func (s *UserAuthService) Logout(c *gin.Context) {
 	var req user_auth.LogoutRequest
 	if err := common.BindAndValidate(c, &req); err != nil {
 		return
 	}
 
-	// 执行登出
+	// Execute logout
 	if err := s.authUseCase.Logout(c.Request.Context(), req.UserId, req.Token); err != nil {
-		logger.Error("用户登出失败", zap.Error(err), zap.Int64("userId", req.UserId))
-		common.GinError(c, i18nresp.CodeInternalError, "登出失败: "+err.Error())
+		logger.Error("user logout failed", zap.Error(err), zap.Int64("userId", req.UserId))
+		common.GinError(c, i18nresp.CodeInternalError, "logout failed: "+err.Error())
 		return
 	}
 
 	common.GinSuccess(c, nil)
 }
 
-// RefreshToken 刷新Token
+// RefreshToken refresh token
 func (s *UserAuthService) RefreshToken(c *gin.Context) {
 	var req user_auth.RefreshTokenRequest
 	if err := common.BindAndValidate(c, &req); err != nil {
 		return
 	}
 
-	// 执行Token刷新
+	// Execute token refresh
 	tokenData, err := s.authUseCase.RefreshToken(c.Request.Context(), req.RefreshToken)
 	if err != nil {
-		logger.Error("刷新Token失败", zap.Error(err))
-		common.GinError(c, i18nresp.CodeInternalError, "刷新Token失败: "+err.Error())
+		logger.Error("refresh token failed", zap.Error(err))
+		common.GinError(c, i18nresp.CodeInternalError, "refresh token failed: "+err.Error())
 		return
 	}
 
-	// 转换响应数据
+	// Convert response data
 	response := &user_auth.RefreshTokenResponse{
 		Token:        tokenData.Token,
 		RefreshToken: tokenData.RefreshToken,
@@ -141,22 +141,22 @@ func (s *UserAuthService) RefreshToken(c *gin.Context) {
 	common.GinSuccess(c, response)
 }
 
-// ValidateToken 校验Token
+// ValidateToken validate token
 func (s *UserAuthService) ValidateToken(c *gin.Context) {
 	var req user_auth.ValidateTokenRequest
 	if err := common.BindAndValidate(c, &req); err != nil {
 		return
 	}
 
-	// 执行Token校验
+	// Execute token validation
 	validateResult, err := s.authUseCase.ValidateToken(c.Request.Context(), req.Token)
 	if err != nil {
-		logger.Error("校验Token失败", zap.Error(err))
-		common.GinError(c, i18nresp.CodeInternalError, "校验Token失败: "+err.Error())
+		logger.Error("validate token failed", zap.Error(err))
+		common.GinError(c, i18nresp.CodeInternalError, "validate token failed: "+err.Error())
 		return
 	}
 
-	// 转换响应数据
+	// Convert response data
 	response := &user_auth.ValidateTokenResponse{
 		Valid: validateResult.Valid,
 	}
@@ -188,31 +188,31 @@ func (s *UserAuthService) ValidateToken(c *gin.Context) {
 	common.GinSuccess(c, response)
 }
 
-// GetUserInfo 获取用户信息
+// GetUserInfo get user information
 func (s *UserAuthService) GetUserInfo(c *gin.Context) {
 	userId, exists := c.Get("userId")
 	if !exists {
-		common.GinError(c, i18nresp.CodeInternalError, "未获取到用户ID")
+		common.GinError(c, i18nresp.CodeInternalError, "failed to get user ID")
 		return
 	}
 	userIdInt, ok := userId.(int64)
 	if !ok {
-		common.GinError(c, i18nresp.CodeInternalError, "用户ID类型错误")
+		common.GinError(c, i18nresp.CodeInternalError, "user ID type error")
 		return
 	}
-	// 获取用户信息
+	// Get user information
 	userInfo, err := s.authUseCase.GetUserInfo(c.Request.Context(), uint(userIdInt))
 	if err != nil {
-		logger.Error("获取用户信息失败", zap.Error(err), zap.Int64("userId", int64(userIdInt)))
-		common.GinError(c, i18nresp.CodeInternalError, "获取用户信息失败")
+		logger.Error("get user information failed", zap.Error(err), zap.Int64("userId", int64(userIdInt)))
+		common.GinError(c, i18nresp.CodeInternalError, "get user information failed")
 		return
 	}
 	if userInfo == nil {
-		common.GinError(c, i18nresp.CodeInternalError, "未获取到用户信息")
+		common.GinError(c, i18nresp.CodeInternalError, "failed to get user information")
 		return
 	}
 
-	// 返回默认配置
+	// Return default configuration
 	response := &user_auth.GetUserInfoResponse{
 		TokenExpiry:        common.AccessTokenExpireTime,
 		RefreshTokenExpiry: common.RefreshTokenExpireTime,
@@ -238,22 +238,22 @@ func (s *UserAuthService) GetUserInfo(c *gin.Context) {
 	common.GinSuccess(c, response)
 }
 
-// GetEncryptionKey 获取加密密钥
+// GetEncryptionKey get encryption key
 func (s *UserAuthService) GetEncryptionKey(c *gin.Context) {
 	var req user_auth.GetEncryptionKeyRequest
 	if err := common.BindAndValidate(c, &req); err != nil {
 		return
 	}
 
-	// 使用pkg/utils生成RSA密钥对
+	// Use pkg/utils to generate RSA key pair
 	keyPair, err := utils.GenerateRSAKeyPair()
 	if err != nil {
-		s.logger.Error("生成RSA密钥对失败", zap.Error(err))
-		common.GinError(c, i18nresp.CodeInternalError, "生成加密密钥失败")
+		s.logger.Error("generate RSA key pair failed", zap.Error(err))
+		common.GinError(c, i18nresp.CodeInternalError, "generate encryption key failed")
 		return
 	}
 
-	// 构造返回数据
+	// Construct return data
 	response := &user_auth.GetEncryptionKeyResponse{
 		KeyId:     keyPair.KeyID,
 		PublicKey: utils.GetPublicKeyBase64(keyPair.PublicKey),
@@ -262,15 +262,15 @@ func (s *UserAuthService) GetEncryptionKey(c *gin.Context) {
 		IssuedAt:  keyPair.IssuedAt.Unix(),
 	}
 
-	// 保存私钥到Redis用于解密
+	// Save private key to Redis for decryption
 	if privateErr := redis.SetEncryptionPrivateKey(keyPair.KeyID, keyPair.PrivateKey); privateErr != nil {
-		s.logger.Error("保存私钥到Redis失败", zap.Error(privateErr), zap.String("keyId", keyPair.KeyID))
-		common.GinError(c, i18nresp.CodeInternalError, "保存加密密钥失败")
+		s.logger.Error("save private key to Redis failed", zap.Error(privateErr), zap.String("keyId", keyPair.KeyID))
+		common.GinError(c, i18nresp.CodeInternalError, "save encryption key failed")
 		return
 	}
 
-	// 记录密钥生成日志
-	s.logger.Info("成功生成新的加密密钥",
+	// Log key generation
+	s.logger.Info("successfully generated new encryption key",
 		zap.String("keyId", keyPair.KeyID),
 		zap.String("algorithm", utils.AlgorithmRSA2048),
 		zap.Time("expiresAt", keyPair.ExpiresAt))
@@ -278,7 +278,7 @@ func (s *UserAuthService) GetEncryptionKey(c *gin.Context) {
 	common.GinSuccess(c, response)
 }
 
-// convertUintToInt64Slice 转换uint切片为int64切片
+// convertUintToInt64Slice convert uint slice to int64 slice
 func (s *UserAuthService) convertUintToInt64Slice(uintSlice []uint) []int64 {
 	int64Slice := make([]int64, len(uintSlice))
 	for i, v := range uintSlice {
@@ -287,24 +287,24 @@ func (s *UserAuthService) convertUintToInt64Slice(uintSlice []uint) []int64 {
 	return int64Slice
 }
 
-// decryptPasswordWithRSA 使用RSA私钥解密密码
+// decryptPasswordWithRSA decrypt password using RSA private key
 func (s *UserAuthService) decryptPasswordWithRSA(keyID, encryptedPassword string) (string, error) {
-	// 从Redis获取私钥
+	// Get private key from Redis
 	privateKeyPEM, err := redis.GetEncryptionPrivateKey(keyID)
 	if err != nil {
-		return "", fmt.Errorf("获取私钥失败: %v", err)
+		return "", fmt.Errorf("get private key failed: %v", err)
 	}
 
 	// base64 decode
 	password, err := base64.StdEncoding.DecodeString(encryptedPassword)
 	if err != nil {
-		return "", fmt.Errorf("base64解码失败: %v", err)
+		return "", fmt.Errorf("base64 decode failed: %v", err)
 	}
 
-	// 使用pkg/utils解密密码
+	// Use pkg/utils to decrypt password
 	decryptedBytes, err := utils.RSADecrypt(string(password), privateKeyPEM)
 	if err != nil {
-		return "", fmt.Errorf("RSA解密失败: %v", err)
+		return "", fmt.Errorf("RSA decrypt failed: %v", err)
 	}
 
 	return string(decryptedBytes), nil
