@@ -1,10 +1,11 @@
 import request from '@/utils/request'
 import baseConfig from '@/config/base_config.ts'
+import { type InstanceResult } from '@/types/instance'
 
 export const InstanceAPI = {
   // 实例列表
   list(data: TableData) {
-    return request<any, List>({
+    return request<TableData, List<InstanceResult>>({
       url: `${baseConfig.baseUrlVersion}/market/instance/list`,
       method: 'POST',
       data,

@@ -5,10 +5,11 @@ import { EnvAPI, PvcAPI, NodeAPI } from '@/api/env'
 import { CodeAPI } from '@/api/code'
 import { useI18n } from 'vue-i18n'
 import { SourceType, AccessType, McpProtocol } from '@/types/instance'
+import {type Code} from '@/types/index'
 
 export const useMcpStore = defineStore('mcp', () => {
   const { t } = useI18n()
-  const packageList = ref<any>([])
+  const packageList = ref<Code[]>([])
   const envList = ref<any>([])
   const nodeList = ref<any>([])
   const pvcList = ref<any>([])

@@ -469,6 +469,7 @@ import zipLogo from '@/assets/logo/zip.png'
 import McpButton from '@/components/mcp-button/index.vue'
 import { TemplateAPI } from '@/api/mcp/template'
 import { AccessType, McpProtocol, SourceType, InstanceData, NodeVisible } from '@/types/instance'
+import { type VolumeMountsItme, type PvcForm,type Code } from '@/types/index.ts'
 
 const { t } = useI18n()
 const {
@@ -508,8 +509,9 @@ const mcpProtocolOptions = computed(() => {
  */
 const currentPackage = computed(() => {
   return (
-    packageList.value?.find((item: { id: any }) => item.id === pageInfo.value.formData.packageId) ||
-    {}
+    packageList.value?.find(
+      (item: { id: string }) => item.id === pageInfo.value.formData.packageId,
+    ) || {name:'',size:"",createdAt:""}
   )
 })
 
@@ -520,7 +522,7 @@ const handleFormat = () => {
 /**
  * Handle view code package
  */
-const handleViewCode = (code: any) => {
+const handleViewCode = (code: Code) => {
   jumpToPage({
     url: '/view-code-package',
     data: {
@@ -573,8 +575,8 @@ const handleDeleteVolume = (index: number) => {
  * @param key - $event
  * @param volume - item of pvc
  */
-const handlePvcChange = (key: any, volume: any) => {
-  const pvc = pvcList.value.find((pvc: any) => pvc.name === volume.pvcName)
+const handlePvcChange = (key: any, volume: VolumeMountsItme) => {
+  const pvc = pvcList.value.find((pvc: PvcForm) => pvc.name === volume.pvcName)
   if (pvc) {
     const accessModes = pvc.accessModes || []
     let readOnlyValue = false

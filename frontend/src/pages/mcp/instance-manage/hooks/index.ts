@@ -1,4 +1,4 @@
-import { type InstanceForm, InstanceStatus, ContainerOptions } from '@/types/instance'
+import { type InstanceResult, InstanceStatus, ContainerOptions } from '@/types/instance'
 import { InstanceAPI } from '@/api/mcp/instance'
 import { useMcpStoreHook } from '@/stores'
 import { useRouterHooks } from '@/utils/url'
@@ -111,7 +111,7 @@ export const useInstanceTableHooks = () => {
     page: 1,
     pageSize: 10,
   })
-  const columns = ref([
+  const columns = ref<any>([
     {
       dataIndex: 'instanceName',
       label: t('mcp.instance.name'),
@@ -134,7 +134,7 @@ export const useInstanceTableHooks = () => {
           options: accessTypeOptions,
         },
       },
-      customRender: ({ row }: any) => {
+      customRender: ({ row }: { row: InstanceResult }) => {
         return h(
           'span',
           { class: ['text-grey', 'text-primary', 'text-warning', 'text-success'][row.accessType] },
@@ -153,7 +153,7 @@ export const useInstanceTableHooks = () => {
           options: mcpProtocolOptions,
         },
       },
-      customRender: ({ row }: any) => {
+      customRender: ({ row }: { row: InstanceResult }) => {
         return mcpProtocolOptions.find((item) => item.value === row.mcpProtocol)?.label
       },
     },
@@ -185,7 +185,7 @@ export const useInstanceTableHooks = () => {
     {
       dataIndex: 'environmentName',
       label: t('mcp.instance.env'),
-      customRender: ({ row }: any) => {
+      customRender: ({ row }: { row: InstanceResult }) => {
         return row.accessType === AccessType.HOSTING ? row.environmentName : '--'
       },
     },
@@ -194,7 +194,7 @@ export const useInstanceTableHooks = () => {
       label: t('mcp.template.notes'),
       props: {
         'show-overflow-tooltip': true,
-        'tooltip-formatter': ({ row }: any) => {
+        'tooltip-formatter': ({ row }: { row: InstanceResult }) => {
           return h('div', { style: { width: '400px' } }, row.notes)
         },
       },
@@ -211,12 +211,10 @@ export const useInstanceTableHooks = () => {
    *
    * @param form - instance form data
    */
-  const handleAddInstance = (form: InstanceForm | null) => {
+  const handleAddInstance = () => {
     jumpToPage({
       url: '/new-instance',
-      data: {
-        id: form?.id,
-      },
+      data: {},
     })
   }
 

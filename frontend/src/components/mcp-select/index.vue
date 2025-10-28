@@ -60,17 +60,17 @@ import McpButton from '../mcp-button/index.vue'
 
 const { t } = useI18n()
 
-interface OptionItem {
-  id: string | number
-  name: string
-  [key: string]: any
-}
+// interface OptionItem {
+//   id: string | number
+//   name: string
+//   [key: string]: any
+// }
 const props = withDefaults(
   defineProps<{
     modelValue?: boolean
     modelSelected?: string | number | null
     title: string
-    options: Array<OptionItem>
+    options: Array<any>
   }>(),
   {
     modelValue: false,

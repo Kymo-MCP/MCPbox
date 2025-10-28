@@ -89,6 +89,7 @@ import { useRouterHooks } from '@/utils/url'
 import instanceLogo from '@/assets/logo/instance.png'
 import McpButton from '@/components/mcp-button/index.vue'
 import McpImage from '@/components/mcp-image/index.vue'
+import { type TemplateResult } from '@/types/index.ts'
 
 const { t } = useI18n()
 const { tablePlus, columns, requestConfig, pageConfig } = useTemplateTableHooks()
@@ -107,7 +108,7 @@ const handleAddTemplate = () => {
  * Handle edit the template
  * @param row - item of template
  */
-const handleEditTemplate = (row: any) => {
+const handleEditTemplate = (row: TemplateResult) => {
   jumpToPage({
     url: '/new-template',
     data: {
@@ -120,7 +121,7 @@ const handleEditTemplate = (row: any) => {
  * Handle delete a template
  * @param templateId - template key
  */
-const handleDeleteTemplate = (row: any) => {
+const handleDeleteTemplate = (row: TemplateResult) => {
   ElMessageBox.confirm(
     `${t('common.confirm') + t('status.delete')}“${row.name}”?`,
     t('common.warn'),

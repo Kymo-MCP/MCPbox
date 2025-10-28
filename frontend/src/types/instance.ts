@@ -77,15 +77,61 @@ export enum NodeVisible {
   RWM = 'ReadWriteMany',
 }
 
+export interface VolumeMountsItme {
+  type: string
+  nodeName: string
+  hostPath: string
+  mountPath: string
+  pvcName: string
+  readOnly: boolean
+}
+
+// base-form
 export interface InstanceForm {
-  from: string
-  serviceId: string
-  templateId: string
   instanceName: string
-  mcpProtocol: string
+  accessType: AccessType
+  mcpProtocol: McpProtocol
+  notes: string
   mcpConfig: string
   environmentId: string
-  port: string
-  evnVariable: { key: string; value: string }[]
-  [key: string]: any
+  iconPath: string
+  servicePath: string
+}
+
+// creat-instance-form
+export interface InstanceCreate extends InstanceForm {
+  sourceType: SourceType
+  name: string
+  notes: string
+  mcpServers: string
+  packageId: string
+  environmentId: string
+  port: number
+  environmentVariables: { key: string; value: string }[]
+  volumeMounts: { [key: string]: any }[]
+  initScript: InstanceData.INITSCRIPT
+  command: string
+}
+
+// list-result-form
+export interface InstanceResult extends InstanceForm {
+  instanceId: string
+  containerName: string
+  containerStatus: ContainerOptions
+  status: InstanceStatus
+  publicProxyConfig: string
+  createdAt: string
+  environmentName: string
+  containerIsReady: boolean
+}
+
+// template-form-by-instance
+export interface TemplateForm extends InstanceForm {
+  name: string
+}
+
+// template-result-by-instance
+export interface TemplateResult extends InstanceForm {
+  templateId: string
+  name: string
 }

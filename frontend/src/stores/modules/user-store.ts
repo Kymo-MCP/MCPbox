@@ -48,6 +48,7 @@ export const useUserStore = defineStore('user', () => {
 
       // 1. 将PEM公钥转换为ArrayBuffer
       const publicKeyBuffer = pemToArrayBuffer(publicKeyPem)
+      // https 协议下加密原生
       if (window.isSecureContext && window.crypto?.subtle) {
         // 2. 导入公钥（指定RSA-OAEP算法）
         const publicKey = await window.crypto.subtle.importKey(
@@ -74,6 +75,7 @@ export const useUserStore = defineStore('user', () => {
         return btoa(String.fromCharCode(...new Uint8Array(encryptedBuffer)))
       }
 
+      // http协议环境下加密
       // 转换公钥为jsrsasign可用的格式
       const publicKey = KEYUTIL.getKey(publicKeyPem) as RSAKey
       const encryptedHex = KJUR.crypto.Cipher.encrypt(

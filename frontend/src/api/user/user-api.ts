@@ -20,7 +20,7 @@ export default UserAPI
 /** 登录用户信息 */
 export interface UserInfo {
   /** 用户ID */
-  userId?: string
+  userId: string
 
   /** 用户名 */
   username?: string
@@ -30,10 +30,4 @@ export interface UserInfo {
 
   /** 头像URL */
   avatar?: string
-
-  /** 角色 */
-  roles: string[]
-
-  /** 权限 */
-  perms: string[]
 }

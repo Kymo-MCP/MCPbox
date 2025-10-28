@@ -58,6 +58,7 @@
       "type": "Type",
       "status": "Status",
       "packStatus": "PackStatus",
+      "containerName": "Container Name",
       "env": "ENV",
       "createTime": "CreateTime",
       "detail": "Instance of detail",

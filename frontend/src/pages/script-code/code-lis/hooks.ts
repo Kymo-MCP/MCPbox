@@ -1,5 +1,3 @@
-import { ref } from 'vue'
-import { useI18n } from 'vue-i18n'
 import { CodeAPI } from '@/api/code/index'
 import { timestampToDate, formatFileSize } from '@/utils/system'
 

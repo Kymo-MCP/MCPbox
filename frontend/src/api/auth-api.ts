@@ -1,5 +1,6 @@
 import request from '@/utils/request'
 import baseConfig from '@/config/base_config.ts'
+import { type UserInfo } from './user/user-api.ts'
 
 const AuthAPI = {
   login(formData: LoginFormData) {
@@ -8,7 +9,7 @@ const AuthAPI = {
     // formData.append('encryptedPassword', data.password)
     // formData.append('captchaKey', data.captchaKey)
     // formData.append('captchaCode', data.captchaCode)
-    return request<any, LoginResult<any>>({
+    return request<LoginFormData, LoginResult<UserInfo>>({
       url: `${baseConfig.baseUrlVersion}/authz/login`,
       method: 'POST',
       data: formData,
@@ -24,7 +25,7 @@ const AuthAPI = {
   },
 
   refreshToken(refreshToken: string) {
-    return request<unknown, LoginResult<any>>({
+    return request<unknown, LoginResult<UserInfo>>({
       url: `${baseConfig.baseUrlVersion}/authz/refresh`,
       method: 'POST',
       data: {
@@ -33,8 +34,8 @@ const AuthAPI = {
     })
   },
 
-  logout(params: any) {
-    return request({
+  logout(params: LoginOutParams) {
+    return request<LoginOutParams>({
       url: `${baseConfig.baseUrlVersion}/authz/logout`,
       method: 'POST',
       params,
@@ -48,8 +49,8 @@ const AuthAPI = {
   /**
    * change password API
    */
-  changePassword(params: any) {
-    return request({
+  changePassword(params: ChangePasswordParams) {
+    return request<ChangePasswordParams>({
       url: `${baseConfig.baseUrlVersion}/authz/users/update-password`,
       method: 'PUT',
       params,
@@ -92,4 +93,14 @@ export interface EncryptionInfo {
   issuedAt: string
   keyId: string
   publicKey: string
+}
+
+export interface LoginOutParams {
+  token: string
+  userId: string
+}
+export interface ChangePasswordParams {
+  confirmPassword: string
+  newPassword: string
+  oldPassword: string
 }

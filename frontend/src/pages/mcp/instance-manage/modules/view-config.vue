@@ -42,7 +42,7 @@ const handleCopy = async () => {
  * Handle init model data
  * @param config - public proxy config
  */
-const init = (config: any) => {
+const init = (config: string) => {
   dialogInfo.value.visible = true
   dialogInfo.value.config = JsonFormatter.format(config)
 }

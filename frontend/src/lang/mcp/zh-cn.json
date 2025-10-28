@@ -58,6 +58,7 @@
       "type": "部署模式",
       "status": "状态",
       "packStatus": "容器状态",
+      "containerName": "容器名称",
       "env": "环境",
       "createTime": "创建时间",
       "detail": "实例详情",

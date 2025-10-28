@@ -71,16 +71,16 @@ import { timestampToDate } from '@/utils/system'
 import { useInstanceTableHooks } from '../hooks'
 import { useMcpStoreHook } from '@/stores'
 import McpButton from '@/components/mcp-button/index.vue'
+import { type InstanceResult } from '@/types/instance'
 
 const { t } = useI18n()
 const { activeOptions, containerOptions } = useInstanceTableHooks()
 const { accessTypeOptions, mcpProtocolOptions } = useMcpStoreHook()
 
-const dialogInfo = ref({
+const dialogInfo = ref<any>({
   visible: false,
   title: t('mcp.instance.detail'),
   formData: {
-    id: null,
     accessType: '',
     instanceName: '',
     mcpProtocol: '',
@@ -95,7 +95,7 @@ const dialogInfo = ref({
  * Handle init form data
  * @param form - instance form
  */
-const init = (formData: any) => {
+const init = (formData: InstanceResult) => {
   dialogInfo.value.visible = true
   dialogInfo.value.formData = cloneDeep(formData)
 }

@@ -15,7 +15,6 @@ export const useInstanceFormHooks = () => {
     title: t('mcp.instance.formData.title'),
     formData: {
       sourceType: SourceType.CUSTOM,
-      templateId: '',
       name: '',
       accessType: '',
       mcpProtocol: '',

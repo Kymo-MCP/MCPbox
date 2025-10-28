@@ -1,10 +1,11 @@
 import request from '@/utils/request'
 import baseConfig from '@/config/base_config.ts'
+import { type Code } from '@/types/index'
 
 export const CodeAPI = {
   // 代码包列表
   list(data: TableData | null) {
-    return request<any, List>({
+    return request<any, List<Code>>({
       url: `${baseConfig.baseUrlVersion}/market/code/packages`,
       method: 'GET',
       data,
@@ -20,7 +21,7 @@ export const CodeAPI = {
   },
   // 删除代码包
   delete(id: string) {
-    return request<any, List>({
+    return request<string>({
       url: `${baseConfig.baseUrlVersion}/market/code/packages/${id}`,
       method: 'DELETE',
     })

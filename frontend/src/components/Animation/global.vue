@@ -71,8 +71,6 @@ const createGlobeInstance = () => {
       phi.value += 0.01
     },
   })
-
-  window.addEventListener('resize', () => {})
 }
 
 watch(
@@ -85,11 +83,10 @@ watch(
 // 初始化
 const init = () => {
   createGlobeInstance()
-  window.addEventListener('resize', () => {
-    createGlobeInstance()
-  })
+  window.addEventListener('resize', createGlobeInstance)
 }
 onBeforeUnmount(() => {
+  window.removeEventListener('resize', createGlobeInstance);
   globe.value?.destroy()
 })
 onMounted(init)

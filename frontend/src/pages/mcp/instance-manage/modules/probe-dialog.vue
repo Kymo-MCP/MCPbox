@@ -88,6 +88,7 @@ import { useInstanceTableHooks } from '../hooks/index.ts'
 import { timestampToDate } from '@/utils/system'
 import { useMcpStoreHook } from '@/stores'
 import McpButton from '@/components/mcp-button/index.vue'
+import { type InstanceResult } from '@/types/instance.ts'
 
 const { InstanceAPI } = useInstanceTableHooks()
 const { t } = useI18n()
@@ -142,7 +143,7 @@ const handleProbe = async () => {
  * Handle init probe model data
  * @param instanceInfo - instance object
  */
-const init = (instanceInfo: { [key: string]: string }) => {
+const init = (instanceInfo: InstanceResult) => {
   dialogInfo.value.instanceInfo = instanceInfo
   dialogInfo.value.probeInfo = {}
   dialogInfo.value.visible = true

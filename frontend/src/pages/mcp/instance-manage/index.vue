@@ -11,7 +11,7 @@
         class="ml-4"
         @click.stop
         :show-arrow="false"
-        @command="(cmd: string) => handleCommand(cmd, null)"
+        @command="(cmd: string) => handleCommand(cmd, {} as InstanceResult)"
       >
         <mcp-button :icon="Plus">{{ t('mcp.instance.action.add') }}</mcp-button>
         <template #dropdown>
@@ -91,11 +91,16 @@
         <template #instanceName="{ row }">
           <div class="flex align-center">
             <mcp-image :src="row.iconPath" width="32" height="32"></mcp-image>
-            <el-tooltip effect="dark" placement="top" class="ml-6" :raw-content="true">
+            <el-tooltip effect="dark" placement="top" class="ml-6" :raw-content="true" width="300">
               <div class="flex-sub ml-2 ellipsis-two">{{ row.instanceName }}</div>
               <template #content>
-                <div style="width: 300px">{{ row.instanceName }}</div>
-                <div style="width: 300px">{{ row.instanceId }}</div>
+                <div class="title-instance">
+                  <div>{{ row.instanceName + row.instanceName + row.instanceName }}</div>
+                  <div class="text-primary text-bold">ID:{{ row.instanceId }}</div>
+                  <div class="text-success text-bold">
+                    {{ t('mcp.instance.containerName') }}：{{ row.containerName }}
+                  </div>
+                </div>
               </template>
             </el-tooltip>
           </div>
@@ -251,6 +256,7 @@ import Select from '@/components/mcp-select/index.vue'
 import { TemplateAPI } from '@/api/mcp/template'
 import McpImage from '@/components/mcp-image/index.vue'
 import { AccessType, InstanceStatus } from '@/types/instance'
+import { type InstanceResult } from '@/types/instance.ts'
 
 const { t } = useI18n()
 const {
@@ -338,7 +344,7 @@ const handleSearchByCount = (type: string) => {
  * Handle view instance detail info
  * @param row - item of instance
  */
-const handleViewDetail = (row: any) => {
+const handleViewDetail = (row: InstanceResult) => {
   instanceDetail.value.init(row)
 }
 
@@ -346,7 +352,7 @@ const handleViewDetail = (row: any) => {
  * handle view instance server log
  * @param row - item of instance
  */
-const handleViewLog = (row: any) => {
+const handleViewLog = (row: InstanceResult) => {
   jumpToPage({
     url: '/instance-log',
     data: {
@@ -359,7 +365,7 @@ const handleViewLog = (row: any) => {
  * Handle eidt the instance form
  * @param row - instance form data
  */
-const handleEditInstance = (row: any) => {
+const handleEditInstance = (row: InstanceResult) => {
   jumpToPage({
     url: '/new-instance',
     data: {
@@ -415,7 +421,7 @@ const handleViewConfig = async (config: string) => {
  * Handle probe insatnce status
  * @param instanceInfo - instance form data
  */
-const handleViewStatus = async (instanceInfo: { [key: string]: string }) => {
+const handleViewStatus = async (instanceInfo: InstanceResult) => {
   probe.value.init(instanceInfo)
 }
 
@@ -453,7 +459,7 @@ const handleDeleteInstance = (instanceId: string) => {
  * @param callback - function name
  * @param row - item of instance data
  */
-const handleCommand = (callback: string, row: any) => {
+const handleCommand = (callback: string, row: InstanceResult) => {
   switch (callback) {
     case 'handleViewLog':
       handleViewLog(row)
@@ -474,7 +480,7 @@ const handleCommand = (callback: string, row: any) => {
       handleDeleteInstance(row.instanceId)
       break
     case 'handleAddInstance':
-      handleAddInstance(null)
+      handleAddInstance()
       break
     case 'handleAddByTemplate':
       handleAddByTemplate()
@@ -553,5 +559,8 @@ onMounted(() => {
 }
 .option-item {
   width: 580px;
+}
+.title-instance {
+  width: 300px;
 }
 </style>
