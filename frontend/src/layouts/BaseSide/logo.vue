@@ -18,11 +18,11 @@ const { jumpToPage } = useRouterHooks()
 defineProps({
   width: {
     type: [String, Number],
-    default: 40,
+    default: 30,
   },
   height: {
     type: [String, Number],
-    default: 40,
+    default: 30,
   },
 })
 const handleToHome = () => {
