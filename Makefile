@@ -83,12 +83,26 @@ build-frontend:
 	@cd $(FRONTEND_PATH) && pnpm i && pnpm build
 	@echo "---------- End build frontend ----------"
 
+	@echo "---------- End build frontend ----------"
+
+# All build targets
+.PHONY: build-all
+build-all: build-backend-all build-frontend
+
 # Docker build targets
 define build_docker_image
 	@echo "---------- Start Docker build $(1) ----------"
 	@echo "cd $(ROOT_PATH) && docker build -t $(IMAGE_REGISTRY)/$(2):$(VERSION) -f $(DOCKERFILES_PATH)/Dockerfile.$(1) ."
 	@cd $(ROOT_PATH) && docker build -t $(IMAGE_REGISTRY)/$(2):$(VERSION) -f $(DOCKERFILES_PATH)/Dockerfile.$(1) .
 	@echo "---------- End Docker build $(1) ----------"
+endef
+
+# Docker push targets
+define push_docker_image
+	@echo "---------- Start Docker push $(1) ----------"
+	@echo "docker push $(IMAGE_REGISTRY)/$(1):$(VERSION)"
+	@docker push $(IMAGE_REGISTRY)/$(1):$(VERSION)
+	@echo "---------- End Docker push $(1) ----------"
 endef
 
 .PHONY: docker-build-init
@@ -118,14 +132,6 @@ docker-build-backend:
 .PHONY: docker-build-all
 docker-build-all: docker-build-init docker-build-market docker-build-authz docker-build-gateway docker-build-frontend
 
-# Docker push targets
-define push_docker_image
-	@echo "---------- Start Docker push $(1) ----------"
-	@echo "docker push $(IMAGE_REGISTRY)/$(1):$(VERSION)"
-	@docker push $(IMAGE_REGISTRY)/$(1):$(VERSION)
-	@echo "---------- End Docker push $(1) ----------"
-endef
-
 .PHONY: docker-push-init
 docker-push-init:
 	$(call push_docker_image,mcp-init)
@@ -153,15 +159,27 @@ docker-push-backend:
 .PHONY: docker-push-all
 docker-push-all: docker-push-init docker-push-market docker-push-authz docker-push-gateway docker-push-frontend
 
-# Combined build and push targets
-.PHONY: build-and-push-backend
-build-and-push-backend: build-backend-all docker-build-init docker-build-market docker-build-authz docker-build-gateway docker-push-init docker-push-market docker-push-authz docker-push-gateway
+# Docker build and push targets (using existing build and push steps)
+.PHONY: docker-build-push-init
+docker-build-push-init: docker-build-init docker-push-init
 
-.PHONY: build-and-push-frontend
-build-and-push-frontend: build-frontend docker-build-frontend docker-push-frontend
+.PHONY: docker-build-push-market
+docker-build-push-market: docker-build-market docker-push-market
 
-.PHONY: build-and-push-all
-build-and-push-all: build-and-push-backend build-and-push-frontend
+.PHONY: docker-build-push-authz
+docker-build-push-authz: docker-build-authz docker-push-authz
+
+.PHONY: docker-build-push-gateway
+docker-build-push-gateway: docker-build-gateway docker-push-gateway
+
+.PHONY: docker-build-push-frontend
+docker-build-push-frontend: docker-build-frontend docker-push-frontend
+
+.PHONY: docker-build-push-backend
+docker-build-push-backend: docker-build-push-init docker-build-push-market docker-build-push-authz docker-build-push-gateway
+
+.PHONY: docker-build-push-all
+docker-build-push-all: docker-build-all docker-push-all
 
 # Protocol buffer generation
 .PHONY: proto-buf
@@ -236,6 +254,7 @@ help:
 	@echo "  build-backend-gateway      - Build gateway service binary"
 	@echo "  build-backend-all          - Build all backend services"
 	@echo "  build-frontend             - Build frontend application"
+	@echo "  build-all                  - Build all services and frontend"
 	@echo ""
 	@echo "Docker targets:"
 	@echo "  docker-build-init          - Build init Docker image"
@@ -244,13 +263,19 @@ help:
 	@echo "  docker-build-gateway       - Build gateway Docker image"
 	@echo "  docker-build-frontend      - Build frontend Docker image"
 	@echo "  docker-build-all           - Build all Docker images"
-	@echo "  docker-push-*              - Push corresponding Docker images"
+	@echo "  docker-push-init           - Push init Docker image"
+	@echo "  docker-push-market         - Push market Docker image"
+	@echo "  docker-push-authz          - Push authz Docker image"
+	@echo "  docker-push-gateway        - Push gateway Docker image"
+	@echo "  docker-push-frontend       - Push frontend Docker image"
 	@echo "  docker-push-all            - Push all Docker images"
-	@echo ""
-	@echo "Combined targets:"
-	@echo "  build-and-push-backend     - Build and push all backend services"
-	@echo "  build-and-push-frontend    - Build and push frontend"
-	@echo "  build-and-push-all         - Build and push everything"
+	@echo "  docker-build-push-init     - Build and push init Docker image"
+	@echo "  docker-build-push-market   - Build and push market Docker image"
+	@echo "  docker-build-push-authz    - Build and push authz Docker image"
+	@echo "  docker-build-push-gateway  - Build and push gateway Docker image"
+	@echo "  docker-build-push-frontend - Build and push frontend Docker image"
+	@echo "  docker-build-push-backend  - Build and push all backend services"
+	@echo "  docker-build-push-all      - Build and push all Docker images"
 	@echo ""
 	@echo "Development targets:"
 	@echo "  dev-backend                - Start backend development server"
