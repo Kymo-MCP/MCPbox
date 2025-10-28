@@ -34,6 +34,7 @@
             <el-select
               v-model="pageInfo.formData.accessType"
               :placeholder="t('mcp.instance.form.accessType')"
+              @change="handleAccessTypeChange"
             >
               <el-option
                 v-for="(accessType, index) in accessTypeOptions"
@@ -49,6 +50,7 @@
             <el-select
               v-model="pageInfo.formData.mcpProtocol"
               :placeholder="t('mcp.instance.form.mcpProtocol')"
+              @change="handleMcpProtocolChange"
             >
               <el-option
                 v-for="(mcpProtocol, index) in mcpProtocolOptions"
@@ -456,6 +458,7 @@ import zipLogo from '@/assets/logo/zip.png'
 import McpButton from '@/components/mcp-button/index.vue'
 import { AccessType, McpProtocol, InstanceData, NodeVisible } from '@/types/instance'
 import { type VolumeMountsItme, type PvcForm, type Code } from '@/types/index'
+import { cloneDeep } from 'lodash-es'
 
 const { t } = useI18n()
 const {
@@ -463,6 +466,7 @@ const {
   router,
   query,
   pageInfo,
+  originForm,
   placeholderServer,
   showImgAddress,
   showMcpServers,
@@ -495,12 +499,33 @@ const currentPackage = computed(() => {
   return (
     packageList.value?.find(
       (item: { id: string }) => item.id === pageInfo.value.formData.packageId,
-    ) || {name:'',size:"",createdAt:""}
+    ) || { name: '', size: '', createdAt: '' }
   )
 })
 
 const handleFormat = () => {
   pageInfo.value.formData.mcpServers = JsonFormatter.format(pageInfo.value.formData.mcpServers)
+}
+
+/**
+ * Handle access type changed
+ */
+const handleAccessTypeChange = () => {
+  pageInfo.value.formData.mcpProtocol = ''
+}
+
+/**
+ * Handle McpProtocol Changed
+ */
+const handleMcpProtocolChange = (value: McpProtocol) => {
+  if (pageInfo.value.formData.accessType === AccessType.HOSTING && value === McpProtocol.STDIO) {
+    pageInfo.value.tooltip.imgAddress =
+      InstanceData.TIP_IMGADDRESS + InstanceData.TIP_IMGADDRESS_DEFAULT
+    pageInfo.value.formData.command = InstanceData.COMMAND_TIP
+    return
+  }
+  pageInfo.value.tooltip.imgAddress = InstanceData.TIP_IMGADDRESS
+  pageInfo.value.formData.command = originForm.value?.command
 }
 
 /**
@@ -670,6 +695,7 @@ const handleGetTemplateDetail = async () => {
   const data = await TemplateAPI.detail({
     id: query.templateId,
   })
+  originForm.value = cloneDeep(data)
   pageInfo.value.formData = data
   pageInfo.value.formData.mcpServers = JsonFormatter.format(data.mcpServers)
   pageInfo.value.formData.environmentVariables = data.environmentVariables

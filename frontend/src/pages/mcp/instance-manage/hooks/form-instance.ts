@@ -15,6 +15,7 @@ export const useInstanceFormHooks = () => {
   const router = useRouter()
   const { query } = useRoute()
   const selectVisible = ref(false)
+  const originForm = ref<any>()
 
   const pageInfo = ref<any>({
     visible: false,
@@ -109,7 +110,7 @@ export const useInstanceFormHooks = () => {
       ],
     },
     tooltip: {
-      imgAddress: InstanceData.TIP_IMGADDRESS,
+      imgAddress: InstanceData.TIP_IMGADDRESS + InstanceData.TIP_IMGADDRESS_DEFAULT,
     },
   })
   const { pvcList } = toRefs(useMcpStoreHook())
@@ -190,6 +191,7 @@ export const useInstanceFormHooks = () => {
     jumpBack,
     jumpToPage,
     pageInfo,
+    originForm,
     placeholderServer,
     showImgAddress,
     showMcpServers,

@@ -8,7 +8,7 @@ export const useTemplateFormHooks = () => {
   const router = useRouter()
   const { query } = useRoute()
   const selectVisible = ref(false)
-
+  const originForm = ref<any>()
   const pageInfo = ref<any>({
     visible: false,
     loading: false,
@@ -102,7 +102,7 @@ export const useTemplateFormHooks = () => {
       ],
     },
     tooltip: {
-      imgAddress: InstanceData.TIP_IMGADDRESS,
+      imgAddress: InstanceData.TIP_IMGADDRESS + InstanceData.TIP_IMGADDRESS_DEFAULT,
     },
   })
   const { pvcList } = toRefs(useMcpStoreHook())
@@ -181,6 +181,7 @@ export const useTemplateFormHooks = () => {
     router,
     query,
     pageInfo,
+    originForm,
     placeholderServer,
     showImgAddress,
     showMcpServers,

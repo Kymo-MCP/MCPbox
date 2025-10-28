@@ -54,17 +54,19 @@ echo 'Initialization completed.'
     &nbsp &nbsp 系统基础命令：tar、wget、zip、unzip<br />
     &nbsp &nbsp Python 环境：Python 3.12.11，配套工具 uv 0.7.12、uvx 0.7.12<br />
     &nbsp &nbsp Node.js 环境：Node.js v18.20.1，配套工具 npm 9.6.6、npx 9.6.6<br />
-  3. 默认以 mcp-hosting 为启动命令，启动时自动完成 MCP STDIO 协议到 steamable-http 协议的转换，并支持 SSE 协议模式运行
   `,
+  TIP_IMGADDRESS_DEFAULT = '3. 默认以 mcp-hosting 为启动命令，启动时自动完成 MCP STDIO 协议到 steamable-http 协议的转换，并支持 SSE 协议模式运行',
   TIP_MCP_SERVER = `
     {
-      "servers": [
-        {
-          "name": "example",
-          "command": "node",
-          "args": ["server.js"]
+      "mcpServers": {
+        "everything": {
+          "args": [
+            "-y",
+            "@modelcontextprotocol/server-everything"
+          ],
+          "command": "npx"
         }
-      ]
+      }
     }
   `, // placeholderServer
   PACKAGE_PATH = '/app/codepkg/', // the default of package path

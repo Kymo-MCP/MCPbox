@@ -48,6 +48,7 @@
             <el-select
               v-model="pageInfo.formData.accessType"
               :placeholder="t('mcp.instance.form.accessType')"
+              @change="handleAccessTypeChange"
             >
               <el-option
                 v-for="(accessType, index) in accessTypeOptions"
@@ -63,6 +64,7 @@
             <el-select
               v-model="pageInfo.formData.mcpProtocol"
               :placeholder="t('mcp.instance.form.mcpProtocol')"
+              @change="handleMcpProtocolChange"
             >
               <el-option
                 v-for="(mcpProtocol, index) in mcpProtocolOptions"
@@ -470,6 +472,7 @@ import McpButton from '@/components/mcp-button/index.vue'
 import { TemplateAPI } from '@/api/mcp/template'
 import { AccessType, McpProtocol, SourceType, InstanceData, NodeVisible } from '@/types/instance'
 import { type VolumeMountsItme, type PvcForm, type Code } from '@/types/index.ts'
+import { cloneDeep } from 'lodash-es'
 
 const { t } = useI18n()
 const {
@@ -477,6 +480,7 @@ const {
   router,
   jumpToPage,
   pageInfo,
+  originForm,
   placeholderServer,
   showImgAddress,
   showMcpServers,
@@ -517,6 +521,26 @@ const currentPackage = computed(() => {
 
 const handleFormat = () => {
   pageInfo.value.formData.mcpServers = JsonFormatter.format(pageInfo.value.formData.mcpServers)
+}
+/**
+ * Handle access type changed
+ */
+const handleAccessTypeChange = () => {
+  pageInfo.value.formData.mcpProtocol = ''
+}
+
+/**
+ * Handle McpProtocol Changed
+ */
+const handleMcpProtocolChange = (value: McpProtocol) => {
+  if (pageInfo.value.formData.accessType === AccessType.HOSTING && value === McpProtocol.STDIO) {
+    pageInfo.value.tooltip.imgAddress =
+      InstanceData.TIP_IMGADDRESS + InstanceData.TIP_IMGADDRESS_DEFAULT
+    pageInfo.value.formData.command = InstanceData.COMMAND_TIP
+    return
+  }
+  pageInfo.value.tooltip.imgAddress = InstanceData.TIP_IMGADDRESS
+  pageInfo.value.formData.command = originForm.value?.command
 }
 
 /**
@@ -675,11 +699,13 @@ const handleGetDetail = async () => {
   const data = await InstanceAPI.detail({
     instanceId: query.instanceId,
   })
+  originForm.value = cloneDeep(data)
   pageInfo.value.formData = data
   pageInfo.value.formData.mcpServers = JsonFormatter.format(data.mcpServers)
   pageInfo.value.formData.environmentVariables = Object.keys(data.environmentVariables)?.map(
     (key) => ({ key, value: data.environmentVariables[key] }),
   )
+  pageInfo.value.formData.volumeMounts = data.volumeMounts || []
 }
 
 /**
