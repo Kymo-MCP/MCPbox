@@ -195,10 +195,6 @@ clean:
 	@rm -rf $(FRONTEND_PATH)/dist
 	@rm -rf $(FRONTEND_PATH)/node_modules/.cache
 
-.PHONY: clean-docker
-clean-docker:
-	@echo "Cleaning Docker images..."
-	@docker images | grep "$(IMAGE_REGISTRY)" | awk '{print $$3}' | xargs -r docker rmi -f
 
 # Test targets
 .PHONY: test-backend
@@ -263,7 +259,6 @@ help:
 	@echo "Utility targets:"
 	@echo "  proto-buf                  - Generate protobuf and swagger files"
 	@echo "  clean                      - Clean build artifacts"
-	@echo "  clean-docker               - Clean Docker images"
 	@echo "  test-all                   - Run all tests"
 	@echo "  lint-all                   - Run all linters"
 	@echo "  print                      - Print configuration"
