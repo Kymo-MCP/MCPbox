@@ -1,4 +1,4 @@
-FROM ccr.ccs.tencentyun.com/itqm-private/builder:v1 AS builder
+FROM 77kymo/builder:v1 AS builder
 
 COPY ../ /app
 
@@ -6,27 +6,27 @@ RUN cd /app && make build-frontend
 
 FROM node:20-alpine
 
-# 设置apk源
+# Set apk mirror
 RUN echo "https://mirrors.aliyun.com/alpine/v3.18/main/" > /etc/apk/repositories && \
     echo "https://mirrors.aliyun.com/alpine/v3.18/community/" >> /etc/apk/repositories && \
     apk update && \
     apk add --no-cache bash curl xsel
 
-# 设置 npm 源
+# Set npm registry
 RUN npm config set registry https://registry.npmmirror.com
 
-# 安装依赖git 
+# Install serve globally
 RUN npm install -g serve
 
 RUN mkdir -p /app
 
 WORKDIR /app
 
-# 复制项目代码
+# Copy built frontend files
 COPY --from=builder /app/frontend/dist /app/
 
-# 暴露端口
+# Expose port
 EXPOSE 3000
 
-# 启动项目
+# Start the application
 CMD ["serve", "-s", "/app"]

@@ -80,11 +80,8 @@ build-backend-all: build-backend-init build-backend-market build-backend-authz b
 build-frontend:
 	@echo "---------- Start build frontend ----------"
 	@echo "cd $(FRONTEND_PATH) && pnpm i && pnpm build"
-	@cd $(FRONTEND_PATH) && pnpm i && pnpm build
+	@cd $(FRONTEND_PATH) && rm -rf node_modules && CI=true pnpm i && pnpm build
 	@echo "---------- End build frontend ----------"
-
-	@echo "---------- End build frontend ----------"
-
 # All build targets
 .PHONY: build-all
 build-all: build-backend-all build-frontend
