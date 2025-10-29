@@ -1,5 +1,11 @@
+FROM 77kymo/builder:latest AS builder
+
+COPY ../ /app
+
+RUN cd /app && make build-backend-init
+
 # 运行阶段
-FROM ccr.ccs.tencentyun.com/itqm-private/alpine:3.22
+FROM alpine:3.22
 
 # 设置 apk aliyun 源
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
@@ -10,16 +16,16 @@ RUN apk add --no-cache ca-certificates tzdata
 # 设置时区
 ENV TZ=Asia/Shanghai
 
+
+RUN mkdir -p /app /app/init-data /app/data /app/config
+
 # 设置工作目录
 WORKDIR /app
 
-RUN mkdir -p /app/config
+COPY --from=builder /app/backend/init-data /app/init-data
 
 # 从构建阶段复制二进制文件
-COPY backend/bin/init /app/init
-
-RUN mkdir /app/data
-COPY backend/init-data /app/init-data
+COPY --from=builder /app/backend/bin/init /app/init
 
 # 运行应用
 CMD ["/app/init"]

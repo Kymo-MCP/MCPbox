@@ -1,4 +1,4 @@
-FROM 77kymo/builder:v1 AS builder
+FROM 77kymo/builder:latest AS builder
 
 COPY ../ /app
 

@@ -1,3 +1,9 @@
+FROM 77kymo/builder:latest AS builder
+
+COPY ../ /app
+
+RUN cd /app && make build-backend-gateway
+
 # 运行阶段
 FROM ccr.ccs.tencentyun.com/itqm-private/alpine:3.22
 
@@ -10,13 +16,13 @@ RUN apk add --no-cache ca-certificates tzdata
 # 设置时区
 ENV TZ=Asia/Shanghai
 
+RUN mkdir -p /app /app/config
+
 # 设置工作目录
 WORKDIR /app
 
 # 从构建阶段复制二进制文件
-COPY backend/bin/gateway /app/gateway
-
-RUN mkdir -p /app/config
+COPY --from=builder /app/backend/bin/gateway /app/gateway
 
 # 运行应用
 CMD ["/app/gateway"]

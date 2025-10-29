@@ -102,6 +102,28 @@ define push_docker_image
 	@echo "---------- End Docker push $(1) ----------"
 endef
 
+# Builder image specific build and push with latest tag
+.PHONY: docker-build-builder
+docker-build-builder:
+	@echo "---------- Start Docker build builder ----------"
+	@echo "cd $(ROOT_PATH) && docker build -t $(IMAGE_REGISTRY)/builder:v1 -f $(DOCKERFILES_PATH)/Dockerfile.builder ."
+	@cd $(ROOT_PATH) && docker build -t $(IMAGE_REGISTRY)/builder:v1 -f $(DOCKERFILES_PATH)/Dockerfile.builder .
+	@echo "---------- End Docker build builder ----------"
+
+.PHONY: docker-push-builder
+docker-push-builder:
+	@echo "---------- Start Docker push builder ----------"
+	@echo "docker push $(IMAGE_REGISTRY)/builder:v1"
+	@docker push $(IMAGE_REGISTRY)/builder:v1
+	@echo "docker tag $(IMAGE_REGISTRY)/builder:v1 $(IMAGE_REGISTRY)/builder:latest"
+	@docker tag $(IMAGE_REGISTRY)/builder:v1 $(IMAGE_REGISTRY)/builder:latest
+	@echo "docker push $(IMAGE_REGISTRY)/builder:latest"
+	@docker push $(IMAGE_REGISTRY)/builder:latest
+	@echo "---------- End Docker push builder ----------"
+
+.PHONY: docker-build-push-builder
+docker-build-push-builder: docker-build-builder docker-push-builder
+
 .PHONY: docker-build-init
 docker-build-init:
 	$(call build_docker_image,init,mcp-init)
@@ -254,6 +276,9 @@ help:
 	@echo "  build-all                  - Build all services and frontend"
 	@echo ""
 	@echo "Docker targets:"
+	@echo "  docker-build-builder       - Build builder Docker image"
+	@echo "  docker-push-builder        - Push builder Docker image"
+	@echo "  docker-build-push-builder  - Build and push builder Docker image with latest tag"
 	@echo "  docker-build-init          - Build init Docker image"
 	@echo "  docker-build-market        - Build market Docker image"
 	@echo "  docker-build-authz         - Build authz Docker image"
