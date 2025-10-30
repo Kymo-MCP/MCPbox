@@ -3,7 +3,7 @@
    <strong>English</strong> | <a href="./README.cn.md">中文版</a> 
 </p>
 
-<img width="1879" height="896" alt="image" src="https://github.com/user-attachments/assets/ee804f92-7e69-419b-8cfc-d5676783fe3d" />
+<img width="1836" height="912" alt="image" src="https://github.com/user-attachments/assets/cc706fe0-f53a-464c-b8d7-c336fec9802e" />
 
 <p align="center">
   <a href="https://raw.githubusercontent.com/Calcium-Ion/new-api/main/LICENSE">
