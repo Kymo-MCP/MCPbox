@@ -28,28 +28,54 @@
 ## 🚀 Overview
 
 
-MCP CAN is a lightweight platform focused on agile management of MCP services. It relies on containerization technology to achieve rapid deployment and remote access of local MCP services, while also supporting centralized configuration management of external MCP services. Its core functions are designed around "deployment convenience" and "basic management capabilities."
+MCP CAN is an open-source, lightweight back-end platform focused on agile management of MCP services. It supports converting the stdio configuration protocol to the SSE protocol and combining it with a token verification mechanism to help users manage and organize MCP services efficiently and securely. It also supports rapid deployment and remote access of local MCP services based on containerization technology, and supports centralized configuration management of external MCP services. Its core functions are designed around "ease of deployment" and "basic management capabilities".
 <img width="1847" height="900" alt="image" src="https://github.com/user-attachments/assets/efe4c922-cb2a-4f18-a9e4-5115ade21506" />
 
 
 
 
 ### ✨ Key Features
+## 🚀1. Containerized Agile Deployment: Focusing on Rapid Code Package Deployment
 
-- **🛡️ Multi-protocol Compatibility and Conversion**: Supports automatic conversion of MCP's stdio configuration protocol to SSE configuration protocol, simplifying the development and integration process and enabling seamless docking and communication between systems of different architectures.
-- **🔗 Multi-mode Connection Management**: Provides three protocol modes: direct connection mode, proxy mode, and managed mode, meeting multi-scenario requirements from local debugging to enterprise-level hosting.
-- **📊 MCP Service Visual Monitoring**: Displays the running status, traffic data, and log records of each MCP instance in real time in the form of a list, helping administrators intuitively grasp the service health status.
-- **🧩 Modular Service Management System**: Includes four modules: template management, instance management, environment management, and code package management, forming a complete service lifecycle management loop.
-- **🚀Containerized Agile Deployment**: Focusing on Rapid Code Package Rollout
-Leveraging a standardized container environment (pre-installed with Node.js and Python runtimes), we support lightweight deployment of MCP services. Deployment methods include:
-● Code Package Upload: Directly upload locally written MCP service code packages (e.g., .zip format). The platform automatically decompresses and adapts them to the container runtime environment.
-● Volume Mounting: Synchronize code files to the container by mounting external storage volumes. This is ideal for scenarios requiring frequent code updates.
-● Toolkit Deployment: Provides official Node.js and Python toolkits, enabling developers to deploy code with one click using command-line tools. AA
-- **🚀 Protocol Conversion**: Enable Remote Access to Local Services
-A built-in protocol conversion gateway automatically converts local MCP service interactions based on the Standard Input/Output (STDIO) protocol to the Streamable HTTP protocol. This eliminates the need for manual code modifications and enables:
-● Local services are quickly mapped to remotely accessible HTTP endpoints;
-● External systems call local MCP services via HTTP requests, solving cross-network access challenges.
----
+Leveraging a standardized container environment (pre-installed with Node.js and Python runtime), it supports lightweight deployment of MCP services, including:
+
+- **Code Package Upload**: Directly upload locally written MCP service code packages (e.g., .zip format), and the platform automatically unzips and adapts them to the container runtime environment;
+- **Storage Volume Mounting**: By mounting external storage volumes, code files are synchronized to the container, suitable for scenarios requiring frequent code updates;
+- **Toolkit Deployment**: Provides official Node.js and Python toolkits, allowing developers to deploy code with a single click via command-line tools.
+
+
+## 🔗2. Protocol Conversion: Enabling Remote Access to Local Services
+
+A built-in protocol conversion gateway supports automatically converting local MCP service interactions based on the "standard input/output (stdio) protocol" to the "streamable HTTP protocol," achieving the following without manual code modification:
+
+- Quickly mapping local services to remotely accessible HTTP endpoints;
+- External systems can call local MCP services via HTTP requests, solving cross-network access challenges.
+
+
+## 🛡️3. Access Modes: Covering Basic Management Needs
+
+The platform offers three access modes, focusing on core management scenarios with clearly defined functional boundaries:
+
+### (1) Direct Connection Mode: External MCP Configuration Management
+Used for centralized management of configurations for "externally accessible MCP services," supporting the input of connection parameters (such as address, port, protocol version) for external MCP services, which are then stored as configuration items. No other additional functions (such as status monitoring or call statistics) are provided.
+
+
+### (2) Proxy Mode: Unified Access Entry Point
+External MCP services are accessed externally through the platform's proxy. Core capabilities include:
+
+- Hiding the service's true connection information (such as IP address, port, and token) to reduce exposure risks;
+- Restricting access permissions for specified terminals based on basic access control;
+- Providing access logs to trace request sources and call details.
+
+
+### (3) Managed Mode: Platform Provides Runtime Environment + SSE Protocol Adaptation
+
+The MCP service is fully deployed in the container provided by the platform. In addition to basic management capabilities, protocol conversion and adaptation are added, specifically supporting:
+
+- **Automatic Protocol Conversion**: For managed MCP services, the interaction method based on the "Standard Input/Output (stdio) protocol" is automatically converted to the "SSE (Server-Sent Events) protocol," without the need for additional development of adaptation;
+- **Unified SSE Access Address**: After successful deployment, an external access address based on the SSE protocol is automatically generated. External systems can directly interact with the MCP service using the SSE protocol through this address;
+- Container lifecycle management (start/stop/restart);
+- Real-time viewing of runtime logs (such as error logs and output logs).
 
 ## 🛠️ Technology Stack
 
