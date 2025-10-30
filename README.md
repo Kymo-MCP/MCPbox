@@ -134,12 +134,12 @@ For detailed deployment steps, please refer to [https://kymo-mcp.github.io/mcp-b
 
 ## 📌 Frequently Asked Questions  
 
-### 1. Why choose MCPBOX instead of other management platforms?
-MCPBOX is an open-source management platform designed specifically for the MCP service ecosystem, unlike general-purpose admin systems.
+### 1. Why choose MCPCAN instead of other management platforms?
+MCPCAN is an open-source management platform designed specifically for the MCP service ecosystem, unlike general-purpose admin systems.
 It supports MCP stdio ↔ SSE protocol conversion, three connection modes, and visualized traffic monitoring, enabling end-to-end management from configuration to distribution.
-Compared to other platforms, MCPBOX focuses on unified management of large-model toolchains and intelligent services, making development and operations more efficient and secure.
+Compared to other platforms, MCPcAN focuses on unified management of large-model toolchains and intelligent services, making development and operations more efficient and secure.
 
-### 2. What unique advantages does MCPBOX have compared to similar products?
+### 2. What unique advantages does MCPCAN have compared to similar products?
 
 - Stronger protocol compatibility: Natively supports MCP stdio/SSE conversion and multiple connection methods.
 
@@ -147,21 +147,16 @@ Compared to other platforms, MCPBOX focuses on unified management of large-model
 
 - Enhanced security mechanisms: Supports Token authentication and multi-level permission control.
 
-- More intuitive operations experience: Graphical interface displays real-time service status and traffic data.
 
-### 3. In what scenarios is MCPBOX suitable?
+### 3. In what scenarios is MCPCAN suitable?
 
-MCPBOX is ideal for scenarios requiring centralized management of multiple MCP services, including but not limited to:
+MCPCAN is ideal for scenarios requiring centralized management of multiple MCP services, including but not limited to:
 
-- AI Agent development platforms that need to manage multiple service instances;
+- Individual/Small Team MCP Service Development: Quickly deploy local code as a remote SSE protocol service for real-time data push testing or small application calls;
 
-- Enterprises that need secure and controlled distribution of MCP tools across teams;
+- External MCP Service Configuration Archiving: Centrally manage connection information for multiple external MCP services, avoiding scattered and lost configurations;
 
-- Developers who want to monitor MCP service performance and traffic data for intelligent operations.
-
-- Whether for individual research or enterprise deployment, MCPBOX provides a flexible architecture and open capabilities to support real-world business applications. 
-
----
+- Lightweight Real-Time API Deployment: Convert MCP services into SSE protocol APIs for use by small systems that need to obtain real-time data (such as front-end real-time dashboards, simple monitoring tools).
 
 ## 🤝 Contributing  
 Contributions of any kind are welcome!
@@ -173,13 +168,6 @@ Contributions of any kind are welcome!
 
 Welcome to Join our [Discord](https://discord.com/channels/1428637640856571995/1428637896532820038) community for discussion and support.
 
-
----
-
-## 📄 License  
-This project is licensed under the **MIT License**. For details, see [LICENSE](./LICENSE).  
-
----
 
 ## 🙌 Acknowledgements  
 - Thanks to the open-source libraries or frameworks used  
