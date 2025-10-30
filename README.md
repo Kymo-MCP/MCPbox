@@ -83,31 +83,11 @@ The MCP service is fully deployed in the container provided by the platform. In 
 - Container lifecycle management (start/stop/restart);
 - Real-time viewing of runtime logs (such as error logs and output logs).
 
-## 🛠️ Technology Stack
-
-### Frontend
-- **Framework**: Next.js 15.5.4 (App Router)
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS v4
-- **UI Components**: Shadcn/UI
-- **State Management**: React Hooks
-
-### Backend
-- **Runtime**: Node.js
-- **API**: Next.js API Routes
-- **Database ORM**: Prisma
-- **Authentication**: NextAuth v5 with GitHub OAuth
-
-### Infrastructure
-- **Container Orchestration**: Kubernetes
-- **Database**: PostgreSQL (via KubeBlocks)
-- **Web Terminal**: ttyd
-- **Container Image**: fullstack-web-runtime (Custom Docker image with development tools）
-
-  
-
 ## ⚡ Deployment
 For detailed deployment steps, please refer to [https://kymo-mcp.github.io/mcp-box-deploy/](https://github.com/Kymo-MCP/mcp-box-deploy/tree/v1.0.0-dev) for details.
+
+## 🛠️ Technology Stack
+
 
 ## 🏗️ Architecture
 
