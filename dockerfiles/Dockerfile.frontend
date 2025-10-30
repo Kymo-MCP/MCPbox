@@ -1,0 +1,32 @@
+FROM 77kymo/builder:latest AS builder
+
+COPY ../ /app
+
+RUN cd /app && make build-frontend
+
+FROM node:20-alpine
+
+# Set apk mirror
+RUN echo "https://mirrors.aliyun.com/alpine/v3.18/main/" > /etc/apk/repositories && \
+    echo "https://mirrors.aliyun.com/alpine/v3.18/community/" >> /etc/apk/repositories && \
+    apk update && \
+    apk add --no-cache bash curl xsel
+
+# Set npm registry
+RUN npm config set registry https://registry.npmmirror.com
+
+# Install serve globally
+RUN npm install -g serve
+
+RUN mkdir -p /app
+
+WORKDIR /app
+
+# Copy built frontend files
+COPY --from=builder /app/frontend/dist /app/
+
+# Expose port
+EXPOSE 3000
+
+# Start the application
+CMD ["serve", "-s", "/app"]

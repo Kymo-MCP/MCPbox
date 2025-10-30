@@ -1,0 +1,61 @@
+server:
+  httpPort: 8081
+
+secret: "dev-app-secret"
+
+domain: "http://demo.mcp-box.com"
+
+services:
+  mcpMarket:
+    host: "mcp-market-svc"
+    port: 8081
+  mcpAuthz:
+    host: "127.0.0.1"
+    port: 8082
+
+database:
+  mysql:
+    host: "mysql-svc"
+    port: 3306
+    database: mcp_dev
+    username: mcp_user
+    password: dev-password
+  redis:
+    host: "redis-svc"
+    port: 6379
+    password: "dev-redis-password"
+    db: 0
+
+
+# database:
+#   mysql:
+#     host: 123.207.70.135
+#     port: 30353
+#     username: litinghong
+#     password: itqm123!@#
+#     database: qm_mcp_market
+
+log:
+  level: debug
+  format: text
+
+
+# 代码包存放路径
+code:
+  # 上传配置
+  upload:
+    # 单个文件最大大小 (MB)
+    maxFileSize: 100
+    # 允许的文件类型
+    allowedExtensions: [".zip", ".tar.gz", ".tar", ".rar"]
+
+storage:
+  # 存储根目录
+  rootPath: ./data
+  # 代码包存放路径
+  codePath: ./data/code-package
+  # static 存放路径
+  staticPath: ./data/static
+
+
+

@@ -1,0 +1,28 @@
+FROM 77kymo/builder:latest AS builder
+
+COPY ../ /app
+
+RUN cd /app && make build-backend-market
+
+# 运行阶段
+FROM alpine:3.22
+
+# 设置 apk aliyun 源
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+
+# 安装必要的运行时依赖
+RUN apk add --no-cache ca-certificates tzdata
+
+# 设置时区
+ENV TZ=Asia/Shanghai
+
+RUN mkdir -p /app /app/config
+
+# 设置工作目录
+WORKDIR /app
+
+# 从构建阶段复制二进制文件
+COPY --from=builder /app/backend/bin/market /app/market
+
+# 运行应用
+CMD ["/app/market"]

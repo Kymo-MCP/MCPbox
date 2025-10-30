@@ -1,0 +1,18 @@
+{
+  "home": {
+    "total": "MCP总数",
+    "start": "启动实例",
+    "stop": "停止实例",
+    "hosting": "托管数",
+    "case": "市场案例",
+    "usedCase": "可用案例",
+    "more": "更多",
+    "market": {
+      "bigModel": "精选mcp，快速接入",
+      "modelScope": "魔塔社区 MCP 服务器",
+      "higress": "Higress MCP 服务器",
+      "mcpso": "MCP服务器发现平台",
+      "smithery": "Smithery MCP 工具"
+    }
+  }
+}

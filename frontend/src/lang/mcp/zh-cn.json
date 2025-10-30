@@ -1,0 +1,180 @@
+{
+  "mcp": {
+    "template": {
+      "name": "模板名称",
+      "type": "部署模式",
+      "env": "环境",
+      "createTime": "创建时间",
+      "notes": "描述",
+      "form": {
+        "placeholderName": "模板名称"
+      },
+      "action": {
+        "add": "创建模板",
+        "save": "保存模板",
+        "saveAndInstance": "保存模板并创建实例",
+        "createInstance":"创建实例"
+      },
+      "pageDesc": {
+        "createTitle": "创建 MCP Server 模板",
+        "editTitle": "编辑 MCP Server 模板",
+        "list": "MCP模板列表",
+        "desc": "管理你的模板列表以及提供再可快速部署MCP服务实例",
+        "total": "模板总数",
+        "compress": "代码包已默认加压到"
+      },
+      "formData": {
+        "title": "创建模板",
+        "name": "模板名称",
+        "notes": "描述",
+        "isBind": "已被绑定",
+        "size": "大小",
+        "path": "路径",
+        "accessModes": "访问模式",
+        "pods": "绑定Pod",
+        "servicePath": "服务路径",
+        "icon": "服务logo"
+      },
+      "rules": {
+        "name": "请输入模板名称",
+        "deployType": "请选择部署模式",
+        "imgAddress": "请填写镜像地址",
+        "environmentId": "请选择代码包运行的环境",
+        "validForm": "请完善表单信息后重试",
+        "mcpServers": {
+          "must": "MCP服务器配置必填",
+          "format": "JSON格式解析错误",
+          "name": "必须存在mcpServers",
+          "serverName": "必须存在一个mcp服务",
+          "regexServerName": "mcp服务名称只能由大小写字母、数字、横线、下划线组成,且不能以数字开头",
+          "url": "mcp服务名称url不能为空",
+          "type": "协议类型需要为sse或steamable-http",
+          "transport": "transport字段需要为sse或steamable-http",
+          "command": "command字段需要必填"
+        }
+      }
+    },
+    "instance": {
+      "name": "实例名称",
+      "type": "部署模式",
+      "status": "状态",
+      "packStatus": "容器状态",
+      "containerName": "容器名称",
+      "env": "环境",
+      "createTime": "创建时间",
+      "detail": "实例详情",
+      "publicProxyConfig": "MCP访问配置",
+      "viewConfig": "查看配置",
+      "config": "MCP 服务配置",
+      "count": {
+        "total": "总数",
+        "running": "已启用",
+        "stoped": "已禁用",
+        "connecting": "托管数"
+      },
+      "form": {
+        "placeholderName": "实例名称",
+        "placeholderType": "部署模式",
+        "placeholderStatus": "状态",
+        "placeholderContainerStatus": "容器状态",
+        "accessType": "访问模式",
+        "mcpProtocol": "MCP协议"
+      },
+      "action": {
+        "add": "创建实例",
+        "save": "保存实例",
+        "create": "创建实例",
+        "view": "查看",
+        "log": "日志",
+        "stop": "停止",
+        "start": "启动",
+        "reStart": "重启",
+        "probe": "状态探测",
+        "delete": "删除",
+        "deleteBox": "确定删除该实例?",
+        "detection": "探测成功；服务正常连接",
+        "restart": "实例已重启",
+        "stopInstance": "实例已停止",
+        "copy": "复制配置",
+        "selectTempalte": "选择模板",
+        "customize": "自定义",
+        "byTemplate": "从模板创建"
+      },
+      "pageDesc": {
+        "createTitle": "创建实例",
+        "editTitle": "编辑实例",
+        "list": "MCP实例列表",
+        "desc": "管理你的实例列表以及提供URL链接",
+        "total": "实例总数",
+        "confirmEdit": "实例编辑之后将重启；确定编辑？",
+        "packStatusTips": "状态有延时，通过状态探测或者查看日志排查容器运行情况。"
+      },
+      "formData": {
+        "title": "创建MCP实例",
+        "baseInfo": "基本信息",
+        "sourceType": "实例来源",
+        "serviceId": "MCP服务器ID",
+        "templateId": "模板ID",
+        "instanceName": "实例名称",
+        "deployType": "部署模式",
+        "imgAddress": "镜像地址",
+        "mcpServers": "MCP服务器配置",
+        "mcpServersPlaceholder": "请输入JSON格式的MCP服务器配置，例如:",
+        "configInfo": "配置信息",
+        "packageId": "代码包选择",
+        "changePackage": "更换代码包",
+        "addPackage": "添加代码包",
+        "environmentId": "环境选择",
+        "port": "端口号",
+        "environmentVariables": "环境变量",
+        "key": "变量名",
+        "value": "变量值",
+        "add-env": "添加环境变量",
+        "volumeConfig": "卷挂载配置",
+        "volumeType": "挂载类型",
+        "nodeName": "节点",
+        "hostPath": "宿主机路径",
+        "mountPath": "容器路径",
+        "readOnly": "只读",
+        "pvcName": "PVC",
+        "addVolume": "添加卷挂载",
+        "initScript": "初始化脚本",
+        "command": "启动命令"
+      },
+      "rules": {
+        "name": "请填写实例名称"
+      },
+      "log": {
+        "title": "实例日志",
+        "instanceId": "实例 ID",
+        "updateTime": "最近跟新"
+      },
+      "loading": {
+        "restart": "正在停用实例...",
+        "stop": "正在停用实例..."
+      },
+      "probe": {
+        "containerStatus": "容器状态",
+        "serviceReadyStatus": "容器svc状态",
+        "probeHttpStatus": "服务状态",
+        "ready": "已就绪",
+        "unready": "未就绪",
+        "title": "状态探测",
+        "errorInfo": "错误信息",
+        "warnInfo": "告警信息",
+        "unit": "条告警"
+      }
+    },
+    "type": {
+      "hosting": "托管",
+      "direct": "直连",
+      "proxy": "代理"
+    },
+    "source": {
+      "unknown": "未知来源",
+      "market": "市场",
+      "template": "模板",
+      "custom": "自定义"
+    }
+  }
+}

@@ -1,0 +1,21 @@
+server:
+  httpPort: 8085
+
+database:
+  mysql:
+    host: "mysql-svc"
+    port: 3306
+    database: mcp_dev
+    username: mcp_user
+    password: dev-password
+  redis:
+    host: "redis-svc"
+    port: 6379
+    password: "dev-redis-password"
+    db: 0
+
+log:
+  level: debug
+  format: text
+
+

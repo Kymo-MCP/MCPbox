@@ -1,0 +1,28 @@
+FROM 77kymo/builder:latest AS builder
+
+COPY ../ /app
+
+RUN cd /app && make build-backend-authz
+
+# Runtime stage
+FROM alpine:3.22
+
+# Set apk aliyun mirror
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+
+# Install necessary runtime dependencies
+RUN apk add --no-cache ca-certificates tzdata
+
+# Set timezone
+ENV TZ=Asia/Shanghai
+
+RUN mkdir -p /app /app/config
+
+# Set working directory
+WORKDIR /app
+
+# Copy binary from build stage
+COPY --from=builder /app/backend/bin/authz /app/authz
+
+# Run application
+CMD ["/app/authz"]

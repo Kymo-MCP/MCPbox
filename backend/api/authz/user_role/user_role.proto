@@ -1,0 +1,192 @@
+syntax = "proto3";
+
+package authz.user_role;
+
+option go_package = "github.com/qm-mcp/backend/api/authz/user_role";
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+// UserRole 用户角色关联信息
+message UserRole {
+    // @inject_tag: json:"userId" form:"userId" uri:"userId" desc:"用户ID"
+    uint64 userId = 1;
+    // @inject_tag: json:"roleId" form:"roleId" uri:"roleId" desc:"角色ID"
+    uint64 roleId = 2;
+}
+
+// GetUserRolesRequest 查询用户角色关联请求
+message GetUserRolesRequest {
+    // @inject_tag: json:"userId" form:"userId" uri:"userId" desc:"用户ID，可选参数"
+    uint64 userId = 1;
+    // @inject_tag: json:"roleId" form:"roleId" uri:"roleId" desc:"角色ID，可选参数"
+    uint64 roleId = 2;
+}
+
+// GetUserRolesResponse 查询用户角色关联响应
+message GetUserRolesResponse {
+    // @inject_tag: json:"code" desc:"响应状态码"
+    int32 code = 1;
+    // @inject_tag: json:"message" desc:"响应消息"
+    string message = 2;
+    // @inject_tag: json:"data" desc:"用户角色关联列表"
+    repeated UserRole userRoles = 3;
+}
+
+// AddUserRoleRequest 添加用户角色关联请求
+message AddUserRoleRequest {
+    // @inject_tag: json:"userId" form:"userId" desc:"用户ID"
+    uint64 userId = 1;
+    // @inject_tag: json:"roleId" form:"roleId" desc:"角色ID"
+    uint64 roleId = 2;
+}
+
+// AddUserRoleResponse 添加用户角色关联响应
+message AddUserRoleResponse {
+    // @inject_tag: json:"code" desc:"响应状态码"
+    int32 code = 1;
+    // @inject_tag: json:"message" desc:"响应消息"
+    string message = 2;
+    // @inject_tag: json:"data" desc:"新增的用户角色关联信息"
+    UserRole userRole = 3;
+}
+
+// DeleteUserRoleRequest 删除用户角色关联请求
+message DeleteUserRoleRequest {
+    // @inject_tag: json:"userId" form:"userId" desc:"用户ID"
+    uint64 userId = 1;
+    // @inject_tag: json:"roleId" form:"roleId" desc:"角色ID"
+    uint64 roleId = 2;
+}
+
+// BatchAddUserRoleRequest 批量添加用户角色关联请求
+message BatchAddUserRoleRequest {
+    // @inject_tag: json:"userId" form:"userId" desc:"用户ID"
+    uint64 userId = 1;
+    // @inject_tag: json:"roleIds" form:"roleIds" desc:"角色ID列表"
+    repeated uint64 roleIds = 2;
+}
+
+// BatchAddUserRoleResponse 批量添加用户角色关联响应
+message BatchAddUserRoleResponse {
+    // @inject_tag: json:"code" desc:"响应状态码"
+    int32 code = 1;
+    // @inject_tag: json:"message" desc:"响应消息"
+    string message = 2;
+    // @inject_tag: json:"data" desc:"批量添加的用户角色关联列表"
+    repeated UserRole data = 3;
+}
+
+// GetRoleIdsByUserIdRequest 根据用户ID获取角色ID列表请求
+message GetRoleIdsByUserIdRequest {
+    // @inject_tag: json:"userId" uri:"userId" desc:"用户ID"
+    uint64 userId = 1;
+}
+
+// GetRoleIdsByUserIdResponse 根据用户ID获取角色ID列表响应
+message GetRoleIdsByUserIdResponse {
+    // @inject_tag: json:"code" desc:"响应状态码"
+    int32 code = 1;
+    // @inject_tag: json:"message" desc:"响应消息"
+    string message = 2;
+    // @inject_tag: json:"data" desc:"角色ID列表"
+    repeated uint64 data = 3;
+}
+
+// GetUserIdsByRoleIdRequest 根据角色ID获取用户ID列表请求
+message GetUserIdsByRoleIdRequest {
+    // @inject_tag: json:"roleId" uri:"roleId" desc:"角色ID"
+    uint64 roleId = 1;
+}
+
+// GetUserIdsByRoleIdResponse 根据角色ID获取用户ID列表响应
+message GetUserIdsByRoleIdResponse {
+    // @inject_tag: json:"code" desc:"响应状态码"
+    int32 code = 1;
+    // @inject_tag: json:"message" desc:"响应消息"
+    string message = 2;
+    // @inject_tag: json:"data" desc:"用户ID列表"
+    repeated uint64 data = 3;
+}
+
+// DeleteByUserIdRequest 删除用户所有角色关联请求
+message DeleteByUserIdRequest {
+    // @inject_tag: json:"userId" uri:"userId" desc:"用户ID"
+    uint64 userId = 1;
+}
+
+// DeleteByRoleIdRequest 删除角色所有用户关联请求
+message DeleteByRoleIdRequest {
+    // @inject_tag: json:"roleId" uri:"roleId" desc:"角色ID"
+    uint64 roleId = 1;
+}
+
+// CommonResponse 通用响应
+message CommonResponse {
+    // @inject_tag: json:"code" desc:"响应状态码"
+    int32 code = 1;
+    // @inject_tag: json:"message" desc:"响应消息"
+    string message = 2;
+}
+
+// 用户角色服务
+service UserRoleService {
+  // 查询用户角色关联
+  rpc GetUserRoles(GetUserRolesRequest) returns (GetUserRolesResponse) {
+    option (google.api.http) = {
+      get: "/authz/user-roles"
+    };
+  }
+
+  // 添加用户角色关联
+  rpc AddUserRole(AddUserRoleRequest) returns (AddUserRoleResponse) {
+    option (google.api.http) = {
+      post: "/authz/user-roles"
+      body: "*"
+    };
+  }
+
+  // 删除用户角色关联
+  rpc DeleteUserRole(DeleteUserRoleRequest) returns (CommonResponse) {
+    option (google.api.http) = {
+      delete: "/authz/user-roles"
+      body: "*"
+    };
+  }
+
+  // 批量添加用户角色关联
+  rpc BatchAddUserRole(BatchAddUserRoleRequest) returns (BatchAddUserRoleResponse) {
+    option (google.api.http) = {
+      post: "/authz/user-roles/batch"
+      body: "*"
+    };
+  }
+
+  // 获取用户角色ID列表
+  rpc GetRoleIdsByUserId(GetRoleIdsByUserIdRequest) returns (GetRoleIdsByUserIdResponse) {
+    option (google.api.http) = {
+      get: "/authz/user-roles/user/{userId}/role-ids"
+    };
+  }
+
+  // 获取角色用户ID列表
+  rpc GetUserIdsByRoleId(GetUserIdsByRoleIdRequest) returns (GetUserIdsByRoleIdResponse) {
+    option (google.api.http) = {
+      get: "/authz/user-roles/role/{roleId}/user-ids"
+    };
+  }
+
+  // 删除用户所有角色
+  rpc DeleteByUserId(DeleteByUserIdRequest) returns (CommonResponse) {
+    option (google.api.http) = {
+      delete: "/authz/user-roles/user/{userId}"
+    };
+  }
+
+  // 删除角色所有用户
+  rpc DeleteByRoleId(DeleteByRoleIdRequest) returns (CommonResponse) {
+    option (google.api.http) = {
+      delete: "/authz/user-roles/role/{roleId}"
+    };
+  }
+}

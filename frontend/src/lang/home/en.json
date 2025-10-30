@@ -1,0 +1,18 @@
+{
+  "home": {
+    "total": "Total",
+    "start": "Start Instance",
+    "stop": "Stop Instance",
+    "hosting": "Hosting",
+    "case": "Market",
+    "usedCase": "Available cases",
+    "more": "More",
+    "market": {
+      "bigModel": "Selected MCP, quick access",
+      "modelScope": "ModelScope Community MCP Server",
+      "higress": "Higress MCP Server",
+      "mcpso": "MCP server discovery platform",
+      "smithery": "Smithery MCP Tools"
+    }
+  }
+}

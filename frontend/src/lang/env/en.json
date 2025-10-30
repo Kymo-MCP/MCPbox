@@ -1,0 +1,100 @@
+{
+  "env": {
+    "run": {
+      "name": "Name",
+      "environment": "ENV-Type",
+      "namespace": "NameSpace",
+      "createdAt": "CreatedTime",
+      "updatedAt": "updatedTime",
+      "config": "Config",
+      "detail": "EnvDetail",
+      "action": {
+        "add": "Add",
+        "detail": "Detail",
+        "connection": "Connection",
+        "edit": "Edit",
+        "pvc": "PVC",
+        "node": "Node",
+        "delete": "Delete",
+        "connectionSuccess": "Success",
+        "deleteBox": "Are you sure to delete this runtime environment?"
+      },
+      "pageDesc": {
+        "list": "Environment Manage",
+        "desc": "Manage your container environment and provide connectivity testing",
+        "total": "Total",
+        "pvcList": "PVC List",
+        "pvcDesc": "PVC management refers to the declaration and binding of persistent storage volumes in container environments",
+        "pvcTotal": "Total",
+        "nodeList": "Node List",
+        "nodeTotal": "Total"
+      },
+      "form": {
+        "name": "Name",
+        "environment": "ENV-Type",
+        "namespace": "NameSpace"
+      },
+      "formData": {
+        "title": "Creat a new environment",
+        "edit": "Edit",
+        "name": "Name",
+        "environment": "Environment Type",
+        "config": "Config (YAML)",
+        "format": "Beautify",
+        "placeholderConfig": "Please enter the YAML format environment configuration, Example:",
+        "namespace": "Namespace"
+      },
+      "rules": {
+        "name": "Please enter the name",
+        "environment": "Please select the environment type",
+        "config": "Please enter the config",
+        "namespace": "Please select the namespace",
+        "formatFaild": "Format failure"
+      },
+      "load": {
+        "connect": "connecting..."
+      }
+    },
+    "pvc": {
+      "name": "Name",
+      "namespace": "NameSpace",
+      "storageClass": "StorageClass",
+      "accessModes": "AccessModes",
+      "capacity": "Capacity",
+      "status": "Status",
+      "roles": "Roles",
+      "pods": "Pods",
+      "creationTime": "CreationTime",
+      "unbound": "Unbound",
+      "action": {
+        "add": "Add"
+      },
+      "formData": {
+        "title": "Creat a new PVC",
+        "name": "Name",
+        "storageClass": "StorageClass",
+        "accessMode": "AccessMode",
+        "storageSize": "StorageSize(GB)",
+        "nodeName": "NodeName",
+        "hostPath": "HostPath"
+      },
+      "rules": {
+        "name": "Please enter the pvcName",
+        "accessMode": "Please select the accessMode",
+        "storageSize": "Please enter the storageSize"
+      },
+      "placeholder": {
+        "storageSize": "请输入存储大小，如：10"
+      }
+    },
+    "node": {
+      "name": "Name",
+      "status": "Status",
+      "roles": "Roles",
+      "internalIp": "InternalIp",
+      "externalIp": "ExternalIp",
+      "creationTime": "CreationTime",
+      "operatingSystem": "OperatingSystem"
+    }
+  }
+}

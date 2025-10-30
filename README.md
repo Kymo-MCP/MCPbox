@@ -5,9 +5,9 @@
 <div align="center">
   <img src="https://img.shields.io/badge/Next.js-15.5.4-black?style=for-the-badge&logo=next.js" alt="Next.js"/>
   <img src="https://img.shields.io/badge/TypeScript-5.0-blue?style=for-the-badge&logo=typescript" alt="TypeScript"/>
-  <img src="https://img.shields.io/badge/PostgreSQL-14-blue?style=for-the-badge&logo=postgresql" alt="PostgreSQL"/>
+  <img src="https://img.shields.io/badge/MySQL-8.0-blue?style=for-the-badge&logo=mysql" alt="MySQL"/>
   <img src="https://img.shields.io/badge/Kubernetes-1.28-326ce5?style=for-the-badge&logo=kubernetes" alt="Kubernetes"/>
-  <img src="https://img.shields.io/badge/Claude_Code-AI-purple?style=for-the-badge" alt="Claude Code"/>
+  <img src="https://img.shields.io/badge/License-GPL--3.0-blue?style=for-the-badge" alt="GPL-3.0"/>
 </div>
 <img width="1836" height="912" alt="image" src="https://github.com/user-attachments/assets/cc706fe0-f53a-464c-b8d7-c336fec9802e" />
 
@@ -31,130 +31,122 @@
 </div>
 
 
-## 🚀 Overview
+## What is MCPCan?
 
+MCPCan is an open-source platform focused on efficient management of MCP (Model Context Protocol) services, providing DevOps and development teams with comprehensive MCP service lifecycle management capabilities through a modern web interface.
 
-MCP CAN is an open-source, lightweight back-end platform focused on agile management of MCP services. It supports converting the stdio configuration protocol to the SSE protocol and combining it with a token verification mechanism to help users manage and organize MCP services efficiently and securely. It also supports rapid deployment and remote access of local MCP services based on containerization technology, and supports centralized configuration management of external MCP services. Its core functions are designed around "ease of deployment" and "basic management capabilities".
-<img width="1847" height="900" alt="image" src="https://github.com/user-attachments/assets/efe4c922-cb2a-4f18-a9e4-5115ade21506" />
+MCPCan supports multi-protocol compatibility and conversion, enabling seamless integration between different MCP service architectures while providing visual monitoring, security authentication, and one-stop deployment capabilities.
 
+<div align="center">
+  <img width="1879" height="896" alt="MCPCan Dashboard" src="https://github.com/user-attachments/assets/ee804f92-7e69-419b-8cfc-d5676783fe3d" />
+</div>
 
+## ✨ Key Features
+- **🎯 Unified Management**: Centralized management of all MCP service instances and configurations
+- **🔄 Protocol Conversion**: Supports seamless conversion between various MCP protocols
+- **📊 Real-time Monitoring**: Provides detailed service status and performance monitoring
+- **🔐 Security & Authentication**: Built-in identity authentication and permission management system
+- **🚀 One-stop Deployment**: Quick release, configuration, and distribution of MCP services
+- **📈 Scalability**: Cloud-native architecture based on Kubernetes
 
+## DEMO Site (Under Construction)
 
-# ✨ Key Features
-## 🚀1. Containerized Agile Deployment: Focusing on Rapid Code Package Deployment
+MCPCan provides an online demo site where you can experience MCPCan's features and performance.
 
-Leveraging a standardized container environment (pre-installed with Node.js and Python runtime), it supports lightweight deployment of MCP services, including:
+Under construction...
 
-- **Code Package Upload**: Directly upload locally written MCP service code packages (e.g., .zip format), and the platform automatically unzips and adapts them to the container runtime environment;
-- **Storage Volume Mounting**: By mounting external storage volumes, code files are synchronized to the container, suitable for scenarios requiring frequent code updates;
-- **Toolkit Deployment**: Provides official Node.js and Python toolkits, allowing developers to deploy code with a single click via command-line tools.
+## Quickstart
 
+For detailed deployment instructions, please refer to our [Deployment Guide](https://kymo-mcp.github.io/mcpcan-deploy/).
 
-## 🔗2. Protocol Conversion: Enabling Remote Access to Local Services
+```bash
+# Install Helm Chart repository
+helm repo add mcpcan https://kymo-mcp.github.io/mcpcan-deploy/
 
-A built-in protocol conversion gateway supports automatically converting local MCP service interactions based on the "standard input/output (stdio) protocol" to the "streamable HTTP protocol," achieving the following without manual code modification:
+# Update Helm repository
+helm repo update mcpcan
 
-- Quickly mapping local services to remotely accessible HTTP endpoints;
-- External systems can call local MCP services via HTTP requests, solving cross-network access challenges.
+# Install latest version
+helm install mcpcan mcpcan/mcpcan-deploy
 
+# Deploy with public IP
+helm install mcpcan mcpcan/mcpcan-deploy \
+  --set global.publicIP=192.168.1.100 \
+  --set infrastructure.mysql.auth.rootPassword=secure-password \
+  --set infrastructure.redis.auth.password=secure-password
 
-## 🛡️3. Access Modes: Covering Basic Management Needs
+# Deploy with domain name
+helm install mcpcan mcpcan/mcpcan-deploy \
+  --set global.domain=mcp.example.com \
+  --set infrastructure.mysql.auth.rootPassword=secure-password \
+  --set infrastructure.redis.auth.password=secure-password
+```
 
-The platform offers three access modes, focusing on core management scenarios with clearly defined functional boundaries:
+## Components
 
-### (1) Direct Connection Mode: External MCP Configuration Management
-Used for centralized management of configurations for "externally accessible MCP services," supporting the input of connection parameters (such as address, port, protocol version) for external MCP services, which are then stored as configuration items. No other additional functions (such as status monitoring or call statistics) are provided.
+MCPCan consists of multiple key components, which collectively form the functional framework of MCPCan, providing users with comprehensive MCP service management capabilities.
 
+| Project | Status | Description |
+|---------|--------|-------------|
+| [MCPCan-Web](frontend/) | ![Status](https://img.shields.io/badge/status-active-green) | MCPCan Web UI (Next.js Frontend) |
+| [MCPCan-Backend](backend/) | ![Status](https://img.shields.io/badge/status-active-green) | MCPCan Backend Services (Go Microservices) |
+| [MCPCan-Gateway](backend/cmd/gateway/) | ![Status](https://img.shields.io/badge/status-active-green) | MCP Gateway Service |
+| [MCPCan-Market](backend/cmd/market/) | ![Status](https://img.shields.io/badge/status-active-green) | MCP Service Marketplace |
+| [MCPCan-Authz](backend/cmd/authz/) | ![Status](https://img.shields.io/badge/status-active-green) | Authentication and Authorization Service |
 
-### (2) Proxy Mode: Unified Access Entry Point
-External MCP services are accessed externally through the platform's proxy. Core capabilities include:
+## Technology Stack
 
-- Hiding the service's true connection information (such as IP address, port, and token) to reduce exposure risks;
-- Restricting access permissions for specified terminals based on basic access control;
-- Providing access logs to trace request sources and call details.
+### Frontend
+- **Framework**: Vue.js 3.5+ (Composition API)
+- **Language**: TypeScript
+- **Styling**: UnoCSS, SCSS
+- **UI Components**: Element Plus
+- **State Management**: Pinia
+- **Build Tool**: Vite
 
+### Backend
+- **Language**: Go 1.24.2+
+- **Framework**: Gin, gRPC
+- **Database**: MySQL, Redis
+- **Container**: Docker, Kubernetes
 
-### (3) Managed Mode: Platform Provides Runtime Environment + SSE Protocol Adaptation
+## Third-party Projects
 
-The MCP service is fully deployed in the container provided by the platform. In addition to basic management capabilities, protocol conversion and adaptation are added, specifically supporting:
+- [mcpcan-deploy](https://github.com/Kymo-MCP/mcpcan-deploy) - Official Helm charts source repository for MCPCan
+- [MCPCan Helm Charts](https://kymo-mcp.github.io/mcpcan-deploy/) - Official Helm charts repository for MCPCan
 
-- **Automatic Protocol Conversion**: For managed MCP services, the interaction method based on the "Standard Input/Output (stdio) protocol" is automatically converted to the "SSE (Server-Sent Events) protocol," without the need for additional development of adaptation;
-- **Unified SSE Access Address**: After successful deployment, an external access address based on the SSE protocol is automatically generated. External systems can directly interact with the MCP service using the SSE protocol through this address;
-- Container lifecycle management (start/stop/restart);
-- Real-time viewing of runtime logs (such as error logs and output logs).
+## Contributing
 
-## ⚡ Deployment
-For detailed deployment steps, please refer to [https://kymo-mcp.github.io/mcp-box-deploy/](https://github.com/Kymo-MCP/mcp-box-deploy/tree/v1.0.0-dev) for details.
+Welcome to submit PR to contribute. Please refer to [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
-## 🛠️ Technology Stack
+Before contributing, please:
+1. Read our [Code of Conduct](CODE_OF_CONDUCT.md)
+2. Check existing issues and pull requests
+3. Follow our coding standards and commit message conventions
 
+## Security
 
-## 🏗️ Architecture
+If you discover a security vulnerability, please refer to our [Security Policy](SECURITY.md) for responsible disclosure guidelines.
 
-### System Architecture
-                                                   ┌──────────────────────────────┐
-                                                   │         Web Console          │
-                                                   │ (Admin Interface / Frontend) │
-                                                   └──────────────────────────────┘
-                                                                 │
-                                                                 ▼
-                                    ┌───────────────────────────────────────────────┐
-                                    │             MCP Management Service            │
-                                    │ (Instance / Template / Environment Mgmt)      │
-                                    └───────────────────────────────────────────────┘
-                                          │             │             │
-                                          │             │             │
-                                          ▼             ▼             ▼
-        ┌────────────────────────┐   ┌────────────────────────┐   ┌────────────────────────┐
-        │ Protocol Gateway       │   │ Container Orchestration│   │ PostgreSQL Database    │
-        │ (stdio ↔ HTTP / SSE)   │   │ (Kubernetes Cluster)   │   │ (Configs, States, etc.)│
-        └────────────────────────┘   └────────────────────────┘   └────────────────────────┘
-                                          │
-                                          │
-                                          ▼
-        ┌────────────────────────┐   ┌────────────────────────┐   ┌────────────────────────┐
-        │ Code Package Repository│   │ Market Case Library    │   │ Available Case Library │
-        │ (User-uploaded MCP     │   │ (BigModel / Modelscope)│   │ (AutoNavi / Calculator)│
-        │  Service Packages)     │   │                        │   │                        │
-        └────────────────────────┘   └────────────────────────┘   └────────────────────────┘
+## License
 
-## 📌 Frequently Asked Questions  
+Copyright (c) 2024-2025 MCPCan Team, All rights reserved.
 
-### 1. Why choose MCPCAN instead of other management platforms?
-MCPCAN is an open-source management platform designed specifically for the MCP service ecosystem, unlike general-purpose admin systems.
-It supports MCP stdio ↔ SSE protocol conversion, three connection modes, and visualized traffic monitoring, enabling end-to-end management from configuration to distribution.
-Compared to other platforms, MCPcAN focuses on unified management of large-model toolchains and intelligent services, making development and operations more efficient and secure.
+Licensed under The GNU General Public License version 3 (GPLv3) (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
 
-### 2. What unique advantages does MCPCAN have compared to similar products?
+https://www.gnu.org/licenses/gpl-3.0.html
 
-- Stronger protocol compatibility: Natively supports MCP stdio/SSE conversion and multiple connection methods.
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
 
-- More flexible operating modes: Switch freely among Direct, Proxy, and Hosted modes.
+## Community & Support
 
-- Enhanced security mechanisms: Supports Token authentication and multi-level permission control.
+- 📖 [Documentation](https://kymo-mcp.github.io/mcpcan-deploy/)
+- 💬 [Discord Community](https://discord.com/channels/1428637640856571995/1428637896532820038)
+- 🐛 [Issue Tracker](https://github.com/Kymo-MCP/mcpcan/issues)
+- 📧 [Mailing List](mailto:opensource@kymo.cn)
 
+## Acknowledgements
 
-### 3. In what scenarios is MCPCAN suitable?
-
-MCPCAN is ideal for scenarios requiring centralized management of multiple MCP services, including but not limited to:
-
-- Individual/Small Team MCP Service Development: Quickly deploy local code as a remote SSE protocol service for real-time data push testing or small application calls;
-
-- External MCP Service Configuration Archiving: Centrally manage connection information for multiple external MCP services, avoiding scattered and lost configurations;
-
-- Lightweight Real-Time API Deployment: Convert MCP services into SSE protocol APIs for use by small systems that need to obtain real-time data (such as front-end real-time dashboards, simple monitoring tools).
-
-## 🤝 Contributing  
-Contributions of any kind are welcome!
-
-- New features and improvements
-- Documentation improvements
-- Bug reports & fixes
-- Translations & suggestions
-
-Welcome to Join our [Discord](https://discord.com/channels/1428637640856571995/1428637896532820038) community for discussion and support.
-
-
-## 🙌 Acknowledgements  
-- Thanks to the open-source libraries or frameworks used  
-- Thanks to contributors and supporters  
+- Thanks to the [MCP Protocol](https://modelcontextprotocol.io/) community
+- Thanks to all contributors and supporters
+- Special thanks to the open-source projects that make MCPCan possible

@@ -1,0 +1,109 @@
+{
+  "login": {
+    "languageToggle": "Language Switch",
+    "login": "Login",
+    "MCPlogin": "Kymo MCP Login",
+    "logging": "Logging in...",
+    "username": "Username",
+    "password": "Password",
+    "noAccount": "Don't have an account?",
+    "reg": "Register",
+    "otherLoginMethods": "Other",
+    "captchaCode": "Verify Code",
+    "agree": "I have read and agree to the",
+    "userAgreement": "User Agreement",
+    "register": "Register account",
+    "haveAccount": "Already have an account?",
+    "forgetPassword": "Forget Password?",
+    "resetPassword": "Reset password",
+    "capsLock": "Caps Lock is On",
+    "userInfo": "UserInfo",
+    "support": "Support",
+    "weichat": "WeiChat",
+    "about": "About",
+    "issues": "Issues",
+    "setting": "Setting",
+    "logout": "Logout",
+    "userSetting": "User Setting",
+    "changePassword": "Password",
+    "currentPw": "Current Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password",
+    "avatar": "Avatar",
+    "message": {
+      "username": {
+        "required": "Please enter Username"
+      },
+      "password": {
+        "required": "Please enter Password",
+        "min": "The password can not be less than 6 digits",
+        "confirm": "Please confirm the password again",
+        "inconformity": "The two password entries are inconsistent"
+      },
+      "captchaCode": {
+        "required": "Please enter Verify Code"
+      }
+    }
+  },
+  "sideMenu": {
+    "add": "Add",
+    "home": "Home",
+    "mcpManage": "MCP-Mg",
+    "templateManage": "Temp-Mg",
+    "newTemplate": "AddTemplate",
+    "instanceManage": "Instance-Mg",
+    "newInstance": "AddInstance",
+    "envManage": "Env-Mg",
+    "runEnviroment": "Run-Env",
+    "pvcManage": "Pvc-Mg",
+    "codePackage": "Code-Package",
+    "codeList": "Code-List",
+    "updateCodePackage": "UpdateCodePackage",
+    "viewCodePackage": "PackageDetails"
+  },
+  "common": {
+    "search": "Search",
+    "reseat": "Reseat",
+    "operation": "Operation",
+    "view": "View",
+    "download": "Download",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "sure": "Sure",
+    "save": "Save",
+    "refresh": "Refresh",
+    "close": "Close",
+    "warn": "Warn",
+    "ok": "OK",
+    "back": "Back"
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive",
+    "pending": "Pending",
+    "running": "Running",
+    "init-timeout-stop": "InitTimeoutStop",
+    "run-timeout-stop": "RunTimeoutStop",
+    "exception-force-stop": "ExceptionForceStop",
+    "manual-stop": "ManualStop",
+    "create-failed": "CreateFailed",
+    "running-unready": "RunningUnready",
+    "noData": "No Data",
+    "delete": "Delete",
+    "success": "Success",
+    "loading": "Loading"
+  },
+  "action": {
+    "create": "Success",
+    "edit": "Success",
+    "download": "Success",
+    "upload": "Success",
+    "delete": "Success",
+    "copy": "Success"
+  },
+  "desc": {
+    "reason": "reason",
+    "placeholderKey": "Please enter keywords to search"
+  }
+}

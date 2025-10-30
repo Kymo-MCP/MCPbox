@@ -1,0 +1,68 @@
+// only scss variables
+
+$--colors: (
+  'primary': (
+    'base': #589ef8,
+  ),
+);
+
+@forward 'element-plus/theme-chalk/src/dark/var.scss' with (
+  $colors: $--colors
+);
+// 全局表单样式修改
+.el-input__wrapper.is-focus {
+  border-color: var(--ep-purple-color) !important;
+  box-shadow: 0 0 0 1px var(--ep-purple-color) !important;
+}
+.el-select__wrapper.is-focused {
+  border-color: var(--ep-purple-color) !important;
+  box-shadow: 0 0 0 1px var(--ep-purple-color) !important;
+}
+.el-cascader__input-wrapper.is-focus {
+  border-color: var(--ep-purple-color) !important;
+  box-shadow: 0 0 0 1px var(--ep-purple-color) !important;
+}
+.el-switch.is-focus .el-switch__core {
+  box-shadow: 0 0 0 1px #7c3aed !important;
+}
+.el-textarea__inner.is-focus {
+  border-color: var(--ep-purple-color) !important;
+  box-shadow: 0 0 0 1px var(--ep-purple-color) !important;
+}
+
+.el-button:hover {
+  color: var(--ep-purple-color);
+  border-color: var(--ep-purple-color);
+  background-color: var(--ep-bg-purple-color);
+}
+
+// 页码
+.el-pagination.is-background .el-pager li {
+  &.is-active {
+    background-color: var(--ep-pager-bg);
+    border: 1px solid var(--ep-pager-border);
+  }
+  &:hover {
+    color: var(--ep-purple-color);
+  }
+}
+
+.el-dropdown-menu__item:not(.is-disabled):focus,
+.el-dropdown-menu__item:not(.is-disabled):hover {
+  color: var(--ep-purple-color) !important;
+  background-color: var(--ep-bg-purple-color) !important;
+}
+
+.el-message-box {
+  background-color: var(--ep-bg-color);
+}
+
+.tips-box {
+  padding: 40px;
+  .el-message-box__content {
+    margin: 28px 0;
+  }
+}
+.el-dialog {
+  // background-color: var(--el-dialog-bg-color);
+}

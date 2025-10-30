@@ -1,0 +1,110 @@
+{
+  "login": {
+    "languageToggle": "语言切换",
+    "login": "登 录",
+    "MCPlogin": "Kymo MCP登录",
+    "logging": "登 录 中...",
+    "username": "用户名",
+    "password": "密码",
+    "noAccount": "您没有账号？",
+    "reg": "注 册",
+    "otherLoginMethods": "其他",
+    "captchaCode": "验证码",
+    "agree": "我已同意并阅读",
+    "userAgreement": "用户协议",
+    "register": "注册账号",
+    "haveAccount": "已有账号？",
+    "forgetPassword": "忘记密码？",
+    "resetPassword": "重置密码",
+    "capsLock": "大写锁定已打开",
+    "userInfo": "个人中心",
+    "support": "赞助",
+    "weichat": "微信",
+    "about": "关于",
+    "issues": "反馈",
+    "setting": "设置",
+    "logout": "退出登录",
+    "userSetting": "用户设置",
+    "changePassword": "修改密码",
+    "currentPw": "当前密码",
+    "newPassword": "新密码",
+    "confirmPassword": "确认新密码",
+    "avatar": "修改头像",
+    "message": {
+      "username": {
+        "required": "请输入用户名"
+      },
+      "password": {
+        "required": "请输入密码",
+        "min": "密码不能少于6位",
+        "confirm": "请再次确认密码",
+        "inconformity": "两次密码输入不一致"
+      },
+      "captchaCode": {
+        "required": "请输入验证码"
+      }
+    }
+  },
+
+  "sideMenu": {
+    "add": "创建",
+    "home": "首页",
+    "mcpManage": "MCP管理",
+    "templateManage": "模板管理",
+    "newTemplate": "创建模板",
+    "instanceManage": "实例管理",
+    "newInstance": "创建实例",
+    "envManage": "环境管理",
+    "runEnviroment": "运行环境",
+    "pvcManage": "PVC管理",
+    "codePackage": "代码包管理",
+    "codeList": "代码包列表",
+    "updateCodePackage": "上传代码包",
+    "viewCodePackage": "代码包详情"
+  },
+  "common": {
+    "search": "搜索",
+    "reseat": "重置",
+    "operation": "操作",
+    "view": "查看",
+    "download": "下载",
+    "delete": "删除",
+    "cancel": "取消",
+    "confirm": "确认",
+    "sure": "确定",
+    "save": "保存",
+    "refresh": "刷新",
+    "close": "关闭",
+    "warn": "提示",
+    "ok": "确定",
+    "back": "返回"
+  },
+  "status": {
+    "active": "启用",
+    "inactive": "禁用",
+    "pending": "启动中",
+    "running": "运行中",
+    "init-timeout-stop": "启动超时停止",
+    "run-timeout-stop": "运行超时停止",
+    "exception-force-stop": "异常强制停止",
+    "manual-stop": "手动停止",
+    "create-failed": "创建失败",
+    "running-unready": "运行未就绪",
+    "noData": "暂无数据",
+    "delete": "删除",
+    "success": "成功",
+    "loading": "数据加载中"
+  },
+  "action": {
+    "create": "创建成功",
+    "edit": "编辑成功",
+    "download": "下载成功",
+    "upload": "上传成功",
+    "delete": "删除成功",
+    "copy": "复制成功"
+  },
+  "desc": {
+    "reason": "原因",
+    "placeholderKey": "请输入关键字搜索"
+  }
+}

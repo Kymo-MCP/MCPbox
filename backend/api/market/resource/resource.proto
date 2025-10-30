@@ -1,0 +1,179 @@
+syntax = "proto3";
+
+package resource;
+
+option go_package = "qm-mcp-server/api/market/resource";
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+// PVCInfo PVC 信息结构
+message PVCInfo {
+    // @inject_tag: json:"name" desc:"PVC 名称"
+    string name = 1;
+    // @inject_tag: json:"namespace" desc:"命名空间"
+    string namespace = 2;
+    // @inject_tag: json:"status" desc:"状态 (Pending, Bound, Lost)"
+    string status = 3;
+    // @inject_tag: json:"volumeName" desc:"绑定的卷名称"
+    string volumeName = 4;
+    // @inject_tag: json:"storageClass" desc:"存储类名称"
+    string storageClass = 5;
+    // @inject_tag: json:"capacity" desc:"容量"
+    string capacity = 6;
+    // @inject_tag: json:"accessModes" desc:"访问模式"
+    repeated string accessModes = 7;
+    // @inject_tag: json:"labels" desc:"标签"
+    map<string, string> labels = 8;
+    // @inject_tag: json:"creationTime" desc:"创建时间"
+    string creationTime = 9;
+    // @inject_tag: json:"pods" desc:"绑定的Pod数量"
+    repeated string pods = 10;
+}
+
+// NodeInfo 节点信息结构体
+message NodeInfo {
+    // @inject_tag: json:"name" desc:"节点名称"
+    string name = 1;
+    // @inject_tag: json:"status" desc:"节点状态 (Ready, NotReady, Unknown)"
+    string status = 2;
+    // @inject_tag: json:"roles" desc:"节点角色 (master, worker)"
+    repeated string roles = 3;
+    // @inject_tag: json:"version" desc:"Kubelet 版本"
+    string version = 4;
+    // @inject_tag: json:"internalIP" desc:"内部IP"
+    string internalIp = 5;
+    // @inject_tag: json:"externalIP" desc:"外部IP"
+    string externalIp = 6;
+    // @inject_tag: json:"operatingSystem" desc:"操作系统"
+    string operatingSystem = 7;
+    // @inject_tag: json:"architecture" desc:"架构"
+    string architecture = 8;
+    // @inject_tag: json:"kernelVersion" desc:"内核版本"
+    string kernelVersion = 9;
+    // @inject_tag: json:"containerRuntime" desc:"容器运行时"
+    string containerRuntime = 10;
+    // @inject_tag: json:"allocatableMemory" desc:"可分配内存"
+    string allocatableMemory = 11;
+    // @inject_tag: json:"allocatableCpu" desc:"可分配CPU"
+    string allocatableCpu = 12;
+    // @inject_tag: json:"allocatablePods" desc:"可分配Pod数量"
+    string allocatablePods = 13;
+    // @inject_tag: json:"labels" desc:"标签"
+    map<string, string> labels = 14;
+    // @inject_tag: json:"annotations" desc:"注解"
+    map<string, string> annotations = 15;
+    // @inject_tag: json:"creationTime" desc:"创建时间"
+    string creationTime = 16;
+}
+
+
+// CreatePVCRequest 创建PVC请求
+message CreatePVCRequest {
+    // @inject_tag: json:"name" form:"name" desc:"PVC名称"
+    string name = 1;
+    // @inject_tag: json:"environmentId" form:"environmentId" desc:"环境ID"
+    int32 environmentId = 2;
+    // @inject_tag: json:"nodeName" form:"nodeName" desc:"节点名称"
+    string nodeName = 3;
+    // @inject_tag: json:"storageSize" form:"storageSize" desc:"存储大小(GB)"
+    int32 storageSize = 4;
+    // @inject_tag: json:"accessMode" form:"accessMode" desc:"读写策略(ReadWriteOnce, ReadOnlyMany, ReadWriteMany)"
+    string accessMode = 5;
+    // @inject_tag: json:"storageClass" form:"storageClass" desc:"存储类名称(可选)"
+    string storageClass = 6;
+    // @inject_tag: json:"hostPath" form:"hostPath" desc:"主机路径(可选，用于创建HostPath类型的PVC)"
+    string hostPath = 8;
+}
+
+// CreatePVCResponse 创建PVC响应
+message CreatePVCResponse {
+    // @inject_tag: json:"pvc" desc:"创建的PVC信息"
+    PVCInfo pvc = 1;
+}
+
+// ListPVCsRequest PVC 列表请求
+message ListPVCsRequest {
+    // @inject_tag: json:"environmentId" query:"environmentId" form:"environmentId" desc:"环境ID"
+    int32 environmentId = 1;
+}
+
+// ListNodesRequest 节点列表请求
+message ListNodesRequest {
+    // @inject_tag: json:"environmentId" query:"environmentId" form:"environmentId" desc:"环境ID"
+    int32 environmentId = 1;
+}
+
+// ListPVCsResponse PVC 列表响应
+message ListPVCsResponse {
+    // @inject_tag: json:"list" desc:"PVC 列表数据"
+    repeated PVCInfo list = 1;
+}
+
+// ListNodesResponse 节点列表响应
+message ListNodesResponse {
+    // @inject_tag: json:"list" desc:"节点列表数据"
+    repeated NodeInfo list = 1;
+}
+
+// ListStorageClassesRequest 存储类型列表请求
+message ListStorageClassesRequest {
+    // @inject_tag: json:"environmentId" query:"environmentId" form:"environmentId" desc:"环境ID"
+    int32 environmentId = 1;
+}
+
+// ListStorageClassesResponse 存储类型列表响应
+message ListStorageClassesResponse {
+    // @inject_tag: json:"list" desc:"存储类型列表数据"
+    repeated StorageClassInfo list = 1;
+}
+
+// StorageClassInfo 存储类型信息结构体
+message StorageClassInfo {
+    // @inject_tag: json:"name" desc:"存储类型名称"
+    string name = 1;
+    // @inject_tag: json:"provisioner" desc:"动态 provisioner"
+    string provisioner = 2;
+    // @inject_tag: json:"reclaimPolicy" desc:"回收策略"
+    string reclaimPolicy = 3;
+    // @inject_tag: json:"volumeBindingMode" desc:"卷绑定模式"
+    string volumeBindingMode = 4;
+    // @inject_tag: json:"parameters" desc:"参数"
+    map<string, string> parameters = 5;
+    // @inject_tag: json:"allowVolumeExpansion" desc:"是否支持动态扩容"
+    bool allowVolumeExpansion = 6;
+    // @inject_tag: json:"mountOptions" desc:"挂载选项"
+    repeated string mountOptions = 7;
+}
+
+// ResourceService 资源管理服务
+service ResourceService {
+    // 创建 PVC 资源
+    rpc CreatePVC(CreatePVCRequest) returns (CreatePVCResponse) {
+        option (google.api.http) = {
+            post: "/resources/pvcs"
+            body: "*"
+        };
+    }
+    
+    // 查询 PVC 资源
+    rpc ListPVCs(ListPVCsRequest) returns (ListPVCsResponse) {
+        option (google.api.http) = {
+            get: "/resources/pvcs"
+        };
+    }
+    
+    // 查询 Node 资源
+    rpc ListNodes(ListNodesRequest) returns (ListNodesResponse) {
+        option (google.api.http) = {
+            get: "/resources/nodes"
+        };
+    }
+
+    // 查询存储类型列表
+    rpc ListStorageClasses(ListStorageClassesRequest) returns (ListStorageClassesResponse) {
+        option (google.api.http) = {
+            get: "/resources/storage-classes"
+        };
+    }
+}

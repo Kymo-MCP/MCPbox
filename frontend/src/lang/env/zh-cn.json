@@ -1,0 +1,100 @@
+{
+  "env": {
+    "run": {
+      "name": "环境名称",
+      "environment": "环境类型",
+      "namespace": "命名空间",
+      "createdAt": "创建时间",
+      "updatedAt": "修改时间",
+      "config": "环境配置",
+      "detail": "环境详情",
+      "action": {
+        "add": "创建环境",
+        "detail": "详情",
+        "connection": "测试连通性",
+        "edit": "编辑",
+        "pvc": "PVC管理",
+        "node": "节点管理",
+        "delete": "删除",
+        "connectionSuccess": "连接测试成功",
+        "deleteBox": "确定删除该运行环境?"
+      },
+      "pageDesc": {
+        "list": "环境管理",
+        "desc": "管理你的容器环境以及提供连接测试",
+        "total": "环境总数",
+        "pvcList": "PVC管理列表",
+        "pvcDesc": "PVC管理你指容器环境中持久化存储卷的声明与绑定",
+        "pvcTotal": "PVC总数",
+        "nodeList": "节点管理",
+        "nodeTotal": "节点总数"
+      },
+      "form": {
+        "name": "环境名称",
+        "environment": "环境类型",
+        "namespace": "命名空间"
+      },
+      "formData": {
+        "title": "创建环境",
+        "edit": "编辑环境",
+        "name": "环境名称",
+        "environment": "环境类型",
+        "config": "环境配置 (YAML格式)",
+        "format": "格式化配置",
+        "placeholderConfig": "请输入YAML格式的环境配置，例如:",
+        "namespace": "命名空间"
+      },
+      "rules": {
+        "name": "请输入环境名称",
+        "environment": "请选择环境类型",
+        "config": "请输入环境配置",
+        "namespace": "请选择命名空间",
+        "formatFaild": "格式化失败"
+      },
+      "load": {
+        "connect": "正在尝试连接..."
+      }
+    },
+    "pvc": {
+      "name": "PVC名称",
+      "namespace": "命名空间",
+      "storageClass": "存储类",
+      "accessModes": "访问模式",
+      "capacity": "容量",
+      "status": "状态",
+      "roles": "角色",
+      "pods": "绑定Pod",
+      "creationTime": "创建时间",
+      "unbound": "Unbound",
+      "action": {
+        "add": "创建PVC"
+      },
+      "formData": {
+        "title": "创建PVC",
+        "name": "PVC名称",
+        "storageClass": "存储类",
+        "accessMode": "访问模式",
+        "storageSize": "存储大小(GB)",
+        "nodeName": "节点名称",
+        "hostPath": "主机路径"
+      },
+      "rules": {
+        "name": "请输入PVC名称",
+        "accessMode": "请选择访问模式",
+        "storageSize": "请输入存储大小"
+      },
+      "placeholder": {
+        "storageSize": "Please enter the storage size, for example: 10"
+      }
+    },
+    "node": {
+      "name": "节点名称",
+      "status": "状态",
+      "roles": "角色",
+      "internalIp": "内部IP",
+      "externalIp": "外部IP",
+      "creationTime": "创建时间",
+      "operatingSystem": "操作系统"
+    }
+  }
+}

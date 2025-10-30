@@ -1,0 +1,260 @@
+// import dark theme
+@use 'element-plus/theme-chalk/src/dark/css-vars.scss' as *;
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+// 黑色主题
+html.dark {
+  --menu-background: #1d1e1f;
+  --ep-color: #fff;
+  --ep-bg-color: #121212;
+  --ep-bg-color-hover: #171819;
+  --ep-border-color: #ffffff80;
+  --el-dialog-bg: #333333;
+  --ep-home-glass: #d8d8d814;
+  --ep-bg-form: rgba(255, 255, 255, 0.08);
+  --ep-bg-stripe-dark: rgba(255, 255, 255, 0.06);
+  --ep-bg-stripe-light: rgba(255, 255, 255, 0.1);
+}
+// 亮色主题
+:root {
+  //   --ep-color-primary: red;
+  --menu-background: #304156;
+  --ep-color: #000;
+  --ep-bg-color: #f6f3f4;
+  --ep-purple-color: #cdbdff;
+  --ep-bg-purple-color: rgba(204, 187, 255, 0.16);
+  --ep-pager-bg: #ccbbff3d;
+  --ep-pager-border: #ccbbff;
+  --ep-bg-grey: #ffffff29;
+  --ep-purple-color-hover: #cdbdff80;
+  --ep-home-glass: #d8d8d84d;
+  --ep-bg-stripe-dark: #fafafa;
+  --ep-bg-stripe-light: rgba(0, 0, 0, 0.06);
+  --el-dialog-bg: #ffffff;
+}
+
+body {
+  font-family:
+    Inter, system-ui, Avenir, 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+}
+
+a {
+  color: var(--ep-color-primary);
+}
+
+code {
+  border-radius: 2px;
+  padding: 2px 4px;
+  background-color: var(--ep-color-primary-light-9);
+  color: var(--ep-color-primary);
+}
+
+#nprogress {
+  pointer-events: none;
+}
+
+#nprogress .bar {
+  background: rgb(13, 148, 136);
+  opacity: 0.75;
+  position: fixed;
+  z-index: 1031;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+}
+// 隐藏滚动条，但保留滚动功能
+.hide-scrollbar {
+  // 1. 核心：隐藏滚动条轨道和滑块（WebKit 内核）
+  &::-webkit-scrollbar {
+    width: 0; // 纵向滚动条宽度设为 0
+    height: 0; // 横向滚动条高度设为 0
+  }
+  // 2. 兼容 Firefox：设置滚动条宽度为"none"
+  scrollbar-width: none;
+  // 3. 兼容 Edge/IE：设置滚动条样式为"none"
+  -ms-overflow-style: none;
+  // 4. 确保容器可滚动（必要时添加）
+  overflow: auto;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.basis-xs {
+  flex-basis: 20%;
+}
+
+.basis-sm {
+  flex-basis: 40%;
+}
+
+.basis-df {
+  flex-basis: 50%;
+}
+
+.basis-lg {
+  flex-basis: 60%;
+}
+
+.basis-xl {
+  flex-basis: 80%;
+}
+
+.flex-shrink {
+  flex-shrink: 0;
+}
+
+.flex-sub {
+  flex: 1;
+}
+
+.flex-twice {
+  flex: 2;
+}
+
+.flex-treble {
+  flex: 3;
+}
+
+.flex-direction {
+  flex-direction: column;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.align-start {
+  align-items: flex-start;
+}
+
+.align-end {
+  align-items: flex-end;
+}
+
+.align-center {
+  align-items: center;
+}
+
+.align-stretch {
+  align-items: stretch;
+}
+
+.self-start {
+  align-self: flex-start;
+}
+
+.self-center {
+  align-self: center;
+}
+
+.self-end {
+  align-self: flex-end;
+}
+
+.self-stretch {
+  align-self: stretch;
+}
+
+.align-stretch {
+  align-items: stretch;
+}
+
+.justify-start {
+  justify-content: flex-start;
+}
+
+.justify-end {
+  justify-content: flex-end;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.justify-around {
+  justify-content: space-around;
+}
+.text-purple {
+  color: var(--ep-purple-color);
+}
+.text-primary {
+  color: #409eff;
+}
+.text-warning {
+  color: #e6a23c;
+}
+.text-success {
+  color: #67c23a;
+}
+.text-bold {
+  font-weight: 600;
+}
+/* ==================
+      省略号
+ ==================== */
+.ellipsis-one {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  word-break: break-all;
+}
+
+.ellipsis-two {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+.ellipsis-three {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+
+.ellipsis-five {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  overflow: hidden;
+}
+
+/* start--文本行数限制--start */
+.u-line-1 {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.base-btn {
+  background: linear-gradient(180deg, #a083f7 0%, #2a029f 100%);
+  border: none;
+  &:hover {
+    background: linear-gradient(180deg, #8d6fe6 0%, #1e017d 100%);
+  }
+}
+.link-hover:hover {
+  color: var(--ep-purple-color);
+}
+.base-btn-link {
+  color: var(--ep-purple-color) !important;
+  &:hover {
+    color: var(--ep-purple-color-hover) !important;
+  }
+}

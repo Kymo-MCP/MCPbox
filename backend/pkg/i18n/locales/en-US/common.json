@@ -1,0 +1,13 @@
+{
+  "1000": "Bad request",
+  "1001": "Unauthorized",
+  "1002": "Forbidden",
+  "1003": "Resource not found",
+  "1004": "Method not allowed",
+  "1005": "Request timeout",
+  "1006": "Too many requests",
+  "1007": "Internal server error",
+  "1008": "Not implemented",
+  "1009": "Service unavailable",
+  "1010": "Gateway timeout"
+}

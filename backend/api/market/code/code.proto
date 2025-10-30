@@ -1,0 +1,217 @@
+syntax = "proto3";
+
+package market.code;
+
+import "google/api/annotations.proto";
+
+option go_package = "qm-mcp-server/api/market/code";
+
+// PackageType 代码包类型枚举
+enum PackageType {
+  // @inject_tag: json:"packageTypeUnspecified" desc:"Unspecified"
+  PackageTypeUnspecified = 0;
+  // @inject_tag: json:"packageTypeTar" desc:"tar package"
+  PackageTypeTar = 1;
+  // @inject_tag: json:"packageTypeZip" desc:"zip package"
+  PackageTypeZip = 2;
+  // @inject_tag: json:"packageTypeTarGz" desc:"tar.gz package"
+  PackageTypeTarGz = 3;
+  // @inject_tag: json:"packageTypeDxt" desc:"dxt package"
+  PackageTypeDxt = 4;
+  // @inject_tag: json:"packageTypeMcpb" desc:"mcpb package"
+  PackageTypeMcpb = 5;
+}
+
+// UploadPackageRequest 代码包上传请求
+message UploadPackageRequest {
+  // @inject_tag: form:"file" binding:"required" desc:"上传文件"
+  bytes file = 1;
+}
+
+// UploadPackageResponse 代码包上传响应
+message UploadPackageResponse {
+  // @inject_tag: json:"packageId" desc:"包ID"
+  string packageId = 1;
+  // @inject_tag: json:"packagePath" desc:"包路径"
+  string packagePath = 2;
+}
+
+// GetCodeTreeRequest 获取代码包结构请求
+message GetCodeTreeRequest {
+  // @inject_tag: form:"packageId" binding:"required" desc:"包ID"
+  string packageId = 1;
+}
+
+// FileNode 文件节点结构
+message FileNode {
+  // @inject_tag: json:"name" desc:"文件名"
+  string name = 1;
+  // @inject_tag: json:"path" desc:"文件路径"
+  string path = 2;
+  // @inject_tag: json:"isDir" desc:"是否为目录"
+  bool isDir = 3;
+  // @inject_tag: json:"size,omitempty" desc:"文件大小"
+  int64 size = 4;
+  // @inject_tag: json:"children,omitempty" desc:"子节点"
+  repeated FileNode children = 5;
+}
+
+// GetCodeTreeResponse 获取代码包结构响应
+message GetCodeTreeResponse {
+  // @inject_tag: json:"fileStructure" desc:"文件结构"
+  FileNode fileStructure = 1;
+}
+
+// GetCodeFileRequest 获取代码文件内容请求
+message GetCodeFileRequest {
+  // @inject_tag: form:"packageId" binding:"required" desc:"包ID"
+  string packageId = 1;
+  // @inject_tag: form:"filePath" binding:"required" desc:"文件路径"
+  string filePath = 2;
+}
+
+// GetCodeFileResponse 获取代码文件内容响应
+message GetCodeFileResponse {
+  // @inject_tag: json:"content" desc:"文件内容"
+  string content = 1;
+}
+
+// EditCodeFileRequest 编辑代码文件请求
+message EditCodeFileRequest {
+  // @inject_tag: form:"packageId" binding:"required" json:"packageId" desc:"包ID"
+  string packageId = 1;
+  // @inject_tag: form:"filePath" binding:"required" json:"filePath" desc:"文件路径"
+  string filePath = 2;
+  // @inject_tag: form:"content" binding:"required" json:"content" desc:"文件内容"
+  string content = 3;
+}
+
+// EditCodeFileResponse 编辑代码文件响应
+message EditCodeFileResponse {
+  // @inject_tag: json:"success" desc:"是否成功"
+  bool success = 1;
+  // @inject_tag: json:"message" desc:"响应消息"
+  string message = 2;
+}
+
+// DownloadPackageRequest 下载代码包请求
+message DownloadPackageRequest {
+  // @inject_tag: form:"packageId" binding:"required" json:"packageId" uri:"packageId" query:"packageId" desc:"包ID"
+  string packageId = 1;
+}
+
+// DownloadPackageResponse 下载代码包响应
+message DownloadPackageResponse {
+  // @inject_tag: json:"fileContent" desc:"文件内容"
+  bytes fileContent = 1;
+}
+
+// CodePackageListRequest 代码包列表请求
+message CodePackageListRequest {
+  // @inject_tag: json:"page" form:"page" desc:"页码"
+  int32 page = 1;
+  // @inject_tag: json:"pageSize" form:"pageSize" desc:"每页数量"
+  int32 pageSize = 2;
+  // @inject_tag: json:"keyword" form:"keyword" desc:"搜索关键词"
+  string keyword = 3;
+  // @inject_tag: json:"packageType" form:"packageType" desc:"包类型"
+  repeated PackageType packageType = 4;
+}
+
+// CodePackageInfo 代码包信息
+message CodePackageInfo {
+  // @inject_tag: json:"id" desc:"包ID"
+  string id = 1;
+  // @inject_tag: json:"name" desc:"包名称"
+  string name = 2;
+  // @inject_tag: json:"path" desc:"包路径"
+  string path = 3;
+  // @inject_tag: json:"size" desc:"包大小"
+  int64 size = 4;
+  // @inject_tag: json:"type" desc:"包类型"
+  PackageType type = 5;
+  // @inject_tag: json:"createdAt" desc:"创建时间"
+  string createdAt = 6;
+  // @inject_tag: json:"updatedAt" desc:"更新时间"
+  string updatedAt = 7;
+}
+
+// CodePackageListResponse 代码包列表响应
+message CodePackageListResponse {
+  // @inject_tag: json:"list" desc:"代码包列表"
+  repeated CodePackageInfo list = 1;
+  // @inject_tag: json:"total" desc:"总数量"
+  int64 total = 2;
+  // @inject_tag: json:"page" desc:"当前页码"
+  int32 page = 3;
+  // @inject_tag: json:"pageSize" desc:"每页数量"
+  int32 pageSize = 4;
+}
+
+// DeleteCodePackageRequest 删除代码包请求
+message DeleteCodePackageRequest {
+  // @inject_tag: form:"packageId" binding:"required" json:"packageId" uri:"packageId" desc:"包ID"
+  string packageId = 1;
+}
+
+// DeleteCodePackageResponse 删除代码包响应
+message DeleteCodePackageResponse {
+  // @inject_tag: json:"success" desc:"是否成功"
+  bool success = 1;
+  // @inject_tag: json:"message" desc:"响应消息"
+  string message = 2;
+}
+
+// CodeService 代码管理服务
+service CodeService {
+  // 上传代码包
+  rpc UploadPackage(UploadPackageRequest) returns (UploadPackageResponse) {
+    option (google.api.http) = {
+      post: "/code/upload",
+      body: "*",
+    };
+  }
+
+  // 获取代码包结构
+  rpc GetCodeTree(GetCodeTreeRequest) returns (GetCodeTreeResponse) {
+    option (google.api.http) = {
+      get: "/code/tree",
+    };
+  }
+
+  // 获取代码文件内容
+  rpc GetCodeFile(GetCodeFileRequest) returns (GetCodeFileResponse) {
+    option (google.api.http) = {
+      get: "/code/get",
+    };
+  }
+
+  // 编辑代码文件
+  rpc EditCodeFile(EditCodeFileRequest) returns (EditCodeFileResponse) {
+    option (google.api.http) = {
+      post: "/code/edit",
+      body: "*",
+    };
+  }
+
+  // 下载代码包
+  rpc DownloadPackage(DownloadPackageRequest) returns (DownloadPackageResponse) {
+    option (google.api.http) = {
+      get: "/code/download/{packageId}",
+    };
+  }
+
+  // 获取代码包列表
+  rpc GetCodePackageList(CodePackageListRequest) returns (CodePackageListResponse) {
+    option (google.api.http) = {
+      get: "/code/packages",
+    };
+  }
+
+  // 删除代码包
+  rpc DeleteCodePackage(DeleteCodePackageRequest) returns (DeleteCodePackageResponse) {
+    option (google.api.http) = {
+      delete: "/code/packages/{packageId}",
+    };
+  }
+}

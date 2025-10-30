@@ -1,0 +1,205 @@
+syntax = "proto3";
+
+package authz.user_auth;
+
+option go_package = "qm-mcp-server/api/authz/user_auth";
+
+import "google/api/annotations.proto";
+
+// 用户登录请求
+message LoginRequest {
+  // @inject_tag: json:"username" form:"username" desc:"用户名"
+  string username = 1;
+  // @inject_tag: json:"encryptedPassword" form:"encryptedPassword" desc:"加密后的密码"
+  string encryptedPassword = 2;
+  // @inject_tag: json:"keyId" form:"keyId" desc:"密钥ID"
+  string keyId = 3;
+  // @inject_tag: json:"timestamp" form:"timestamp" desc:"时间戳"
+  int64 timestamp = 4;
+}
+
+// 用户登录响应
+message LoginResponse {
+  // @inject_tag: json:"token" desc:"访问令牌"
+  string token = 1;
+  // @inject_tag: json:"refreshToken" desc:"刷新令牌"
+  string refreshToken = 2;
+  // @inject_tag: json:"expiresIn" desc:"令牌过期时间(秒)"
+  int64 expiresIn = 3;
+  // @inject_tag: json:"userInfo" desc:"用户信息"
+  UserInfo userInfo = 4;
+}
+
+// 用户信息
+message UserInfo {
+  // @inject_tag: json:"userId" desc:"用户ID"
+  int64 userId = 1;
+  // @inject_tag: json:"username" desc:"用户名"
+  string username = 2;
+  // @inject_tag: json:"nickname" desc:"昵称"
+  string nickname = 3;
+  // @inject_tag: json:"email" desc:"邮箱"
+  string email = 4;
+  // @inject_tag: json:"phone" desc:"手机号"
+  string phone = 5;
+  // @inject_tag: json:"avatar" desc:"头像"
+  string avatar = 6;
+  // @inject_tag: json:"deptId" desc:"部门ID"
+  int64 deptId = 7;
+  // @inject_tag: json:"deptName" desc:"部门名称"
+  string deptName = 8;
+  // @inject_tag: json:"roleIds" desc:"角色ID列表"
+  repeated int64 roleIds = 9;
+  // @inject_tag: json:"roleNames" desc:"角色名称列表"
+  repeated string roleNames = 10;
+}
+
+// 用户退出请求
+message LogoutRequest {
+  // @inject_tag: json:"userId" form:"userId" desc:"用户ID"
+  int64 userId = 1;
+  // @inject_tag: json:"token" form:"token" desc:"访问令牌"
+  string token = 2;
+}
+
+// 用户退出响应
+message LogoutResponse {
+  // 空响应，框架会处理统一的响应格式
+}
+
+// 获取用户配置请求
+message GetUserInfoRequest {}
+
+// 获取用户配置响应
+message GetUserInfoResponse {
+  // @inject_tag: json:"tokenExpiry" desc:"Token有效期(秒)"
+  int64 tokenExpiry = 1;
+  // @inject_tag: json:"refreshTokenExpiry" desc:"刷新Token有效期(秒)"
+  int64 refreshTokenExpiry = 2;
+  // @inject_tag: json:"theme" desc:"主题设置"
+  string theme = 3;
+  // @inject_tag: json:"language" desc:"语言设置"
+  string language = 4;
+  // @inject_tag: json:"timezone" desc:"时区设置"
+  string timezone = 5;
+  // @inject_tag: json:"pageSize" desc:"分页大小"
+  int32 pageSize = 6;
+  // @inject_tag: json:"enableNotification" desc:"是否启用通知"
+  bool enableNotification = 7;
+  // @inject_tag: json:"autoLogout" desc:"自动登出时间(分钟)"
+  int32 autoLogout = 8;
+  // @inject_tag: json:"userInfo" desc:"用户信息"
+  UserInfo userInfo = 9;
+}
+
+// Token刷新请求
+message RefreshTokenRequest {
+  // @inject_tag: json:"refreshToken" form:"refreshToken" desc:"刷新令牌"
+  string refreshToken = 1;
+}
+
+// Token刷新响应
+message RefreshTokenResponse {
+  // @inject_tag: json:"token" desc:"新的访问令牌"
+  string token = 1;
+  // @inject_tag: json:"refreshToken" desc:"新的刷新令牌"
+  string refreshToken = 2;
+  // @inject_tag: json:"expiresIn" desc:"令牌过期时间(秒)"
+  int64 expiresIn = 3;
+}
+
+// Token校验请求
+message ValidateTokenRequest {
+  // @inject_tag: json:"token" form:"token" desc:"访问令牌"
+  string token = 1;
+}
+
+// Token校验响应
+message ValidateTokenResponse {
+  // @inject_tag: json:"valid" desc:"是否有效"
+  bool valid = 1;
+  // @inject_tag: json:"userInfo" desc:"用户信息"
+  UserInfo userInfo = 2;
+  // @inject_tag: json:"loginInfo" desc:"登录信息"
+  LoginInfo loginInfo = 3;
+}
+
+// 登录信息
+message LoginInfo {
+  // @inject_tag: json:"loginTime" desc:"登录时间"
+  int64 loginTime = 1;
+  // @inject_tag: json:"loginIp" desc:"登录IP"
+  string loginIp = 2;
+  // @inject_tag: json:"userAgent" desc:"用户代理"
+  string userAgent = 3;
+  // @inject_tag: json:"expiresAt" desc:"过期时间"
+  int64 expiresAt = 4;
+}
+
+// 获取加密密钥请求
+message GetEncryptionKeyRequest {
+}
+
+// 获取加密密钥响应
+message GetEncryptionKeyResponse {
+  // @inject_tag: json:"keyId" desc:"密钥ID"
+  string keyId = 1;
+  // @inject_tag: json:"publicKey" desc:"公钥(Base64编码)"
+  string publicKey = 2;
+  // @inject_tag: json:"algorithm" desc:"加密算法"
+  string algorithm = 3;
+  // @inject_tag: json:"expiresAt" desc:"密钥过期时间戳"
+  int64 expiresAt = 4;
+  // @inject_tag: json:"issuedAt" desc:"密钥签发时间戳"
+  int64 issuedAt = 5;
+}
+
+// 用户认证服务
+service UserAuthService {
+  // 用户登录
+  rpc Login(LoginRequest) returns (LoginResponse) {
+    option (google.api.http) = {
+      post: "/authz/login"
+      body: "*"
+    };
+  }
+
+  // 用户退出
+  rpc Logout(LogoutRequest) returns (LogoutResponse) {
+    option (google.api.http) = {
+      post: "/authz/logout"
+      body: "*"
+    };
+  }
+
+  // 获取用户配置
+  rpc GetUserInfo(GetUserInfoRequest) returns (GetUserInfoResponse) {
+    option (google.api.http) = {
+      get: "/authz/user-info"
+    };
+  }
+
+  // 刷新Token
+  rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse) {
+    option (google.api.http) = {
+      post: "/authz/refresh"
+      body: "*"
+    };
+  }
+
+  // 校验Token
+  rpc ValidateToken(ValidateTokenRequest) returns (ValidateTokenResponse) {
+    option (google.api.http) = {
+      post: "/authz/validate"
+      body: "*"
+    };
+  }
+
+  // 获取加密密钥
+  rpc GetEncryptionKey(GetEncryptionKeyRequest) returns (GetEncryptionKeyResponse) {
+    option (google.api.http) = {
+      post: "/authz/encryption-key"
+      body: "*"
+    };
+  }
+}

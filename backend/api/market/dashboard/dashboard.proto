@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+package dashboard;
+
+import "google/api/annotations.proto";
+
+option go_package = "qm-mcp-server/api/market/dashboard";
+
+// StatisticalRequest 统计请求
+message StatisticalRequest {
+  // 空请求，不需要参数
+}
+
+// StatisticalResponse 统计响应
+message StatisticalResponse {
+  // @inject_tag: json:"totalInstances" desc:"实例总数"
+  int32 totalInstances = 1;
+  // @inject_tag: json:"activeInstances" desc:"已启用实例数量"
+  int32 activeInstances = 2;
+  // @inject_tag: json:"inactiveInstances" desc:"已禁用实例数量"
+  int32 inactiveInstances = 3;
+  // @inject_tag: json:"proxyInstances" desc:"代理模式实例数量"
+  int32 proxyInstances = 4;
+  // @inject_tag: json:"directInstances" desc:"直连模式实例数量"
+  int32 directInstances = 5;
+  // @inject_tag: json:"hostingInstances" desc:"托管模式实例数量"
+  int32 hostingInstances = 6;
+  // @inject_tag: json:"totalEnvironments" desc:"环境总数"
+  int32 totalEnvironments = 7;
+}
+
+message AvailableCasesRequest {
+  // 空请求，不需要参数
+}
+
+// AvailableCasesResponse 可用案例响应
+message AvailableCasesResponse {
+  // @inject_tag: json:"cases" desc:"可用案例列表"
+  repeated CaseInfo cases = 1;
+}
+
+// CaseInfo 案例信息
+message CaseInfo {
+  // @inject_tag: json:"templateId" desc:"模板ID"
+  int32 templateId = 1;
+  // @inject_tag: json:"name" desc:"模板名称"
+  string name = 2;
+  // @inject_tag: json:"description" desc:"模板描述"
+  string description = 3;
+  // @inject_tag: json:"createdAt" desc:"创建时间"
+  int64 createdAt = 4;
+  // @inject_tag: json:"iconPath" desc:"图标路径"
+  string iconPath = 5;
+}
+
+// DashboardService 仪表板服务
+service DashboardService {
+  // 统计信息
+  rpc Statistical(StatisticalRequest) returns (StatisticalResponse) {
+    option (google.api.http) = {
+      get: "/dashboard/statistical",
+    };
+  }
+
+  // 可用案例
+  rpc AvailableCases(AvailableCasesRequest) returns (AvailableCasesResponse) {
+    option (google.api.http) = {
+      get: "/dashboard/available-cases",
+    };
+  }
+}

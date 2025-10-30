@@ -1,0 +1,773 @@
+syntax = "proto3";
+
+package instance;
+
+import "google/api/annotations.proto";
+
+option go_package = "qm-mcp-server/api/market/instance";
+
+enum AccessType {
+  AccessTypeUnknown = 0;
+  DIRECT            = 1;
+  PROXY             = 2;
+  HOSTING           = 3;
+}
+
+enum McpProtocol {
+  McpProtocolUnknown = 0;
+  SSE                = 1;
+  STEAMABLE_HTTP     = 2;
+  STDIO              = 3;
+}
+
+enum SourceType {
+  SourceTypeUnknown = 0;
+  // MCP market
+  MARKET = 1;
+  // Instance template
+  TEMPLATE = 2;
+  // Custom
+  CUSTOM = 3;
+}
+
+// AccessConfig access configuration
+message AccessConfig {
+  // @inject_tag: json:"type" desc:"access type (e.g., http, https)"
+  string type = 1;
+  // @inject_tag: json:"url" desc:"access URL"
+  string url = 2;
+}
+
+// GetStatusRequest 实例状态探测请求
+message GetStatusRequest {
+  // @inject_tag: json:"instanceId" form:"instanceId" uri:"instanceId" desc:"实例ID"
+  string instanceId = 1;
+}
+
+// DataForStatus 状态数据
+message DataForStatus {
+  // @inject_tag: json:"instanceId" desc:"实例ID"
+  string instanceId = 1;
+  // @inject_tag: json:"status" desc:"实例状态"
+  string status = 2;
+}
+
+// ContainerStatus 容器状态信息
+message ContainerStatus {
+  // @inject_tag: json:"instanceId" desc:"实例ID"
+  string instanceId = 1;
+  // @inject_tag: json:"containerName" desc:"容器名称"
+  string containerName = 2;
+  // @inject_tag: json:"isReady" desc:"是否就绪"
+  bool isReady = 3;
+  // @inject_tag: json:"runInfo" desc:"运行信息"
+  string runInfo = 4;
+  // @inject_tag: json:"lastCheckTime" desc:"最后检查时间（时间戳）"
+  int64 lastCheckTime = 5;
+  // @inject_tag: json:"error" desc:"错误信息"
+  string error = 6;
+}
+
+// CreateRequest 创建实例请求结构体
+message CreateRequest {
+  // @inject_tag: json:"name" form:"name" desc:"实例名称"
+  string name = 1;
+  // @inject_tag: json:"port" form:"port" desc:"端口号"
+  int32 port = 2;
+  // @inject_tag: json:"initScript" form:"initScript" desc:"初始化脚本"
+  string initScript = 3;
+  // @inject_tag: json:"command" form:"command" desc:"启动命令"
+  string command = 4;
+  // @inject_tag: json:"environmentVariables" form:"environmentVariables" desc:"环境变量"
+  map<string, string> environmentVariables = 5;
+  // @inject_tag: json:"volumeMounts" form:"volumeMounts" desc:"卷挂载配置列表"
+  repeated VolumeMount volumeMounts = 6;
+  // @inject_tag: json:"startupTimeout" form:"startupTimeout" desc:"启动超时时间（秒）"
+  int32 startupTimeout = 7;
+  // @inject_tag: json:"runningTimeout" form:"runningTimeout" desc:"运行超时时间（秒）"
+  int32 runningTimeout = 8;
+  // @inject_tag: json:"environmentId" form:"environmentId" desc:"环境ID"
+  int32 environmentId = 9;
+  // @inject_tag: json:"packageId,omitempty" form:"packageId" desc:"包ID，非必填"
+  string packageId = 10;
+  // @inject_tag: json:"accessType" form:"accessType" desc:"访问模式"
+  AccessType accessType = 11;
+  // @inject_tag: json:"mcpServers" form:"mcpServers" desc:"MCP服务器配置"
+  string mcpServers = 12;
+  // @inject_tag: json:"imgAddress" form:"imgAddress" desc:"镜像地址"
+  string imgAddress = 13;
+  // @inject_tag: json:"sourceType" form:"sourceType" desc:"实例来源"
+  SourceType sourceType = 14;
+  // @inject_tag: json:"mcpServerId" form:"mcpServerId" desc:"MCP服务器ID"
+  string mcpServerId = 15;
+  // @inject_tag: json:"templateId" form:"templateId" desc:"模板ID"
+  int32 templateId = 16;
+  // @inject_tag: json:"tokens" form:"tokens" desc:"令牌列表"
+  repeated McpToken tokens = 17;
+  // @inject_tag: json:"notes" form:"notes" desc:"备注"
+  string notes = 18;
+  // @inject_tag: json:"mcpProtocol" form:"mcpProtocol" desc:"MCP协议"
+  McpProtocol mcpProtocol = 19;
+  // @inject_tag: json:"servicePath" form:"servicePath" desc:"服务路径"
+  string servicePath = 20;
+  // @inject_tag: json:"iconPath" form:"iconPath" desc:"图标路径"
+  string iconPath = 21;
+}
+
+// McpToken MCP令牌
+message McpToken {
+  // @inject_tag: json:"token" form:"token" desc:"令牌"
+  string token = 1;
+  // @inject_tag: json:"expireAt" form:"expireAt" desc:"令牌过期时间"
+  int64 expireAt = 2;
+  // @inject_tag: json:"publishAt" desc:"令牌创建时间"
+  int64 publishAt = 3;
+  // @inject_tag: json:"usages" desc:"令牌使用场景"
+  repeated string usages = 4;
+}
+
+// CreateResp 创建实例响应结构体
+message CreateResp {
+  // @inject_tag: json:"instanceId" desc:"实例ID"
+  string instanceId = 1;
+  // @inject_tag: json:"name" desc:"实例名称"
+  string name = 2;
+  // @inject_tag: json:"accessType" desc:"部署模式"
+  AccessType accessType = 3;
+  // @inject_tag: json:"status" desc:"实例状态"
+  string status = 4;
+  // @inject_tag: json:"mcpProtocol" desc:"MCP协议"
+  McpProtocol mcpProtocol = 5;
+}
+
+// DetailRequest 实例详情请求结构体
+message DetailRequest {
+  // @inject_tag: json:"instanceId" uri:"instanceId" form:"instanceId" desc:"实例ID"
+  string instanceId = 1;
+}
+
+// DetailResp 实例详情响应结构体
+message DetailResp {
+  // @inject_tag: json:"instanceId" desc:"实例ID"
+  string instanceId = 1;
+  // @inject_tag: json:"name" desc:"实例名称"
+  string name = 2;
+  // @inject_tag: json:"accessType" desc:"部署模式"
+  AccessType accessType = 3;
+  // @inject_tag: json:"status" desc:"实例状态"
+  string status = 4;
+  // @inject_tag: json:"mcpProtocol" desc:"MCP协议"
+  McpProtocol mcpProtocol = 5;
+  // @inject_tag: json:"notes" desc:"备注"
+  string notes = 6;
+  // @inject_tag: json:"mcpServers" desc:"MCP服务器配置"
+  string mcpServers = 7;
+  // @inject_tag: json:"port" desc:"端口号"
+  int32 port = 8;
+  // @inject_tag: json:"initScript" desc:"初始化脚本"
+  string initScript = 9;
+  // @inject_tag: json:"command" desc:"启动命令"
+  string command = 10;
+  // @inject_tag: json:"environmentVariables" desc:"环境变量"
+  map<string, string> environmentVariables = 11;
+  // @inject_tag: json:"volumeMounts" desc:"卷挂载配置列表"
+  repeated VolumeMount volumeMounts = 12;
+  // @inject_tag: json:"startupTimeout" desc:"启动超时时间（秒）"
+  int32 startupTimeout = 13;
+  // @inject_tag: json:"runningTimeout" desc:"运行超时时间（秒）"
+  int32 runningTimeout = 14;
+  // @inject_tag: json:"environmentId" desc:"环境ID"
+  int32 environmentId = 15;
+  // @inject_tag: json:"packageId,omitempty" desc:"包ID，非必填"
+  string packageId = 16;
+  // @inject_tag: json:"imgAddress" form:"imgAddress" desc:"镜像地址"
+  string imgAddress = 17;
+  // @inject_tag: json:"servicePath" form:"servicePath" desc:"服务路径"
+  string servicePath = 18;
+  // @inject_tag: json:"publicProxyConfig" desc:"公共代理配置"
+  string publicProxyConfig = 19;
+  // @inject_tag: json:"tokens" desc:"令牌列表"
+  repeated McpToken tokens = 20;
+  // @inject_tag: json:"mcpServerId" desc:"MCP服务器ID"
+  string mcpServerId = 21;
+  // @inject_tag: json:"templateId" desc:"模板ID"
+  int32 templateId = 22;
+  // @inject_tag: json:"containerName" desc:"容器名称"
+  string containerName = 23;
+  // @inject_tag: json:"containerServiceName" desc:"容器服务名称"
+  string containerServiceName = 24;
+  // @inject_tag: json:"containerIsReady" desc:"容器是否就绪"
+  bool containerIsReady = 25;
+  // @inject_tag: json:"iconPath" desc:"图标路径"
+  string iconPath = 26;
+  // @inject_tag: json:"containerStatus" desc:"容器状态"
+  string containerStatus = 27;
+  // @inject_tag: json:"containerLastMessage" desc:"容器最后一条消息"
+  string containerLastMessage = 28;
+}
+
+// EditRequest 编辑实例请求结构体
+message EditRequest {
+  // @inject_tag: json:"instanceId" form:"instanceId" desc:"实例ID"
+  string instanceId = 1;
+  // @inject_tag: json:"name" form:"name" desc:"实例名称"
+  string name = 2;
+  // @inject_tag: json:"mcpServers" form:"mcpServers" desc:"MCP服务器配置"
+  string mcpServers = 3;
+  // @inject_tag: json:"port" form:"port" desc:"端口号"
+  int32 port = 4;
+  // @inject_tag: json:"initScript" form:"initScript" desc:"初始化脚本"
+  string initScript = 5;
+  // @inject_tag: json:"command" form:"command" desc:"启动命令"
+  string command = 6;
+  // @inject_tag: json:"environmentVariables" form:"environmentVariables" desc:"环境变量"
+  map<string, string> environmentVariables = 7;
+  // @inject_tag: json:"volumeMounts" form:"volumeMounts" desc:"卷挂载配置列表"
+  repeated VolumeMount volumeMounts = 8;
+  // @inject_tag: json:"startupTimeout" form:"startupTimeout" desc:"启动超时时间（秒）"
+  int32 startupTimeout = 9;
+  // @inject_tag: json:"runningTimeout" form:"runningTimeout" desc:"运行超时时间（秒）"
+  int32 runningTimeout = 10;
+  // @inject_tag: json:"packageId,omitempty" form:"packageId" desc:"包ID，非必填"
+  string packageId = 11;
+  // @inject_tag: json:"imgAddress" form:"imgAddress" desc:"镜像地址"
+  string imgAddress = 12;
+  // @inject_tag: json:"notes" form:"notes" desc:"备注"
+  string notes = 13;
+  // @inject_tag: json:"servicePath" form:"servicePath" desc:"服务路径"
+  string servicePath = 14;
+  // @inject_tag: json:"iconPath" form:"iconPath" desc:"图标路径"
+  string iconPath = 15;
+}
+
+// EditResp 编辑实例响应结构体
+message EditResp {
+  // @inject_tag: json:"instanceId" desc:"实例ID"
+  string instanceId = 1;
+  // @inject_tag: json:"name" desc:"实例名称"
+  string name = 2;
+  // @inject_tag: json:"accessType" desc:"部署模式"
+  AccessType accessType = 3;
+  // @inject_tag: json:"status" desc:"实例状态"
+  string status = 4;
+  // @inject_tag: json:"mcpProtocol" desc:"MCP协议"
+  McpProtocol mcpProtocol = 5;
+}
+
+// ListRequest 实例列表请求结构体
+message ListRequest {
+  // @inject_tag: json:"page" form:"page" desc:"页码"
+  int32 page = 1;
+  // @inject_tag: json:"pageSize" form:"pageSize" desc:"每页数量"
+  int32 pageSize = 2;
+  // @inject_tag: json:"instanceName" form:"instanceName" desc:"搜索关键词:实例名称或者 id 值"
+  string instanceName = 3;
+  // @inject_tag: json:"environmentId" form:"environmentId" desc:"环境ID"
+  int32 environmentId = 4;
+  // @inject_tag: json:"accessType" form:"accessType" desc:"部署模式"
+  AccessType accessType = 5;
+  // @inject_tag: json:"status" form:"status" desc:"实例状态 (active-活跃/inactive-不活跃)"
+  string status = 6;
+  // 发现字段编号 7 缺失，修正 containerStatus 字段编号为 7
+  // @inject_tag: json:"containerStatus" form:"containerStatus" desc:"容器状态 (pending-启动中/running-运行中/running-unready-运行未就绪/init-timeout-stop-启动超时停止/run-timeout-stop-运行超时停止/exception-force-stop-异常强制停止/manual-stop-手动停止/create-failed-创建失败)"
+  string containerStatus = 7;
+  // @inject_tag: json:"mcpProtocol" form:"mcpProtocol" desc:"MCP协议"
+  McpProtocol mcpProtocol = 12;
+  // @inject_tag: json:"sortBy" form:"sortBy" desc:"排序字段 (createdAt/updatedAt/instanceName)"
+  string sortBy = 10;
+  // @inject_tag: json:"sortOrder" form:"sortOrder" desc:"排序方向 (asc/desc)"
+  string sortOrder = 11;
+}
+
+// ListResp 实例列表响应结构体
+message ListResp {
+  // @inject_tag: json:"total" desc:"总数量"
+  int64 total = 1;
+  // @inject_tag: json:"page" desc:"当前页码"
+  int32 page = 2;
+  // @inject_tag: json:"pageSize" desc:"每页数量"
+  int32 pageSize = 3;
+  // @inject_tag: json:"list" desc:"实例列表"
+  repeated InstanceInfo list = 4;
+
+  message InstanceInfo {
+    // @inject_tag: json:"instanceId" desc:"实例ID"
+    string instanceId = 1;
+    // @inject_tag: json:"instanceName" desc:"实例名称"
+    string instanceName = 2;
+    // @inject_tag: json:"accessType" desc:"部署模式"
+    AccessType accessType = 3;
+    // 移除重复的 accessType 字段，已使用枚举类型表示访问模式
+    // @inject_tag: json:"status" desc:"实例状态 (active-激活/inactive-未激活)"
+    string status = 4;
+    // @inject_tag: json:"environmentId" desc:"环境ID"
+    uint32 environmentId = 5;
+    // @inject_tag: json:"environmentName" desc:"环境名称"
+    string environmentName = 6;
+    // @inject_tag: json:"containerStatus" desc:"容器状态 (pending-启动中/running-运行中/running-unready-运行未就绪/init-timeout-stop-启动超时停止/run-timeout-stop-运行超时停止/exception-force-stop-异常强制停止/manual-stop-手动停止/create-failed-创建失败)"
+    string containerStatus = 7;
+    // @inject_tag: json:"containerName" desc:"容器名称"
+    string containerName = 8;
+    // @inject_tag: json:"containerServiceName" desc:"容器服务名称"
+    string containerServiceName = 9;
+    // @inject_tag: json:"containerIsReady" desc:"容器是否就绪"
+    bool containerIsReady = 10;
+    // @inject_tag: json:"containerCreateOptions" desc:"容器创建选项 (JSON格式)"
+    string containerCreateOptions = 11;
+    // @inject_tag: json:"containerLastMessage" desc:"容器上次状态信息"
+    string containerLastMessage = 12;
+    // @inject_tag: json:"containerInitTimeoutStopAt" desc:"容器启动超时停止时间 (毫秒时间戳)"
+    int64 containerInitTimeoutStopAt = 13;
+    // @inject_tag: json:"containerRunTimeoutStopAt" desc:"容器运行超时停止时间 (毫秒时间戳)"
+    int64 containerRunTimeoutStopAt = 14;
+    // @inject_tag: json:"sourceConfig" desc:"MCP 来源服务配置 (JSON格式)"
+    string sourceConfig = 15;
+    // @inject_tag: json:"targetConfig" desc:"MCP 目标服务配置 (JSON格式)"
+    string targetConfig = 16;
+    // @inject_tag: json:"publicProxyConfig" desc:"MCP 公网代理服务配置 (JSON格式)"
+    string publicProxyConfig = 17;
+    // @inject_tag: json:"innerProxyConfig" desc:"MCP 内网代理服务配置 (JSON格式)"
+    string innerProxyConfig = 18;
+    // @inject_tag: json:"isDeleted" desc:"是否删除"
+    bool isDeleted = 19;
+    // @inject_tag: json:"createdAt" desc:"创建时间 (毫秒时间戳)"
+    string createdAt = 20;
+    // @inject_tag: json:"updatedAt" desc:"更新时间 (毫秒时间戳)"
+    string updatedAt = 21;
+    // @inject_tag: json:"mcpProtocol" desc:"MCP协议"
+    McpProtocol mcpProtocol = 22;
+    // @inject_tag: json:"tokens" desc:"令牌列表"
+    repeated McpToken tokens = 23;
+    // @inject_tag: json:"iconPath" desc:"图标路径"
+    string iconPath = 24;
+    // @inject_tag: json:"servicePath" desc:"服务路径"
+    string servicePath = 25;
+  }
+}
+
+// RestartRequest 重启实例请求结构体
+message RestartRequest {
+  // @inject_tag: json:"instanceId" form:"instanceId" desc:"实例ID"
+  string instanceId = 1;
+}
+
+// RestartResp 重启实例响应结构体
+message RestartResp {
+  // @inject_tag: json:"instanceId" desc:"实例ID"
+  string instanceId = 1;
+  // @inject_tag: json:"name" desc:"实例名称"
+  string name = 2;
+  // 修正字段名大小写，将 AccessType 改为 accessType
+  // @inject_tag: json:"accessType" desc:"部署模式"
+  AccessType accessType = 3;
+  // @inject_tag: json:"status" desc:"实例状态"
+  string status = 4;
+  // 修正字段编号，补充缺失的编号 5
+  // @inject_tag: json:"accessConfig" desc:"访问配置"
+  McpServersConfig accessConfig = 5;
+  // @inject_tag: json:"publicProxyConfig" desc:"公网代理配置"
+  McpServersConfig publicProxyConfig = 6;
+  // @inject_tag: json:"innerProxyConfig" desc:"内网代理配置"
+  McpServersConfig innerProxyConfig = 7;
+  // @inject_tag: json:"message" desc:"状态消息"
+  string message = 8;
+  // @inject_tag: json:"mcpProtocol" desc:"MCP协议"
+  McpProtocol mcpProtocol = 9;
+}
+
+// VolumeMount 卷挂载配置
+message VolumeMount {
+  // @inject_tag: json:"type" desc:"卷类型: hostPath, pvc"
+  string type = 1;
+  // @inject_tag: json:"mountPath" desc:"挂载路径"
+  string mountPath = 2;
+  // @inject_tag: json:"readOnly" desc:"是否只读"
+  bool readOnly = 3;
+  // @inject_tag: json:"subPath" desc:"子路径"
+  string subPath = 4;
+  // @inject_tag: json:"pvcName" desc:"PVC 名称"
+  string pvcName = 5;
+  // @inject_tag: json:"hostPath" desc:"主机路径 (hostPath 类型时必填)"
+  string hostPath = 6;
+  // @inject_tag: json:"nodeName" desc:"节点名称 (hostPath 类型时必填)"
+  string nodeName = 7;
+}
+
+// ContainerDeleteRequest 容器删除请求结构体
+message ContainerDeleteRequest {
+  // @inject_tag: json:"instanceId" uri:"instanceId" form:"instanceId" desc:"实例ID"
+  string instanceId = 1;
+}
+
+// McpServersConfig 服务器配置
+message McpServersConfig {
+  // @inject_tag: json:"host" desc:"主机地址"
+  string host = 1;
+  // @inject_tag: json:"port" desc:"端口号"
+  int32 port = 2;
+  // @inject_tag: json:"protocol" desc:"协议类型"
+  string protocol = 3;
+}
+
+// GetStatusResp 实例状态探测响应数据
+message GetStatusResp {
+  // @inject_tag: json:"instanceId" desc:"实例ID"
+  string instanceId = 1;
+  // @inject_tag: json:"status" desc:"实例状态"
+  string status = 2;
+  // @inject_tag: json:"containerName" desc:"容器名称"
+  string containerName = 3;
+  // @inject_tag: json:"runtimeType" desc:"运行时类型"
+  string runtimeType = 4;
+  // @inject_tag: json:"errorMessage" desc:"错误信息"
+  string errorMessage = 5;
+  // @inject_tag: json:"warningEvents" desc:"警告事件"
+  repeated ContainerEvent warningEvents = 6;
+  // @inject_tag: json:"containerReady" desc:"容器是否就绪"
+  bool containerReady = 7;
+  // @inject_tag: json:"serviceReady" desc:"服务是否就绪"
+  bool serviceReady = 8;
+  // @inject_tag: json:"probeHttp" desc:"HTTP 探测是否成功"
+  bool probeHttp = 9;
+}
+
+// ContainerEvent 容器事件
+message ContainerEvent {
+  // @inject_tag: json:"type" desc:"事件类型"
+  string type = 1;
+  // @inject_tag: json:"reason" desc:"事件原因"
+  string reason = 2;
+  // @inject_tag: json:"message" desc:"事件消息"
+  string message = 3;
+  // @inject_tag: json:"firstTimestamp" desc:"首次发生时间（时间戳）"
+  int64 firstTimestamp = 4;
+  // @inject_tag: json:"lastTimestamp" desc:"最后发生时间（时间戳）"
+  int64 lastTimestamp = 5;
+  // @inject_tag: json:"count" desc:"发生次数"
+  int32 count = 6;
+}
+
+// 禁用实例请求
+message DisabledRequest {
+  // @inject_tag: json:"instanceId" form:"instanceId" uri:"instanceId" desc:"实例ID"
+  string instanceId = 1;
+}
+
+// 禁用实例响应
+message DisabledResp {
+  // @inject_tag: json:"message" desc:"响应消息"
+  string message = 1;
+}
+
+// 删除实例请求
+message DeleteRequest {
+  // @inject_tag: json:"instanceId" form:"instanceId" uri:"instanceId" desc:"实例ID"
+  string instanceId = 1;
+}
+
+// 删除实例响应
+message DeleteResp {
+  // @inject_tag: json:"message" desc:"响应消息"
+  string message = 1;
+}
+
+// LogsRequest 查看实例运行日志请求
+message LogsRequest {
+  // @inject_tag: json:"instanceId" form:"instanceId" uri:"instanceId" desc:"实例ID"
+  string instanceId = 1;
+  // @inject_tag: json:"lines" form:"lines" desc:"日志行数，默认100"
+  int32 lines = 2;
+}
+
+// LogsResp 查看实例运行日志响应
+message LogsResp {
+  // @inject_tag: json:"instanceId" desc:"实例ID"
+  string instanceId = 1;
+  // @inject_tag: json:"isManaged" desc:"是否为托管实例"
+  bool isManaged = 2;
+  // @inject_tag: json:"logs" desc:"日志内容，仅托管实例返回"
+  string logs = 3;
+  // @inject_tag: json:"message" desc:"响应消息"
+  string message = 4;
+}
+
+// TemplateCreateResp 模板创建响应
+message TemplateCreateRequest {
+  // @inject_tag: json:"name" form:"name" desc:"实例名称"
+  string name = 1;
+  // @inject_tag: json:"port" form:"port" desc:"端口号"
+  int32 port = 2;
+  // @inject_tag: json:"initScript" form:"initScript" desc:"初始化脚本"
+  string initScript = 3;
+  // @inject_tag: json:"command" form:"command" desc:"启动命令"
+  string command = 4;
+  // @inject_tag: json:"environmentVariables" form:"environmentVariables" desc:"环境变量"
+  map<string, string> environmentVariables = 5;
+  // @inject_tag: json:"volumeMounts" form:"volumeMounts" desc:"卷挂载配置列表"
+  repeated VolumeMount volumeMounts = 6;
+  // @inject_tag: json:"startupTimeout" form:"startupTimeout" desc:"启动超时时间（秒）"
+  int32 startupTimeout = 7;
+  // @inject_tag: json:"runningTimeout" form:"runningTimeout" desc:"运行超时时间（秒）"
+  int32 runningTimeout = 8;
+  // @inject_tag: json:"environmentId" form:"environmentId" desc:"环境ID"
+  int32 environmentId = 9;
+  // @inject_tag: json:"packageId,omitempty" form:"packageId" desc:"包ID，非必填"
+  string packageId = 10;
+  // @inject_tag: json:"accessType" form:"accessType" desc:"部署模式"
+  AccessType accessType = 11;
+  // @inject_tag: json:"mcpServers" form:"mcpServers" desc:"MCP服务器配置"
+  string mcpServers = 12;
+  // @inject_tag: json:"imgAddress" form:"imgAddress" desc:"镜像地址"
+  string imgAddress = 13;
+  // @inject_tag: json:"mcpServerId" form:"mcpServerId" desc:"MCP服务器ID"
+  string mcpServerId = 15;
+  // @inject_tag: json:"tokens" form:"tokens" desc:"令牌列表"
+  repeated McpToken tokens = 16;
+  // @inject_tag: json:"notes" form:"notes" desc:"备注"
+  string notes = 17;
+  // @inject_tag: json:"mcpProtocol" form:"mcpProtocol" desc:"MCP协议"
+  McpProtocol mcpProtocol = 18;
+  // @inject_tag: json:"iconPath" form:"iconPath" desc:"图标路径"
+  string iconPath = 19;
+}
+
+// TemplateCreateResp 模板创建响应
+message TemplateCreateResp {
+  // @inject_tag: json:"templateId" desc:"模板ID"
+  int32 templateId = 1;
+}
+
+// TemplateDetailRequest 模板详情请求
+message TemplateDetailRequest {
+  // @inject_tag: json:"templateId" form:"templateId" uri:"templateId" desc:"模板ID"
+  int32 templateId = 1;
+}
+
+// TemplateDetailResp 模板详情响应
+message TemplateDetailResp {
+  // @inject_tag: json:"templateId" form:"templateId" uri:"templateId" desc:"模板ID"
+  int32 templateId = 1;
+  // @inject_tag: json:"name" form:"name" desc:"实例名称"
+  string name = 2;
+  // @inject_tag: json:"port" form:"port" desc:"端口号"
+  int32 port = 3;
+  // @inject_tag: json:"initScript" form:"initScript" desc:"初始化脚本"
+  string initScript = 4;
+  // @inject_tag: json:"command" form:"command" desc:"启动命令"
+  string command = 5;
+  // @inject_tag: json:"environmentVariables" form:"environmentVariables" desc:"环境变量"
+  map<string, string> environmentVariables = 6;
+  // @inject_tag: json:"volumeMounts" form:"volumeMounts" desc:"卷挂载配置列表"
+  repeated VolumeMount volumeMounts = 7;
+  // @inject_tag: json:"startupTimeout" form:"startupTimeout" desc:"启动超时时间（秒）"
+  int32 startupTimeout = 8;
+  // @inject_tag: json:"runningTimeout" form:"runningTimeout" desc:"运行超时时间（秒）"
+  int32 runningTimeout = 9;
+  // @inject_tag: json:"environmentId" form:"environmentId" desc:"环境ID"
+  int32 environmentId = 10;
+  // @inject_tag: json:"packageId,omitempty" form:"packageId" desc:"包ID，非必填"
+  string packageId = 11;
+  // @inject_tag: json:"accessType" form:"accessType" desc:"部署模式"
+  AccessType accessType = 12;
+  // @inject_tag: json:"mcpServers" form:"mcpServers" desc:"MCP服务器配置"
+  string mcpServers = 13;
+  // @inject_tag: json:"imgAddress" form:"imgAddress" desc:"镜像地址"
+  string imgAddress = 14;
+  // @inject_tag: json:"mcpServerId" form:"mcpServerId" desc:"MCP服务器ID"
+  string mcpServerId = 16;
+  // @inject_tag: json:"tokens" form:"tokens" desc:"令牌列表"
+  repeated McpToken tokens = 17;
+  // @inject_tag: json:"notes" form:"notes" desc:"备注"
+  string notes = 18;
+  // @inject_tag: json:"mcpProtocol" form:"mcpProtocol" desc:"MCP协议"
+  McpProtocol mcpProtocol = 19;
+  // @inject_tag: json:"iconPath" form:"iconPath" desc:"图标路径"
+  string iconPath = 20;
+  // @inject_tag: json:"createdAt" form:"createdAt" desc:"创建时间"
+  string createdAt = 21;
+  // @inject_tag: json:"updatedAt" form:"updatedAt" desc:"更新时间"
+  string updatedAt = 22;
+  // @inject_tag: json:"environmentName" form:"environmentName" desc:"环境名称"
+  string environmentName = 23;
+  // @inject_tag: json:"servicePath" form:"servicePath" desc:"服务路径"
+  string servicePath = 24;
+}
+
+// TemplateEditRequest 模板编辑请求
+message TemplateEditRequest {
+  // @inject_tag: json:"templateId" form:"templateId" uri:"templateId" desc:"模板ID"
+  int32 templateId = 1;
+  // @inject_tag: json:"name" form:"name" desc:"实例名称"
+  string name = 2;
+  // @inject_tag: json:"port" form:"port" desc:"端口号"
+  int32 port = 3;
+  // @inject_tag: json:"initScript" form:"initScript" desc:"初始化脚本"
+  string initScript = 4;
+  // @inject_tag: json:"command" form:"command" desc:"启动命令"
+  string command = 5;
+  // @inject_tag: json:"environmentVariables" form:"environmentVariables" desc:"环境变量"
+  map<string, string> environmentVariables = 6;
+  // @inject_tag: json:"volumeMounts" form:"volumeMounts" desc:"卷挂载配置列表"
+  repeated VolumeMount volumeMounts = 7;
+  // @inject_tag: json:"startupTimeout" form:"startupTimeout" desc:"启动超时时间（秒）"
+  int32 startupTimeout = 8;
+  // @inject_tag: json:"runningTimeout" form:"runningTimeout" desc:"运行超时时间（秒）"
+  int32 runningTimeout = 9;
+  // @inject_tag: json:"environmentId" form:"environmentId" desc:"环境ID"
+  int32 environmentId = 10;
+  // @inject_tag: json:"packageId,omitempty" form:"packageId" desc:"包ID，非必填"
+  string packageId = 11;
+  // @inject_tag: json:"accessType" form:"accessType" desc:"部署模式"
+  AccessType accessType = 12;
+  // @inject_tag: json:"mcpServers" form:"mcpServers" desc:"MCP服务器配置"
+  string mcpServers = 13;
+  // @inject_tag: json:"imgAddress" form:"imgAddress" desc:"镜像地址"
+  string imgAddress = 14;
+  // @inject_tag: json:"mcpServerId" form:"mcpServerId" desc:"MCP服务器ID"
+  string mcpServerId = 16;
+  // @inject_tag: json:"tokens" form:"tokens" desc:"令牌列表"
+  repeated McpToken tokens = 17;
+  // @inject_tag: json:"notes" form:"notes" desc:"备注"
+  string notes = 18;
+  // @inject_tag: json:"mcpProtocol" form:"mcpProtocol" desc:"MCP协议"
+  McpProtocol mcpProtocol = 19;
+  // @inject_tag: json:"iconPath" form:"iconPath" desc:"图标路径"
+  string iconPath = 20;
+}
+
+// TemplateEditResp 模板编辑响应
+message TemplateEditResp {
+  // @inject_tag: json:"message" desc:"响应消息"
+  string message = 1;
+}
+
+// TemplateListRequest 模板列表请求
+message TemplateListRequest {
+  // @inject_tag: json:"page" form:"page" desc:"页码"
+  int32 page = 1;
+  // @inject_tag: json:"pageSize" form:"pageSize" desc:"每页数量"
+  int32 pageSize = 2;
+  // @inject_tag: json:"templateId" form:"templateId" desc:"模板ID"
+  int32 templateId = 3;
+  // @inject_tag: json:"name" form:"name" desc:"模板名称"
+  string name = 4;
+}
+
+// TemplateListResp 模板列表响应
+message TemplateListResp {
+  // @inject_tag: json:"list" desc:"模板列表"
+  repeated TemplateDetailResp list = 1;
+  // @inject_tag: json:"total" desc:"总记录数"
+  int32 total = 2;
+  // @inject_tag: json:"page" desc:"当前页码"
+  int32 page = 3;
+  // @inject_tag: json:"pageSize" desc:"每页数量"
+  int32 pageSize = 4;
+}
+
+// TemplateDeleteRequest 模板删除请求
+message TemplateDeleteRequest {
+  // @inject_tag: json:"templateId" form:"templateId" uri:"templateId" desc:"模板ID"
+  int32 templateId = 1;
+}
+
+// TemplateDeleteResp 模板删除响应
+message TemplateDeleteResp {}
+
+// InstanceService 实例管理服务
+service InstanceService {
+  // 创建实例
+  rpc Create(CreateRequest) returns (CreateResp) {
+    option (google.api.http) = {
+      post: "/instance/create",
+      body: "*",
+    };
+  }
+  // 实例详情
+  rpc Detail(DetailRequest) returns (DetailResp) {
+    option (google.api.http) = {
+      get: "/instance/{instanceId}",
+    };
+  }
+  // 编辑实例
+  rpc Edit(EditRequest) returns (EditResp) {
+    option (google.api.http) = {
+      put:  "/instance/edit",
+      body: "*",
+    };
+  }
+  // 实例列表
+  rpc List(ListRequest) returns (ListResp) {
+    option (google.api.http) = {
+      post: "/instance/list",
+      body: "*",
+    };
+  }
+  // 禁用实例
+  rpc Disabled(DisabledRequest) returns (DisabledResp) {
+    option (google.api.http) = {
+      put:  "/instance/disabled",
+      body: "*",
+    };
+  }
+  // 重启实例
+  rpc Restart(RestartRequest) returns (RestartResp) {
+    option (google.api.http) = {
+      put:  "/instance/restart",
+      body: "*",
+    };
+  }
+  // 实例状态探测
+  rpc Status(GetStatusRequest) returns (GetStatusResp) {
+    option (google.api.http) = {
+      get: "/instance/status/{instanceId}",
+    };
+  }
+  // 删除实例
+  rpc Delete(DeleteRequest) returns (DeleteResp) {
+    option (google.api.http) = {
+      delete: "/instance/{instanceId}",
+    };
+  }
+  // 查看实例运行日志
+  rpc Logs(LogsRequest) returns (LogsResp) {
+    option (google.api.http) = {
+      post: "/instance/logs",
+      body: "*",
+    };
+  }
+
+  // 创建模板
+  rpc TemplateCreate(TemplateCreateRequest) returns (TemplateCreateResp) {
+    option (google.api.http) = {
+      post: "/template/create",
+      body: "*",
+    };
+  }
+  // 模板详情
+  rpc TemplateDetail(TemplateDetailRequest) returns (TemplateDetailResp) {
+    option (google.api.http) = {
+      get: "/template/{templateId}",
+    };
+  }
+  // 编辑模板
+  rpc TemplateEdit(TemplateEditRequest) returns (TemplateEditResp) {
+    option (google.api.http) = {
+      put:  "/template/edit",
+      body: "*",
+    };
+  }
+  // 模板列表
+  rpc TemplateList(TemplateListRequest) returns (TemplateListResp) {
+    option (google.api.http) = {
+      post: "/template/list",
+      body: "*",
+    };
+  }
+  // 删除模板
+  rpc TemplateDelete(TemplateDeleteRequest) returns (TemplateDeleteResp) {
+    option (google.api.http) = {
+      delete: "/template/{templateId}",
+    };
+  }
+}
