@@ -34,7 +34,7 @@ MCP CAN is an open-source, lightweight back-end platform focused on agile manage
 
 
 
-### ✨ Key Features
+# ✨ Key Features
 ## 🚀1. Containerized Agile Deployment: Focusing on Rapid Code Package Deployment
 
 Leveraging a standardized container environment (pre-installed with Node.js and Python runtime), it supports lightweight deployment of MCP services, including:
@@ -103,6 +103,34 @@ The MCP service is fully deployed in the container provided by the platform. In 
 ## ⚡ Deployment
 For detailed deployment steps, please refer to [https://kymo-mcp.github.io/mcp-box-deploy/](https://github.com/Kymo-MCP/mcp-box-deploy/tree/v1.0.0-dev) for details.
 
+## 🏗️ Architecture
+
+### System Architecture
+                                                   ┌──────────────────────────────┐
+                                                   │         Web Console          │
+                                                   │ (Admin Interface / Frontend) │
+                                                   └──────────────────────────────┘
+                                                                 │
+                                                                 ▼
+                                    ┌───────────────────────────────────────────────┐
+                                    │             MCP Management Service            │
+                                    │ (Instance / Template / Environment Mgmt)      │
+                                    └───────────────────────────────────────────────┘
+                                          │             │             │
+                                          │             │             │
+                                          ▼             ▼             ▼
+        ┌────────────────────────┐   ┌────────────────────────┐   ┌────────────────────────┐
+        │ Protocol Gateway       │   │ Container Orchestration│   │ PostgreSQL Database    │
+        │ (stdio ↔ HTTP / SSE)   │   │ (Kubernetes Cluster)   │   │ (Configs, States, etc.)│
+        └────────────────────────┘   └────────────────────────┘   └────────────────────────┘
+                                          │
+                                          │
+                                          ▼
+        ┌────────────────────────┐   ┌────────────────────────┐   ┌────────────────────────┐
+        │ Code Package Repository│   │ Market Case Library    │   │ Available Case Library │
+        │ (User-uploaded MCP     │   │ (BigModel / Modelscope)│   │ (AutoNavi / Calculator)│
+        │  Service Packages)     │   │                        │   │                        │
+        └────────────────────────┘   └────────────────────────┘   └────────────────────────┘
 
 ## 📌 Frequently Asked Questions  
 
