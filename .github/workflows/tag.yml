@@ -1,0 +1,126 @@
+name: Release Tag
+
+# 触发器配置
+on:
+  push:                 # 自动触发
+    branches:
+      - main            # 监听 main 分支变动
+  workflow_dispatch:    # 手动触发
+    inputs:
+      ReleaseTag:
+        description: '是否创建发布标签'
+        required: true
+        type: boolean
+        default: false
+    
+
+permissions:
+  contents: write
+
+jobs:
+  create-tag:
+    runs-on: ubuntu-latest
+    # 手动触发时需要 ReleaseTag 为 true，自动触发时直接执行
+    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.ReleaseTag == 'true')
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 读取VERSION文件
+        id: version_info
+        run: |
+          if [ -f "VERSION" ]; then
+            VERSION=$(cat VERSION | tr -d '\n\r' | xargs)
+            echo "从VERSION文件读取版本: $VERSION"
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+          else
+            echo "❌ VERSION文件不存在"
+            exit 1
+          fi
+
+      - name: 验证版本格式
+        id: validate_version
+        run: |
+          VERSION="${{ steps.version_info.outputs.version }}"
+          # 检查版本号是否符合 v*.*.* 格式（如 v1.0.1, v2.3.1）
+          # 不允许有其他后缀（如 v1.0.1-dev）
+          if [[ $VERSION =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "✅ 版本格式验证通过: $VERSION"
+            echo "valid_version=true" >> $GITHUB_OUTPUT
+          else
+            echo "❌ 版本格式不符合要求: $VERSION"
+            echo "❌ 要求格式: v*.*.* (如 v1.0.1, v2.3.1)"
+            echo "❌ 不允许后缀: v1.0.1-dev, v1.0.1-alpha 等"
+            echo "valid_version=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+      - name: 生成标签名称
+        id: tag_info
+        run: |
+          VERSION="${{ steps.version_info.outputs.version }}"
+          # 使用VERSION文件中的版本号作为标签名称
+          TAG_NAME="$VERSION"
+          echo "标签名称: $TAG_NAME"
+          echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
+
+      - name: 检查标签是否存在
+        id: check_tag
+        # 只有在版本格式验证通过后才执行
+        if: steps.validate_version.outputs.valid_version == 'true'
+        run: |
+          TAG_NAME="${{ steps.tag_info.outputs.tag_name }}"
+          if git ls-remote --tags origin | grep -q "refs/tags/$TAG_NAME$"; then
+            echo "标签 $TAG_NAME 已存在"
+            echo "tag_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "标签 $TAG_NAME 不存在，可以创建"
+            echo "tag_exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 创建并推送标签
+        if: steps.validate_version.outputs.valid_version == 'true' && steps.check_tag.outputs.tag_exists == 'false'
+        run: |
+          TAG_NAME="${{ steps.tag_info.outputs.tag_name }}"
+          VERSION="${{ steps.version_info.outputs.version }}"
+          
+          # 配置 Git
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # 创建标签
+          git tag -a "$TAG_NAME" -m "从main分支创建发布标签 $TAG_NAME (版本: $VERSION)"
+          
+          # 使用完整引用路径推送标签，避免与同名分支冲突
+          git push origin "refs/tags/$TAG_NAME"
+          
+          echo "✅ 成功创建并推送标签: $TAG_NAME"
+          echo "📍 来源分支: main"
+          echo "📋 版本信息: $VERSION"
+
+      - name: 强制更新标签（如果已存在）
+        if: steps.validate_version.outputs.valid_version == 'true' && steps.check_tag.outputs.tag_exists == 'true'
+        run: |
+          TAG_NAME="${{ steps.tag_info.outputs.tag_name }}"
+          VERSION="${{ steps.version_info.outputs.version }}"
+          
+          # 配置 Git
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # 删除远程标签
+          git push origin --delete "refs/tags/$TAG_NAME" || true
+          
+          # 删除本地标签（如果存在）
+          git tag -d "$TAG_NAME" || true
+          
+          # 创建新标签
+          git tag -a "$TAG_NAME" -m "从main分支强制更新发布标签 $TAG_NAME (版本: $VERSION)"
+          
+          # 推送新标签
+          git push origin "refs/tags/$TAG_NAME"
+          
+          echo "✅ 成功强制更新标签: $TAG_NAME"
+          echo "📍 来源分支: main"
+          echo "📋 版本信息: $VERSION"
+          echo "⚠️ 注意: 已强制覆盖现有标签"
