@@ -1,7 +1,7 @@
 # MCPCan
 
 <div align="center">
-  <img src="https://img.shields.io/badge/Next.js-15.5.4-black?style=for-the-badge&logo=next.js" alt="Next.js"/>
+  <img src="https://img.shields.io/badge/Vue.js-3.2.47-4FC08D?style=for-the-badge&logo=vue.js&logoColor=ffffff" alt="Vue.js"/>
   <img src="https://img.shields.io/badge/TypeScript-5.0-blue?style=for-the-badge&logo=typescript" alt="TypeScript"/>
   <img src="https://img.shields.io/badge/MySQL-8.0-blue?style=for-the-badge&logo=mysql" alt="MySQL"/>
   <img src="https://img.shields.io/badge/Kubernetes-1.28-326ce5?style=for-the-badge&logo=kubernetes" alt="Kubernetes"/>
@@ -64,17 +64,18 @@ helm install mcpcan mcpcan/mcpcan-deploy \
 
 MCPCan 由多个关键组件组成，它们共同构成了 MCPCan 的功能框架，为用户提供全面的 MCP 服务管理能力。
 
-| 项目 | 状态 | 描述 |
-|------|------|------|
-| [MCPCan-Web](frontend/) | ![Status](https://img.shields.io/badge/status-active-green) | MCPCan Web UI (Next.js 前端) |
-| [MCPCan-Backend](backend/) | ![Status](https://img.shields.io/badge/status-active-green) | MCPCan 后端服务 (Go 微服务) |
-| [MCPCan-Gateway](backend/cmd/gateway/) | ![Status](https://img.shields.io/badge/status-active-green) | MCP 网关服务 |
-| [MCPCan-Market](backend/cmd/market/) | ![Status](https://img.shields.io/badge/status-active-green) | MCP 服务市场 |
-| [MCPCan-Authz](backend/cmd/authz/) | ![Status](https://img.shields.io/badge/status-active-green) | 认证和授权服务 |
+| 项目                                   | 状态                                                        | 描述                        |
+| -------------------------------------- | ----------------------------------------------------------- | --------------------------- |
+| [MCPCan-Web](frontend/)                | ![Status](https://img.shields.io/badge/status-active-green) | MCPCan Web UI (Vue.js 前端) |
+| [MCPCan-Backend](backend/)             | ![Status](https://img.shields.io/badge/status-active-green) | MCPCan 后端服务 (Go 微服务) |
+| [MCPCan-Gateway](backend/cmd/gateway/) | ![Status](https://img.shields.io/badge/status-active-green) | MCP 网关服务                |
+| [MCPCan-Market](backend/cmd/market/)   | ![Status](https://img.shields.io/badge/status-active-green) | MCP 服务市场                |
+| [MCPCan-Authz](backend/cmd/authz/)     | ![Status](https://img.shields.io/badge/status-active-green) | 认证和授权服务              |
 
 ## 技术栈
 
 ### 前端
+
 - **框架**: Vue.js 3.5+ (Composition API)
 - **语言**: TypeScript
 - **样式**: UnoCSS, SCSS
@@ -83,6 +84,7 @@ MCPCan 由多个关键组件组成，它们共同构成了 MCPCan 的功能框�
 - **构建工具**: Vite
 
 ### 后端
+
 - **语言**: Go 1.24.2+
 - **框架**: Gin, gRPC
 - **数据库**: MySQL, Redis
@@ -98,6 +100,7 @@ MCPCan 由多个关键组件组成，它们共同构成了 MCPCan 的功能框�
 欢迎提交 PR 贡献代码。请参考 [CONTRIBUTING.md](CONTRIBUTING.md) 了解贡献指南。
 
 在贡献之前，请：
+
 1. 阅读我们的[行为准则](CODE_OF_CONDUCT.md)
 2. 检查现有的 issues 和 pull requests
 3. 遵循我们的编码标准和提交信息约定
