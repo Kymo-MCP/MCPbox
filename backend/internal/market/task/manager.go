@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"qm-mcp-server/pkg/database/repository/mysql"
-	"qm-mcp-server/pkg/scheduler"
+	"github.com/kymo-mcp/mcpcan/pkg/database/repository/mysql"
+	"github.com/kymo-mcp/mcpcan/pkg/scheduler"
 
 	"go.uber.org/zap"
 )

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package dept;
 
-option go_package = "qm-mcp-server/api/authz/dept";
+option go_package = "github.com/kymo-mcp/mcpcan/api/authz/dept";
 
 import "google/protobuf/empty.proto";
 import "google/api/annotations.proto";

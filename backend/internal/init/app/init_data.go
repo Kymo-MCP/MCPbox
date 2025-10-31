@@ -5,7 +5,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	"qm-mcp-server/pkg/logger"
+	"github.com/kymo-mcp/mcpcan/pkg/logger"
 
 	"go.uber.org/zap"
 )

@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"qm-mcp-server/pkg/database/model"
-	"qm-mcp-server/pkg/database/repository/mysql"
+	"github.com/kymo-mcp/mcpcan/pkg/database/model"
+	"github.com/kymo-mcp/mcpcan/pkg/database/repository/mysql"
 )
 
 // TemplateBiz 模板数据访问层

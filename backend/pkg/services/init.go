@@ -2,9 +2,9 @@ package services
 
 import (
 	"fmt"
-	"qm-mcp-server/pkg/common"
-	"qm-mcp-server/pkg/services/authz"
-	"qm-mcp-server/pkg/services/market"
+	"github.com/kymo-mcp/mcpcan/pkg/common"
+	"github.com/kymo-mcp/mcpcan/pkg/services/authz"
+	"github.com/kymo-mcp/mcpcan/pkg/services/market"
 )
 
 func LoadServices(cfgs *common.Services) error {

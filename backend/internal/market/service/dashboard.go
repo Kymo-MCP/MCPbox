@@ -7,13 +7,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 
-	pb "qm-mcp-server/api/market/dashboard"
-	instancepb "qm-mcp-server/api/market/instance"
-	"qm-mcp-server/internal/market/biz"
-	"qm-mcp-server/pkg/common"
-	"qm-mcp-server/pkg/database/model"
-	"qm-mcp-server/pkg/i18n"
-	"qm-mcp-server/pkg/logger"
+	pb "github.com/kymo-mcp/mcpcan/api/market/dashboard"
+	instancepb "github.com/kymo-mcp/mcpcan/api/market/instance"
+	"github.com/kymo-mcp/mcpcan/internal/market/biz"
+	"github.com/kymo-mcp/mcpcan/pkg/common"
+	"github.com/kymo-mcp/mcpcan/pkg/database/model"
+	"github.com/kymo-mcp/mcpcan/pkg/i18n"
+	"github.com/kymo-mcp/mcpcan/pkg/logger"
 )
 
 // DashboardService dashboard service

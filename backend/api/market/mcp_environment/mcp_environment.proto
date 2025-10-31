@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package mcp_environment;
 
-option go_package = "qm-mcp-server/api/market/mcp_environment";
+option go_package = "github.com/kymo-mcp/mcpcan/api/market/mcp_environment";
 
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";

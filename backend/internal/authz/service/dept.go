@@ -6,12 +6,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 
-	"qm-mcp-server/api/authz/dept"
-	"qm-mcp-server/internal/authz/biz"
-	"qm-mcp-server/pkg/common"
-	"qm-mcp-server/pkg/database/model"
-	i18nresp "qm-mcp-server/pkg/i18n"
-	"qm-mcp-server/pkg/logger"
+	"github.com/kymo-mcp/mcpcan/api/authz/dept"
+	"github.com/kymo-mcp/mcpcan/internal/authz/biz"
+	"github.com/kymo-mcp/mcpcan/pkg/common"
+	"github.com/kymo-mcp/mcpcan/pkg/database/model"
+	i18nresp "github.com/kymo-mcp/mcpcan/pkg/i18n"
+	"github.com/kymo-mcp/mcpcan/pkg/logger"
 )
 
 // DeptService department HTTP service

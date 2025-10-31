@@ -3,7 +3,7 @@ package utils
 import (
 	"encoding/json"
 	"fmt"
-	"qm-mcp-server/pkg/database/model"
+	"github.com/kymo-mcp/mcpcan/pkg/database/model"
 	"strings"
 	"unicode"
 )

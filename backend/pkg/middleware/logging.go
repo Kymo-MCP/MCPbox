@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
-	"qm-mcp-server/pkg/logger"
+	"github.com/kymo-mcp/mcpcan/pkg/logger"
 	"strings"
 	"time"
 

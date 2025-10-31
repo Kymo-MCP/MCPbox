@@ -7,13 +7,13 @@ import (
 
 	"go.uber.org/zap"
 
-	"qm-mcp-server/internal/authz/config"
-	"qm-mcp-server/pkg/common"
-	"qm-mcp-server/pkg/database/repository/mysql"
-	"qm-mcp-server/pkg/i18n"
-	"qm-mcp-server/pkg/jwt"
-	"qm-mcp-server/pkg/logger"
-	"qm-mcp-server/pkg/redis"
+	"github.com/kymo-mcp/mcpcan/internal/authz/config"
+	"github.com/kymo-mcp/mcpcan/pkg/common"
+	"github.com/kymo-mcp/mcpcan/pkg/database/repository/mysql"
+	"github.com/kymo-mcp/mcpcan/pkg/i18n"
+	"github.com/kymo-mcp/mcpcan/pkg/jwt"
+	"github.com/kymo-mcp/mcpcan/pkg/logger"
+	"github.com/kymo-mcp/mcpcan/pkg/redis"
 )
 
 // AuthUseCase authentication business logic

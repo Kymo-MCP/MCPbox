@@ -4,7 +4,7 @@ package market.code;
 
 import "google/api/annotations.proto";
 
-option go_package = "qm-mcp-server/api/market/code";
+option go_package = "github.com/kymo-mcp/mcpcan/api/market/code";
 
 // PackageType 代码包类型枚举
 enum PackageType {

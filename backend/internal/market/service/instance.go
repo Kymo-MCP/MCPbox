@@ -11,14 +11,14 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 
-	instancepb "qm-mcp-server/api/market/instance"
-	"qm-mcp-server/internal/market/biz"
-	"qm-mcp-server/pkg/common"
-	i18nresp "qm-mcp-server/pkg/i18n"
+	instancepb "github.com/kymo-mcp/mcpcan/api/market/instance"
+	"github.com/kymo-mcp/mcpcan/internal/market/biz"
+	"github.com/kymo-mcp/mcpcan/pkg/common"
+	i18nresp "github.com/kymo-mcp/mcpcan/pkg/i18n"
 
-	"qm-mcp-server/pkg/database/model"
-	"qm-mcp-server/pkg/database/repository/mysql"
-	"qm-mcp-server/pkg/utils"
+	"github.com/kymo-mcp/mcpcan/pkg/database/model"
+	"github.com/kymo-mcp/mcpcan/pkg/database/repository/mysql"
+	"github.com/kymo-mcp/mcpcan/pkg/utils"
 )
 
 // InstanceService struct for instance service

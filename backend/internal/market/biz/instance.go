@@ -5,14 +5,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
-	"qm-mcp-server/internal/market/config"
-	"qm-mcp-server/pkg/common"
-	"qm-mcp-server/pkg/database/model"
-	"qm-mcp-server/pkg/database/repository/mysql"
-	"qm-mcp-server/pkg/utils"
+	"github.com/kymo-mcp/mcpcan/internal/market/config"
+	"github.com/kymo-mcp/mcpcan/pkg/common"
+	"github.com/kymo-mcp/mcpcan/pkg/database/model"
+	"github.com/kymo-mcp/mcpcan/pkg/database/repository/mysql"
+	"github.com/kymo-mcp/mcpcan/pkg/utils"
 	"strings"
 
-	instancepb "qm-mcp-server/api/market/instance"
+	instancepb "github.com/kymo-mcp/mcpcan/api/market/instance"
 )
 
 // InstanceBiz 实例数据处理层

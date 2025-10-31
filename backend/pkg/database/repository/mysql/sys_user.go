@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"qm-mcp-server/pkg/database/model"
-	"qm-mcp-server/pkg/logger"
+	"github.com/kymo-mcp/mcpcan/pkg/database/model"
+	"github.com/kymo-mcp/mcpcan/pkg/logger"
 
 	"go.uber.org/zap"
 	"gorm.io/gorm"

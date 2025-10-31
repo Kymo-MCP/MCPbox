@@ -4,12 +4,12 @@ import (
 	"context"
 	"fmt"
 
-	"qm-mcp-server/api/market/mcp_environment"
-	"qm-mcp-server/pkg/common"
-	"qm-mcp-server/pkg/container"
-	"qm-mcp-server/pkg/database/model"
-	"qm-mcp-server/pkg/database/repository/mysql"
-	"qm-mcp-server/pkg/i18n"
+	"github.com/kymo-mcp/mcpcan/api/market/mcp_environment"
+	"github.com/kymo-mcp/mcpcan/pkg/common"
+	"github.com/kymo-mcp/mcpcan/pkg/container"
+	"github.com/kymo-mcp/mcpcan/pkg/database/model"
+	"github.com/kymo-mcp/mcpcan/pkg/database/repository/mysql"
+	"github.com/kymo-mcp/mcpcan/pkg/i18n"
 
 	"gopkg.in/yaml.v3"
 )

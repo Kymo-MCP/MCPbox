@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"qm-mcp-server/internal/market/app"
+	"github.com/kymo-mcp/mcpcan/internal/market/app"
 )
 
 func main() {

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package authz.user_auth;
 
-option go_package = "qm-mcp-server/api/authz/user_auth";
+option go_package = "github.com/kymo-mcp/mcpcan/api/authz/user_auth";
 
 import "google/api/annotations.proto";
 

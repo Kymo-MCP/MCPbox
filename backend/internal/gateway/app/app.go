@@ -9,10 +9,10 @@ import (
 	"syscall"
 	"time"
 
-	"qm-mcp-server/internal/gateway/config"
-	"qm-mcp-server/pkg/database"
-	"qm-mcp-server/pkg/database/repository/mysql"
-	"qm-mcp-server/pkg/logger"
+	"github.com/kymo-mcp/mcpcan/internal/gateway/config"
+	"github.com/kymo-mcp/mcpcan/pkg/database"
+	"github.com/kymo-mcp/mcpcan/pkg/database/repository/mysql"
+	"github.com/kymo-mcp/mcpcan/pkg/logger"
 
 	"go.uber.org/zap"
 )

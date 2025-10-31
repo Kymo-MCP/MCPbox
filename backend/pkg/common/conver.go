@@ -2,9 +2,9 @@ package common
 
 import (
 	"fmt"
-	codepb "qm-mcp-server/api/market/code"
-	instancepb "qm-mcp-server/api/market/instance"
-	"qm-mcp-server/pkg/database/model"
+	codepb "github.com/kymo-mcp/mcpcan/api/market/code"
+	instancepb "github.com/kymo-mcp/mcpcan/api/market/instance"
+	"github.com/kymo-mcp/mcpcan/pkg/database/model"
 )
 
 // ConvertToInstanceInfo converts database model to proto message

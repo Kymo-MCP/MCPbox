@@ -1,5 +1,5 @@
 version: v1
-name: buf.build/nolan/qm-mcp-server
+name: buf.build/kymo-mcp/mcpcan
 deps:
   - buf.build/googleapis/googleapis
   - buf.build/gogo/protobuf

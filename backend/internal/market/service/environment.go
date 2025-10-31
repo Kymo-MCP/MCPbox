@@ -8,11 +8,11 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"qm-mcp-server/api/market/mcp_environment"
-	"qm-mcp-server/internal/market/biz"
-	"qm-mcp-server/pkg/common"
-	"qm-mcp-server/pkg/database/model"
-	i18nresp "qm-mcp-server/pkg/i18n"
+	"github.com/kymo-mcp/mcpcan/api/market/mcp_environment"
+	"github.com/kymo-mcp/mcpcan/internal/market/biz"
+	"github.com/kymo-mcp/mcpcan/pkg/common"
+	"github.com/kymo-mcp/mcpcan/pkg/database/model"
+	i18nresp "github.com/kymo-mcp/mcpcan/pkg/i18n"
 )
 
 // EnvironmentService provides environment management functionality

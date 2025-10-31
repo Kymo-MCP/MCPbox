@@ -2,7 +2,7 @@ package authz
 
 import (
 	"fmt"
-	"qm-mcp-server/pkg/common"
+	"github.com/kymo-mcp/mcpcan/pkg/common"
 )
 
 var AuthzConfig *common.Service

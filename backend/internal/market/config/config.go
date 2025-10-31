@@ -3,9 +3,9 @@ package config
 import (
 	"fmt"
 
-	"qm-mcp-server/pkg/common"
-	"qm-mcp-server/pkg/utils"
-	"qm-mcp-server/pkg/version"
+	"github.com/kymo-mcp/mcpcan/pkg/common"
+	"github.com/kymo-mcp/mcpcan/pkg/utils"
+	"github.com/kymo-mcp/mcpcan/pkg/version"
 
 	"github.com/spf13/viper"
 )

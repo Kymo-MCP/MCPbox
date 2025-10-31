@@ -4,7 +4,7 @@ package instance;
 
 import "google/api/annotations.proto";
 
-option go_package = "qm-mcp-server/api/market/instance";
+option go_package = "github.com/kymo-mcp/mcpcan/api/market/instance";
 
 enum AccessType {
   AccessTypeUnknown = 0;

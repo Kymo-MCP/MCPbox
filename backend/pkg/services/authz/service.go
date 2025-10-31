@@ -7,7 +7,7 @@ import (
 	"io"
 	"net/http"
 
-	"qm-mcp-server/api/authz/user_auth"
+	"github.com/kymo-mcp/mcpcan/api/authz/user_auth"
 )
 
 type AuthzService struct {

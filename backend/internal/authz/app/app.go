@@ -12,14 +12,14 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 
-	"qm-mcp-server/internal/authz/config"
-	"qm-mcp-server/internal/authz/service"
-	"qm-mcp-server/pkg/common"
-	dbpkg "qm-mcp-server/pkg/database"
-	"qm-mcp-server/pkg/database/repository/mysql"
-	"qm-mcp-server/pkg/logger"
-	"qm-mcp-server/pkg/middleware"
-	"qm-mcp-server/pkg/redis"
+	"github.com/kymo-mcp/mcpcan/internal/authz/config"
+	"github.com/kymo-mcp/mcpcan/internal/authz/service"
+	"github.com/kymo-mcp/mcpcan/pkg/common"
+	dbpkg "github.com/kymo-mcp/mcpcan/pkg/database"
+	"github.com/kymo-mcp/mcpcan/pkg/database/repository/mysql"
+	"github.com/kymo-mcp/mcpcan/pkg/logger"
+	"github.com/kymo-mcp/mcpcan/pkg/middleware"
+	"github.com/kymo-mcp/mcpcan/pkg/redis"
 )
 
 // App application structure

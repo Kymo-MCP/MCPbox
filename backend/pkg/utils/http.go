@@ -85,7 +85,7 @@ func ProbeHTTP(ctx context.Context, options HTTPProbeOptions, expectedStatus int
 	}
 
 	// set User-Agent
-	req.Header.Set("User-Agent", "qm-mcp-server-health-checker/1.0")
+	req.Header.Set("User-Agent", "github.com/kymo-mcp/mcpcan-health-checker/1.0")
 
 	// perform request
 	resp, err := client.Do(req)

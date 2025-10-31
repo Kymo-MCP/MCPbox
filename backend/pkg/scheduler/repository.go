@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"sync"
 
-	"qm-mcp-server/pkg/i18n"
+	"github.com/kymo-mcp/mcpcan/pkg/i18n"
 )
 
 // MemoryTaskRepository 内存任务存储实现

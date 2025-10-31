@@ -7,13 +7,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 
-	"qm-mcp-server/api/authz/user_auth"
-	"qm-mcp-server/internal/authz/biz"
-	"qm-mcp-server/pkg/common"
-	i18nresp "qm-mcp-server/pkg/i18n"
-	"qm-mcp-server/pkg/logger"
-	"qm-mcp-server/pkg/redis"
-	"qm-mcp-server/pkg/utils"
+	"github.com/kymo-mcp/mcpcan/api/authz/user_auth"
+	"github.com/kymo-mcp/mcpcan/internal/authz/biz"
+	"github.com/kymo-mcp/mcpcan/pkg/common"
+	i18nresp "github.com/kymo-mcp/mcpcan/pkg/i18n"
+	"github.com/kymo-mcp/mcpcan/pkg/logger"
+	"github.com/kymo-mcp/mcpcan/pkg/redis"
+	"github.com/kymo-mcp/mcpcan/pkg/utils"
 )
 
 // UserAuthService user authentication HTTP service

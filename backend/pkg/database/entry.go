@@ -3,8 +3,8 @@ package database
 import (
 	"time"
 
-	"qm-mcp-server/pkg/common"
-	"qm-mcp-server/pkg/database/repository/mysql"
+	"github.com/kymo-mcp/mcpcan/pkg/common"
+	"github.com/kymo-mcp/mcpcan/pkg/database/repository/mysql"
 )
 
 // Init 初始化数据库连接

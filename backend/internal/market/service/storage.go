@@ -12,12 +12,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 
-	"qm-mcp-server/api/market/storage"
-	"qm-mcp-server/internal/market/config"
-	"qm-mcp-server/pkg/common"
-	i18nresp "qm-mcp-server/pkg/i18n"
-	"qm-mcp-server/pkg/logger"
-	"qm-mcp-server/pkg/utils"
+	"github.com/kymo-mcp/mcpcan/api/market/storage"
+	"github.com/kymo-mcp/mcpcan/internal/market/config"
+	"github.com/kymo-mcp/mcpcan/pkg/common"
+	i18nresp "github.com/kymo-mcp/mcpcan/pkg/i18n"
+	"github.com/kymo-mcp/mcpcan/pkg/logger"
+	"github.com/kymo-mcp/mcpcan/pkg/utils"
 )
 
 // StorageService provides storage-related operations

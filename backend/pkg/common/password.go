@@ -2,8 +2,8 @@ package common
 
 import (
 	"fmt"
-	"qm-mcp-server/pkg/i18n"
-	"qm-mcp-server/pkg/logger"
+	"github.com/kymo-mcp/mcpcan/pkg/i18n"
+	"github.com/kymo-mcp/mcpcan/pkg/logger"
 )
 
 // PasswordValidationResult represents the result of password validation

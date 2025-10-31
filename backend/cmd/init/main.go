@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"qm-mcp-server/internal/init/app"
+	"github.com/kymo-mcp/mcpcan/internal/init/app"
 )
 
 func main() {

@@ -10,7 +10,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/rest"
 
-	"qm-mcp-server/pkg/k8s"
+	"github.com/kymo-mcp/mcpcan/pkg/k8s"
 )
 
 // KubernetesRuntime Kubernetes runtime implementation

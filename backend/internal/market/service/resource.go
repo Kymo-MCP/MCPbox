@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"net/http"
 
-	"qm-mcp-server/api/market/resource"
-	"qm-mcp-server/internal/market/biz"
-	"qm-mcp-server/pkg/common"
-	i18nresp "qm-mcp-server/pkg/i18n"
-	"qm-mcp-server/pkg/k8s"
+	"github.com/kymo-mcp/mcpcan/api/market/resource"
+	"github.com/kymo-mcp/mcpcan/internal/market/biz"
+	"github.com/kymo-mcp/mcpcan/pkg/common"
+	i18nresp "github.com/kymo-mcp/mcpcan/pkg/i18n"
+	"github.com/kymo-mcp/mcpcan/pkg/k8s"
 
 	"github.com/gin-gonic/gin"
 )

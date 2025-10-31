@@ -7,9 +7,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"qm-mcp-server/api/market/code"
-	"qm-mcp-server/internal/authz/config"
-	"qm-mcp-server/pkg/logger"
+	"github.com/kymo-mcp/mcpcan/api/market/code"
+	"github.com/kymo-mcp/mcpcan/internal/authz/config"
+	"github.com/kymo-mcp/mcpcan/pkg/logger"
 
 	"go.uber.org/zap"
 )

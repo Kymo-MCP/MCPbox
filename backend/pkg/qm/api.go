@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"time"
 
-	"qm-mcp-server/api/market/market"
+	"github.com/kymo-mcp/mcpcan/api/market/market"
 )
 
 // CallMarketAPI general market API call method

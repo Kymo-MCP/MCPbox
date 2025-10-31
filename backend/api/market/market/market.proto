@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package market;
 
-option go_package = "qm-mcp-server/api/market/market";
+option go_package = "github.com/kymo-mcp/mcpcan/api/market/market";
 
 import "google/protobuf/empty.proto";
 import "google/api/annotations.proto";

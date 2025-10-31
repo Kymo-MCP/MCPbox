@@ -8,7 +8,7 @@ import (
 	"encoding/base64"
 	"encoding/pem"
 	"fmt"
-	"qm-mcp-server/pkg/redis"
+	"github.com/kymo-mcp/mcpcan/pkg/redis"
 	"time"
 
 	"github.com/google/uuid"

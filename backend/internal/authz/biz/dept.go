@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"qm-mcp-server/pkg/database/model"
-	"qm-mcp-server/pkg/database/repository/mysql"
+	"github.com/kymo-mcp/mcpcan/pkg/database/model"
+	"github.com/kymo-mcp/mcpcan/pkg/database/repository/mysql"
 )
 
 // DeptData department data access layer

@@ -4,7 +4,7 @@ package dashboard;
 
 import "google/api/annotations.proto";
 
-option go_package = "qm-mcp-server/api/market/dashboard";
+option go_package = "github.com/kymo-mcp/mcpcan/api/market/dashboard";
 
 // StatisticalRequest 统计请求
 message StatisticalRequest {

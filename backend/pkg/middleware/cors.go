@@ -4,9 +4,9 @@ import (
 	"net"
 	"strings"
 
-	"qm-mcp-server/pkg/common"
-	"qm-mcp-server/pkg/i18n"
-	"qm-mcp-server/pkg/utils"
+	"github.com/kymo-mcp/mcpcan/pkg/common"
+	"github.com/kymo-mcp/mcpcan/pkg/i18n"
+	"github.com/kymo-mcp/mcpcan/pkg/utils"
 
 	"github.com/gin-gonic/gin"
 )

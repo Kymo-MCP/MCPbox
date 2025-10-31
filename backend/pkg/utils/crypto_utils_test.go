@@ -2,7 +2,7 @@ package utils_test
 
 import (
 	"encoding/base64"
-	"qm-mcp-server/pkg/utils"
+	"github.com/kymo-mcp/mcpcan/pkg/utils"
 	"testing"
 )
 

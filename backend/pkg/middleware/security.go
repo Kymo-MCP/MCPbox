@@ -13,9 +13,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 
-	"qm-mcp-server/pkg/common"
-	"qm-mcp-server/pkg/i18n"
-	"qm-mcp-server/pkg/logger"
+	"github.com/kymo-mcp/mcpcan/pkg/common"
+	"github.com/kymo-mcp/mcpcan/pkg/i18n"
+	"github.com/kymo-mcp/mcpcan/pkg/logger"
 )
 
 // SecurityConfig 安全配置

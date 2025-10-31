@@ -1,7 +1,7 @@
 package i18n_test
 
 import (
-	"qm-mcp-server/pkg/i18n"
+	"github.com/kymo-mcp/mcpcan/pkg/i18n"
 	"testing"
 )
 

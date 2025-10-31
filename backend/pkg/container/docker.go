@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"qm-mcp-server/pkg/k8s"
+	"github.com/kymo-mcp/mcpcan/pkg/k8s"
 )
 
 // DockerRuntime Docker runtime implementation

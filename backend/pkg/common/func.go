@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path"
-	"qm-mcp-server/pkg/database/model"
+	"github.com/kymo-mcp/mcpcan/pkg/database/model"
 	"strings"
 
 	"k8s.io/client-go/rest"

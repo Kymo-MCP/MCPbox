@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"qm-mcp-server/pkg/common"
+	"github.com/kymo-mcp/mcpcan/pkg/common"
 
 	"github.com/redis/go-redis/v9"
 )

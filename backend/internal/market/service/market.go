@@ -2,11 +2,11 @@ package service
 
 import (
 	"fmt"
-	"qm-mcp-server/api/market/market"
-	"qm-mcp-server/internal/market/config"
-	"qm-mcp-server/pkg/common"
-	i18nresp "qm-mcp-server/pkg/i18n"
-	"qm-mcp-server/pkg/qm"
+	"github.com/kymo-mcp/mcpcan/api/market/market"
+	"github.com/kymo-mcp/mcpcan/internal/market/config"
+	"github.com/kymo-mcp/mcpcan/pkg/common"
+	i18nresp "github.com/kymo-mcp/mcpcan/pkg/i18n"
+	"github.com/kymo-mcp/mcpcan/pkg/qm"
 
 	"github.com/gin-gonic/gin"
 )

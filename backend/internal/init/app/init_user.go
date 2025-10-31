@@ -3,10 +3,10 @@ package app
 import (
 	"context"
 	"fmt"
-	"qm-mcp-server/internal/authz/biz"
-	"qm-mcp-server/internal/init/config"
-	"qm-mcp-server/pkg/database/model"
-	"qm-mcp-server/pkg/database/repository/mysql"
+	"github.com/kymo-mcp/mcpcan/internal/authz/biz"
+	"github.com/kymo-mcp/mcpcan/internal/init/config"
+	"github.com/kymo-mcp/mcpcan/pkg/database/model"
+	"github.com/kymo-mcp/mcpcan/pkg/database/repository/mysql"
 	"time"
 )
 

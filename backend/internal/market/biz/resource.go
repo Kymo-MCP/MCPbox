@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	"qm-mcp-server/pkg/common"
-	"qm-mcp-server/pkg/container"
-	"qm-mcp-server/pkg/database/model"
-	"qm-mcp-server/pkg/k8s"
+	"github.com/kymo-mcp/mcpcan/pkg/common"
+	"github.com/kymo-mcp/mcpcan/pkg/container"
+	"github.com/kymo-mcp/mcpcan/pkg/database/model"
+	"github.com/kymo-mcp/mcpcan/pkg/k8s"
 )
 
 // ResourceBiz 资源数据处理层

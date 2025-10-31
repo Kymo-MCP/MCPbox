@@ -1,6 +1,10 @@
-module qm-mcp-server
+module github.com/kymo-mcp/mcpcan
 
 go 1.24.2
+
+// 本地开发时使用，将远程模块路径重定向到本地路径
+// 当代码推送到 GitHub 后，可以删除这行
+replace github.com/kymo-mcp/mcpcan => ./
 
 require (
 	github.com/gin-gonic/gin v1.10.1
@@ -80,7 +84,6 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
-	github.com/nicksnyder/go-i18n/v2 v2.6.0
 	github.com/pelletier/go-toml/v2 v2.2.2 // indirect
 	github.com/sagikazarmark/locafero v0.4.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
@@ -97,7 +100,7 @@ require (
 	golang.org/x/exp v0.0.0-20240222234643-814bf88cf225 // indirect
 	golang.org/x/net v0.38.0 // indirect
 	golang.org/x/sys v0.31.0 // indirect
-	golang.org/x/text v0.26.0
+	golang.org/x/text v0.26.0 // indirect
 	google.golang.org/protobuf v1.36.6
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1

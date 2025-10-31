@@ -7,10 +7,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 
-	"qm-mcp-server/pkg/i18n"
-	"qm-mcp-server/pkg/jwt"
-	"qm-mcp-server/pkg/logger"
-	"qm-mcp-server/pkg/redis"
+	"github.com/kymo-mcp/mcpcan/pkg/i18n"
+	"github.com/kymo-mcp/mcpcan/pkg/jwt"
+	"github.com/kymo-mcp/mcpcan/pkg/logger"
+	"github.com/kymo-mcp/mcpcan/pkg/redis"
 )
 
 var SkipPaths = []string{

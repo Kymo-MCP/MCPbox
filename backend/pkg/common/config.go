@@ -153,7 +153,7 @@ func getConfigSearchPaths() []string {
 	if configRoot := os.Getenv("CONFIG_ROOT"); configRoot != "" {
 		configPaths = append(configPaths, configRoot)
 	} else {
-		configPaths = append(configPaths, "/etc/qm-mcp-server")
+		configPaths = append(configPaths, "/etc/github.com/kymo-mcp/mcpcan")
 	}
 
 	// Config folder in project root directory

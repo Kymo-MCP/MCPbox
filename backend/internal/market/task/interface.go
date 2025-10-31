@@ -3,7 +3,7 @@ package task
 import (
 	"context"
 
-	"qm-mcp-server/pkg/database/model"
+	"github.com/kymo-mcp/mcpcan/pkg/database/model"
 )
 
 // TaskManager 任务管理器接口

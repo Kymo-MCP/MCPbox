@@ -6,11 +6,11 @@ import (
 
 	"go.uber.org/zap"
 
-	"qm-mcp-server/internal/init/config"
-	dbpkg "qm-mcp-server/pkg/database"
-	"qm-mcp-server/pkg/database/model"
-	"qm-mcp-server/pkg/database/repository/mysql"
-	"qm-mcp-server/pkg/logger"
+	"github.com/kymo-mcp/mcpcan/internal/init/config"
+	dbpkg "github.com/kymo-mcp/mcpcan/pkg/database"
+	"github.com/kymo-mcp/mcpcan/pkg/database/model"
+	"github.com/kymo-mcp/mcpcan/pkg/database/repository/mysql"
+	"github.com/kymo-mcp/mcpcan/pkg/logger"
 )
 
 // App application structure

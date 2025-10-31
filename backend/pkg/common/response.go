@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	i18nresp "qm-mcp-server/pkg/i18n"
+	i18nresp "github.com/kymo-mcp/mcpcan/pkg/i18n"
 
 	"github.com/gin-gonic/gin"
 )

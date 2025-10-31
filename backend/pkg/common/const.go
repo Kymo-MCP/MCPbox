@@ -41,7 +41,7 @@ const (
 	// Default hosting image address
 	DefatuleHostingImg = "ccr.ccs.tencentyun.com/itqm-private/mcp-hosting"
 
-	SourceServerName = "qm-mcp-server"
+	SourceServerName = "github.com/kymo-mcp/mcpcan"
 
 	McpProxyServiceName = "mcp-gateway-svc"
 

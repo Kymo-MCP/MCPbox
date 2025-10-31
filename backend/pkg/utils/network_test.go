@@ -1,7 +1,7 @@
 package utils_test
 
 import (
-	"qm-mcp-server/pkg/utils"
+	"github.com/kymo-mcp/mcpcan/pkg/utils"
 	"testing"
 )
 

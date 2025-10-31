@@ -3,7 +3,7 @@ package container
 import (
 	"context"
 
-	"qm-mcp-server/pkg/k8s"
+	"github.com/kymo-mcp/mcpcan/pkg/k8s"
 
 	corev1 "k8s.io/api/core/v1"
 )

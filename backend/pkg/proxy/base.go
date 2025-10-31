@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strings"
 
-	"qm-mcp-server/pkg/logger"
+	"github.com/kymo-mcp/mcpcan/pkg/logger"
 
 	"github.com/fatedier/golib/pool"
 	"go.uber.org/zap"

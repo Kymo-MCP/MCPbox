@@ -10,12 +10,12 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 
-	"qm-mcp-server/pkg/database/model"
-	"qm-mcp-server/pkg/database/repository/mysql"
-	"qm-mcp-server/pkg/i18n"
-	"qm-mcp-server/pkg/logger"
-	"qm-mcp-server/pkg/redis"
-	"qm-mcp-server/pkg/utils"
+	"github.com/kymo-mcp/mcpcan/pkg/database/model"
+	"github.com/kymo-mcp/mcpcan/pkg/database/repository/mysql"
+	"github.com/kymo-mcp/mcpcan/pkg/i18n"
+	"github.com/kymo-mcp/mcpcan/pkg/logger"
+	"github.com/kymo-mcp/mcpcan/pkg/redis"
+	"github.com/kymo-mcp/mcpcan/pkg/utils"
 )
 
 // ListUsersParams user list query parameters

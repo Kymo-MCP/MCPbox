@@ -4,7 +4,7 @@ package authz.user;
 
 import "google/api/annotations.proto";
 
-option go_package = "qm-mcp-server/api/authz/user";
+option go_package = "github.com/kymo-mcp/mcpcan/api/authz/user";
 
 // 用户状态枚举
 enum UserStatus {

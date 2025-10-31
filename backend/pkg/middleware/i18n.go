@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	i18nresp "qm-mcp-server/pkg/i18n"
+	i18nresp "github.com/kymo-mcp/mcpcan/pkg/i18n"
 )
 
 // I18nMiddleware 国际化中间件

@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"qm-mcp-server/pkg/i18n"
+	"github.com/kymo-mcp/mcpcan/pkg/i18n"
 
 	"github.com/gin-gonic/gin"
 )

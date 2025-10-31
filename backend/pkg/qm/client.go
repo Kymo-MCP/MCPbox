@@ -2,7 +2,7 @@ package qm
 
 import (
 	"fmt"
-	"qm-mcp-server/pkg/common"
+	"github.com/kymo-mcp/mcpcan/pkg/common"
 	"strconv"
 	"time"
 )

@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"qm-mcp-server/internal/gateway/app"
+	"github.com/kymo-mcp/mcpcan/internal/gateway/app"
 )
 
 // main 主函数

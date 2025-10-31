@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"qm-mcp-server/internal/authz/app"
+	"github.com/kymo-mcp/mcpcan/internal/authz/app"
 )
 
 // main 主函数
