@@ -134,8 +134,8 @@ const systemStore = useSystemStoreHook()
 const { themeType } = toRefs(systemStore)
 const { userInfo } = useUserStore()
 const { jumpBack, jumpToPage } = useRouterHooks()
-const github = 'https://github.com/Kymo-MCP/MCPbox'
-const issues = 'https://github.com/Kymo-MCP/MCPbox/issues'
+const github = 'https://github.com/kymo-mcp/mcpcan'
+const issues = 'https://github.com/kymo-mcp/mcpcan/issues'
 const route = useRoute()
 const router = useRouter()
 // condition of show back button

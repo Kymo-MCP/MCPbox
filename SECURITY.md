@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-We take security seriously and provide security updates for the following versions of MCPBox:
+We take security seriously and provide security updates for the following versions of MCPCan:
 
 | Version | Supported          |
 | ------- | ------------------ |
@@ -11,7 +11,7 @@ We take security seriously and provide security updates for the following versio
 
 ## Reporting a Vulnerability
 
-We appreciate your efforts to responsibly disclose security vulnerabilities. If you discover a security issue in MCPBox, please follow these guidelines:
+We appreciate your efforts to responsibly disclose security vulnerabilities. If you discover a security issue in MCPCan, please follow these guidelines:
 
 ### How to Report
 
@@ -42,7 +42,7 @@ We appreciate your efforts to responsibly disclose security vulnerabilities. If 
 
 ### For Users
 
-- Always use the latest stable version of MCPBox
+- Always use the latest stable version of MCPCan
 - Regularly update all dependencies and container images
 - Use strong, unique passwords for all accounts
 - Enable two-factor authentication when available
@@ -63,7 +63,7 @@ We appreciate your efforts to responsibly disclose security vulnerabilities. If 
 
 ## Security Features
 
-MCPBox includes several built-in security features:
+MCPCan includes several built-in security features:
 
 - **Authentication & Authorization**: Role-based access control (RBAC)
 - **Data Encryption**: TLS encryption for data in transit
@@ -126,7 +126,7 @@ Security updates are released as needed and announced through:
 
 ## Compliance
 
-MCPBox is designed to help organizations meet various compliance requirements:
+MCPCan is designed to help organizations meet various compliance requirements:
 
 - **SOC 2**: System and Organization Controls
 - **ISO 27001**: Information Security Management
@@ -137,11 +137,11 @@ MCPBox is designed to help organizations meet various compliance requirements:
 
 - **Security Team**: opensource@kymo.cn
 - **General Support**: opensource@kymo.cn
-- **Documentation**: https://docs.mcpbox.org/security
+- **Documentation**: https://docs.mcpcan.org/security
 
 ## Acknowledgments
 
-We would like to thank the security researchers and community members who have helped improve MCPBox's security:
+We would like to thank the security researchers and community members who have helped improve MCPCan's security:
 
 - [Security Hall of Fame will be maintained here]
 

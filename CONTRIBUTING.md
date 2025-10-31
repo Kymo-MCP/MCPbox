@@ -1,6 +1,6 @@
-# Contributing to MCPBox
+# Contributing to MCPCan
 
-Thank you for your interest in contributing to MCPBox! We welcome contributions from everyone, whether you're fixing bugs, adding features, improving documentation, or helping with translations.
+Thank you for your interest in contributing to MCPCan! We welcome contributions from everyone, whether you're fixing bugs, adding features, improving documentation, or helping with translations.
 
 ## Table of Contents
 
@@ -32,15 +32,15 @@ Before you begin, ensure you have the following installed:
 
 ### Fork and Clone
 
-1. Fork the MCPBox repository on GitHub
+1. Fork the MCPCan repository on GitHub
 2. Clone your fork locally:
    ```bash
-   git clone https://github.com/your-username/MCPbox.git
-   cd MCPbox
+   git clone https://github.com/your-username/mcpcan.git
+   cd mcpcan
    ```
 3. Add the upstream repository:
    ```bash
-   git remote add upstream https://github.com/original-org/MCPbox.git
+   git remote add upstream https://github.com/kymo-mcp/mcpcan.git
    ```
 
 ## Development Setup
@@ -77,7 +77,7 @@ docker-compose -f docker-compose.dev.yml up
 
 ### Reporting Bugs
 
-Before creating bug reports, please check the [issue tracker](https://github.com/your-org/MCPbox/issues) to see if the problem has already been reported.
+Before creating bug reports, please check the [issue tracker](https://github.com/kymo-mcp/mcpcan/issues) to see if the problem has already been reported.
 
 When creating a bug report, please include:
 
@@ -263,8 +263,8 @@ Contributors will be recognized in:
 
 ## License
 
-By contributing to MCPBox, you agree that your contributions will be licensed under the [GPL-3.0 License](LICENSE).
+By contributing to MCPCan, you agree that your contributions will be licensed under the [GPL-3.0 License](LICENSE).
 
 ---
 
-Thank you for contributing to MCPBox! Your efforts help make this project better for everyone. 🚀
+Thank you for contributing to MCPCan! Your efforts help make this project better for everyone. 🚀
