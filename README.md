@@ -1,9 +1,10 @@
 # MCPCAN：A lightweight MCP service management platform built on a containerized architecture.
+
 <p align="Left">
    <strong>English</strong> | <a href="./README_CN.md">中文版</a> 
 </p>
 <div align="center">
-  <img src="https://img.shields.io/badge/Next.js-15.5.4-black?style=for-the-badge&logo=next.js" alt="Next.js"/>
+  <img src="https://img.shields.io/badge/Vue.js-3.2.47-4FC08D?style=for-the-badge&logo=vue.js&logoColor=ffffff" alt="Vue.js"/>
   <img src="https://img.shields.io/badge/TypeScript-5.0-blue?style=for-the-badge&logo=typescript" alt="TypeScript"/>
   <img src="https://img.shields.io/badge/MySQL-8.0-blue?style=for-the-badge&logo=mysql" alt="MySQL"/>
   <img src="https://img.shields.io/badge/Kubernetes-1.28-326ce5?style=for-the-badge&logo=kubernetes" alt="Kubernetes"/>
@@ -30,7 +31,6 @@
 </p>
 </div>
 
-
 ## What is MCPCan?
 
 MCPCan is an open-source platform focused on efficient management of MCP (Model Context Protocol) services, providing DevOps and development teams with comprehensive MCP service lifecycle management capabilities through a modern web interface.
@@ -42,6 +42,7 @@ MCPCan supports multi-protocol compatibility and conversion, enabling seamless i
 </div>
 
 ## ✨ Key Features
+
 - **🎯 Unified Management**: Centralized management of all MCP service instances and configurations
 - **🔄 Protocol Conversion**: Supports seamless conversion between various MCP protocols
 - **📊 Real-time Monitoring**: Provides detailed service status and performance monitoring
@@ -86,17 +87,18 @@ helm install mcpcan mcpcan/mcpcan-deploy \
 
 MCPCan consists of multiple key components, which collectively form the functional framework of MCPCan, providing users with comprehensive MCP service management capabilities.
 
-| Project | Status | Description |
-|---------|--------|-------------|
-| [MCPCan-Web](frontend/) | ![Status](https://img.shields.io/badge/status-active-green) | MCPCan Web UI (Next.js Frontend) |
-| [MCPCan-Backend](backend/) | ![Status](https://img.shields.io/badge/status-active-green) | MCPCan Backend Services (Go Microservices) |
-| [MCPCan-Gateway](backend/cmd/gateway/) | ![Status](https://img.shields.io/badge/status-active-green) | MCP Gateway Service |
-| [MCPCan-Market](backend/cmd/market/) | ![Status](https://img.shields.io/badge/status-active-green) | MCP Service Marketplace |
-| [MCPCan-Authz](backend/cmd/authz/) | ![Status](https://img.shields.io/badge/status-active-green) | Authentication and Authorization Service |
+| Project                                | Status                                                      | Description                                |
+| -------------------------------------- | ----------------------------------------------------------- | ------------------------------------------ |
+| [MCPCan-Web](frontend/)                | ![Status](https://img.shields.io/badge/status-active-green) | MCPCan Web UI (Vue.js Frontend)            |
+| [MCPCan-Backend](backend/)             | ![Status](https://img.shields.io/badge/status-active-green) | MCPCan Backend Services (Go Microservices) |
+| [MCPCan-Gateway](backend/cmd/gateway/) | ![Status](https://img.shields.io/badge/status-active-green) | MCP Gateway Service                        |
+| [MCPCan-Market](backend/cmd/market/)   | ![Status](https://img.shields.io/badge/status-active-green) | MCP Service Marketplace                    |
+| [MCPCan-Authz](backend/cmd/authz/)     | ![Status](https://img.shields.io/badge/status-active-green) | Authentication and Authorization Service   |
 
 ## Technology Stack
 
 ### Frontend
+
 - **Framework**: Vue.js 3.5+ (Composition API)
 - **Language**: TypeScript
 - **Styling**: UnoCSS, SCSS
@@ -105,6 +107,7 @@ MCPCan consists of multiple key components, which collectively form the function
 - **Build Tool**: Vite
 
 ### Backend
+
 - **Language**: Go 1.24.2+
 - **Framework**: Gin, gRPC
 - **Database**: MySQL, Redis
@@ -120,6 +123,7 @@ MCPCan consists of multiple key components, which collectively form the function
 Welcome to submit PR to contribute. Please refer to [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 Before contributing, please:
+
 1. Read our [Code of Conduct](CODE_OF_CONDUCT.md)
 2. Check existing issues and pull requests
 3. Follow our coding standards and commit message conventions
