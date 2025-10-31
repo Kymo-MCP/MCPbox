@@ -26,15 +26,6 @@ database:
     password: "dev-redis-password"
     db: 0
 
-
-# database:
-#   mysql:
-#     host: 123.207.70.135
-#     port: 30353
-#     username: litinghong
-#     password: itqm123!@#
-#     database: qm_mcp_market
-
 log:
   level: debug
   format: text

@@ -8,7 +8,7 @@ init:
   admin_data_scope: all
 kubernetes:
   namespace: mcp-box
-  defaultConfigFilePath: "/Users/nolan/Library/Application Support/Lens/kubeconfigs/f0a69454-ed44-4575-9330-826ff5e3ab2d-pasted-kubeconfig.yaml"
+  defaultConfigFilePath: "/app/config/kubeconfig.yaml"
 database:
   mysql:
     host: "mysql-svc"
