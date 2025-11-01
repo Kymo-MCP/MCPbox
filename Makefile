@@ -52,6 +52,12 @@ print:
 # Backend build targets
 define build_backend_service
 	@echo "---------- Start Go build $(1) ----------"
+	@echo "---- Step 1: Generating protobuf files ----"
+	@$(MAKE) proto-buf
+	@echo "---- Step 2: Running go mod tidy ----"
+	@echo "cd $(BACKEND_PATH) && go mod tidy"
+	@cd $(BACKEND_PATH) && go mod tidy
+	@echo "---- Step 3: Building Go binary ----"
 	@echo "cd $(BACKEND_PATH) && $(GO_BUILD_ENV) go build -ldflags \"$(LDFLAGS)\" -o $(BACKEND_PATH)/bin/$(1) $(BACKEND_PATH)/cmd/$(1)/main.go"
 	@cd $(BACKEND_PATH) && $(GO_BUILD_ENV) go build -ldflags "$(LDFLAGS)" -o $(BACKEND_PATH)/bin/$(1) $(BACKEND_PATH)/cmd/$(1)/main.go
 	@echo "---------- End Go build $(1) ----------"
