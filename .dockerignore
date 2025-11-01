@@ -87,6 +87,5 @@ frontend/dist/
 frontend/node_modules/
 
 # Docker files (exclude from context when building)
-Dockerfile*
-docker-compose*.yml
+frontend/Dockerfile*
 .dockerignore
