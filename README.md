@@ -38,7 +38,6 @@ MCPCan is an open-source platform focused on efficient management of MCP (Model 
 MCPCan supports multi-protocol compatibility and conversion, enabling seamless integration between different MCP service architectures while providing visual monitoring, security authentication, and one-stop deployment capabilities.
 
 <div align="center">
-  <img width="1879" height="896" alt="MCPCan Dashboard" src="https://github.com/user-attachments/assets/ee804f92-7e69-419b-8cfc-d5676783fe3d" />
 </div>
 
 ## ✨ Key Features
