@@ -24,10 +24,10 @@ import (
 	"go.uber.org/zap"
 )
 
-// TaskStatus 任务状态信息
-// 移除TaskStatus结构体，不再使用任务管理
+// TaskStatus task status information
+// Remove TaskStatus struct, no longer use task management
 
-// ContainerBiz 容器数据层
+// ContainerBiz container data layer
 type ContainerBiz struct {
 	ctx context.Context
 }
@@ -38,7 +38,7 @@ func init() {
 	GContainerBiz = NewContainerBiz(context.Background())
 }
 
-// NewContainerBiz 创建容器数据处理层实例
+// NewContainerBiz create container data processing layer instance
 func NewContainerBiz(ctx context.Context) *ContainerBiz {
 	return &ContainerBiz{
 		ctx: ctx,
@@ -46,40 +46,40 @@ func NewContainerBiz(ctx context.Context) *ContainerBiz {
 }
 
 type ContainerOptions struct {
-	// 实例ID
+	// Instance ID
 	InstanceID string
 
-	// 容器名称
+	// Container name
 	ContainerName string
 
-	// McpServers 配置
+	// McpServers configuration
 	McpServers string
 
-	// 端口映射配置
+	// Port mapping configuration
 	PortMapping map[int]int
 
-	// 初始化脚本内容
+	// Initialization script content
 	InitScript string
 
-	// 环境变量配置
+	// Environment variables configuration
 	EnvironmentVariables map[string]string
 
-	// 卷挂载配置（支持多个卷）
+	// Volume mount configuration (supports multiple volumes)
 	VolumeMounts []k8s.UnifiedMount
 
-	// 毫秒时间戳，默认 0 表示不检测一直创建，设置值时最大不能超过 1 天
+	// Millisecond timestamp, default 0 means no detection and always create, when set the maximum cannot exceed 1 day
 	StartupTimeout int64
 
-	// 毫秒时间戳，默认 0 表示常驻服务，设置值时最大不能超过 1 年（超过 1 年应该设置常驻）
+	// Millisecond timestamp, default 0 means resident service, when set the maximum cannot exceed 1 year (more than 1 year should be set as resident)
 	RunningTimeout int64
 
 	// code package download link
 	PackageDownloadLink string
 }
 
-// 删除不再使用的存储和节点配置结构体，亲和性逻辑已转移到Create方法中
+// Remove no longer used storage and node configuration structs, affinity logic has been moved to Create method
 
-// ContainerCreateResult 容器创建结果
+// ContainerCreateResult container creation result
 type ContainerCreateResult struct {
 	ContainerName string
 	ServiceName   string
@@ -87,54 +87,54 @@ type ContainerCreateResult struct {
 	Message       string
 }
 
-// ContainerDeleteParams 容器删除参数
+// ContainerDeleteParams container deletion parameters
 type ContainerDeleteParams struct {
 	InstanceID string
 }
 
-// ContainerDeleteResult 容器删除结果
+// ContainerDeleteResult container deletion result
 type ContainerDeleteResult struct {
 	ContainerName string
 	ServiceName   string
 	Message       string
 }
 
-// ContainerStatusParams 容器状态查询参数
+// ContainerStatusParams container status query parameters
 type ContainerStatusParams struct {
 	InstanceID string
 }
 
-// ContainerStatusResult 容器状态查询结果
+// ContainerStatusResult container status query result
 type ContainerStatusResult struct {
 	ContainerName  string
 	ServiceName    string
 	ErrorMessage   string
-	ContainerReady bool                       // 容器是否就绪
-	ServiceReady   bool                       // 服务是否就绪
-	WarningEvents  []container.ContainerEvent // 警告事件
+	ContainerReady bool                       // Whether container is ready
+	ServiceReady   bool                       // Whether service is ready
+	WarningEvents  []container.ContainerEvent // Warning events
 }
 
-// CreateContainer 创建容器业务逻辑
+// CreateContainer create container business logic
 func (cd *ContainerBiz) CreateHostingContainerForSSEAndSteamableHttp(req *instancepb.CreateRequest, instanceID string) (*ContainerCreateResult, error) {
 	var err error
 	shortInstanceId := instanceID[:8]
 
-	// 1. 生成容器名称
+	// 1. Generate container name
 	containerName := cd.generateContainerName(shortInstanceId)
 	serviceName := cd.generateServiceName(shortInstanceId)
 
-	// 2. 代码包下载链接生成
+	// 2. Code package download link generation
 	packageId := req.PackageId
 	codepkgInstallScript := ""
 	if packageId != "" {
-		// 生成代码包安装脚本
+		// Generate code package install script
 		codepkgInstallScript, err = cd.generateCodePkgInstallScript(packageId)
 		if err != nil {
 			return nil, fmt.Errorf("failed to generate code package install script: %w", err)
 		}
 	}
 
-	// 4. 生成镜像配置
+	// 4. Generate image configuration
 	imgPms, err := cd.getMcpHostingImageCfgForSSEAndSteamableHttp(req.ImgAddress, req.Port, req.InitScript, req.Command, codepkgInstallScript)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get mcp hosting image config: %w", err)
@@ -144,7 +144,7 @@ func (cd *ContainerBiz) CreateHostingContainerForSSEAndSteamableHttp(req *instan
 	command := imgPms.command
 	commandArgs := imgPms.commandArgs
 
-	// 5. 设置环境变量
+	// 5. Set environment variables
 	envVars := make(map[string]string)
 	envVars["MCP_INSTANCE_ID"] = instanceID
 	envVars["MCP_PORT"] = fmt.Sprintf("%d", imgPms.port)
@@ -153,7 +153,7 @@ func (cd *ContainerBiz) CreateHostingContainerForSSEAndSteamableHttp(req *instan
 		envVars[k] = v
 	}
 
-	// 6. 设置卷挂载配置（亲和性判断逻辑转移到Create方法中）
+	// 6. Set volume mount configuration (affinity judgment logic moved to Create method)
 	mounts := []k8s.UnifiedMount{}
 	if len(req.VolumeMounts) > 0 {
 		for _, vm := range req.VolumeMounts {
@@ -161,7 +161,7 @@ func (cd *ContainerBiz) CreateHostingContainerForSSEAndSteamableHttp(req *instan
 		}
 	}
 
-	// 7. 设置标签
+	// 7. Set labels
 	labels := make(map[string]string)
 	labels["app"] = containerName
 	labels["instance"] = instanceID
@@ -173,7 +173,7 @@ func (cd *ContainerBiz) CreateHostingContainerForSSEAndSteamableHttp(req *instan
 		labels["mcp.running.timeout"] = fmt.Sprintf("%d", req.RunningTimeout)
 	}
 
-	// 8. 构建容器创建选项
+	// 8. Build container creation options
 	containerOptions := container.ContainerCreateOptions{
 		ImageName:     image,
 		ContainerName: containerName,
@@ -187,7 +187,7 @@ func (cd *ContainerBiz) CreateHostingContainerForSSEAndSteamableHttp(req *instan
 		WorkingDir:    "/app",
 	}
 
-	// 9. 设置超时上下文
+	// 9. Set timeout context
 	ctx := cd.ctx
 	if req.StartupTimeout > 0 {
 		var cancel context.CancelFunc

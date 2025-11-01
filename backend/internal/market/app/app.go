@@ -54,17 +54,17 @@ type App struct {
 
 // New creates new application instance
 func New() (*App, error) {
-	// 加载全局配置
+	// Load global configuration
 	cfg, err := cfg.Load()
 	if err != nil {
-		return nil, fmt.Errorf("加载配置失败: %w", err)
+		return nil, fmt.Errorf("failed to load configuration: %w", err)
 	}
-	// 初始化日志
+	// Initialize logger
 	if err := logger.Init(cfg.Log.Level, cfg.Log.Format); err != nil {
-		return nil, fmt.Errorf("初始化日志失败: %w", err)
+		return nil, fmt.Errorf("failed to initialize logger: %w", err)
 	}
 
-	// 打印配置信息
+	// Print configuration information
 	logger.Debug("Version info", zap.String("version", fmt.Sprintf("%+v", cfg.VersionInfo)))
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -76,79 +76,79 @@ func New() (*App, error) {
 	}, nil
 }
 
-// Initialize 初始化应用程序所有组件
+// Initialize initialize all application components
 func (a *App) Initialize() error {
-	// 初始化数据库
+	// Initialize database
 	if err := database.Init(&a.config.Database); err != nil {
-		return fmt.Errorf("初始化数据库失败: %w", err)
+		return fmt.Errorf("failed to initialize database: %w", err)
 	}
 
-	// 初始化Redis
+	// Initialize Redis
 	if err := redis.Init(&a.config.Database.Redis); err != nil {
-		return fmt.Errorf("初始化Redis失败: %w", err)
+		return fmt.Errorf("failed to initialize Redis: %w", err)
 	}
 
-	// 使用全局数据库仓库实例（已在init中初始化）
+	// Use global database repository instance (already initialized in init)
 	if mysql.McpInstanceRepo == nil {
-		return fmt.Errorf("McpInstanceRepo 未正确初始化，请检查数据库初始化流程")
+		return fmt.Errorf("McpInstanceRepo not properly initialized, please check database initialization process")
 	}
 
-	// 加载服务配置
+	// Load service configuration
 	if err := services.LoadServices(&a.config.Services); err != nil {
-		return fmt.Errorf("加载服务配置失败: %w", err)
+		return fmt.Errorf("failed to load service configuration: %w", err)
 	}
 
-	// 启动调度器
+	// Start scheduler
 	if err := a.initializeScheduler(); err != nil {
-		return fmt.Errorf("初始化调度器失败: %w", err)
+		return fmt.Errorf("failed to initialize scheduler: %w", err)
 	}
 
-	// 初始化任务管理器，不再依赖全局容器运行时
+	// Initialize task manager, no longer depends on global container runtime
 	a.taskManager = task.NewTaskManager(
 		mysql.McpInstanceRepo,
 		a.scheduler,
 		a.logger,
 	)
 
-	// 设置全局任务
+	// Set up global tasks
 	if err := a.taskManager.SetupGlobalTasks(a.shutdownCtx); err != nil {
-		return fmt.Errorf("设置全局任务失败: %w", err)
+		return fmt.Errorf("failed to set up global tasks: %w", err)
 	}
 
-	// 初始化 HTTP 服务器
+	// Initialize HTTP server
 	if err := a.initializeHTTPServer(); err != nil {
-		return fmt.Errorf("初始化HTTP服务器失败: %w", err)
+		return fmt.Errorf("failed to initialize HTTP server: %w", err)
 	}
 
-	a.logger.Info("应用程序初始化完成")
+	a.logger.Info("Application initialization completed")
 	return nil
 }
 
-// initializeScheduler 初始化调度器
+// initializeScheduler initialize scheduler
 func (a *App) initializeScheduler() error {
 	globalScheduler := scheduler.GetGlobalScheduler()
 	if globalScheduler == nil {
-		return fmt.Errorf("全局调度器未初始化")
+		return fmt.Errorf("global scheduler not initialized")
 	}
 
 	a.scheduler = globalScheduler.GetTaskManager().GetScheduler()
-	a.logger.Info("调度器初始化成功")
+	a.logger.Info("Scheduler initialized successfully")
 
 	return nil
 }
 
-// initializeHTTPServer 初始化HTTP服务器
+// initializeHTTPServer initialize HTTP server
 func (a *App) initializeHTTPServer() error {
 
 	a.ginEngine = gin.Default()
 
-	// 设置中间件
+	// Set up middleware
 	a.setupMiddleware()
 
-	// 初始化 Gin 引擎
+	// Initialize Gin engine
 	a.setupHttpServer()
 
-	// 创建 HTTP 服务器
+	// Create HTTP server
 	serverAddr := fmt.Sprintf(":%d", a.config.Server.HttpPort)
 	a.httpServer = &http.Server{
 		Addr:    serverAddr,
@@ -158,75 +158,75 @@ func (a *App) initializeHTTPServer() error {
 	return nil
 }
 
-// Run 运行应用程序
+// Run run application
 func (a *App) Run() error {
-	// 启动任务管理器
+	// Start task manager
 	err := a.taskManager.StartMonitoring(a.shutdownCtx)
 	if err != nil {
-		return fmt.Errorf("启动任务管理器失败: %w", err)
+		return fmt.Errorf("failed to start task manager: %w", err)
 	}
 
-	// 启动HTTP服务器
+	// Start HTTP server
 	go func() {
 		if err := a.httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			a.logger.Fatal("HTTP服务器启动失败", zap.Error(err))
+			a.logger.Fatal("HTTP server startup failed", zap.Error(err))
 		}
 	}()
 
-	a.logger.Info("应用程序启动成功",
+	a.logger.Info("Application started successfully",
 		zap.String("address", a.httpServer.Addr))
 
-	// 等待中断信号
+	// Wait for interrupt signal
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 
-	a.logger.Info("正在关闭应用程序...")
+	a.logger.Info("Shutting down application...")
 
-	// 优雅关闭
+	// Graceful shutdown
 	return a.Shutdown()
 }
 
-// Shutdown 优雅关闭应用程序
+// Shutdown gracefully shutdown application
 func (a *App) Shutdown() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 
-	// 停止任务管理器
+	// Stop task manager
 	if a.taskManager != nil {
 		err := a.taskManager.StopMonitoring(ctx)
 		if err != nil {
-			a.logger.Error("停止任务管理器失败", zap.Error(err))
+			a.logger.Error("Failed to stop task manager", zap.Error(err))
 		}
 	}
 
-	// 关闭HTTP服务器
+	// Close HTTP server
 	if a.httpServer != nil {
 		if err := a.httpServer.Shutdown(ctx); err != nil {
-			a.logger.Error("HTTP服务器关闭失败", zap.Error(err))
+			a.logger.Error("HTTP server shutdown failed", zap.Error(err))
 			return err
 		}
 	}
 
-	// 取消应用程序上下文
+	// Cancel application context
 	if a.shutdownCancel != nil {
 		a.shutdownCancel()
 	}
 
-	a.logger.Info("应用程序已优雅关闭")
+	a.logger.Info("Application has been gracefully shut down")
 	return nil
 }
 
-// setupHttpServer 初始化 Gin 引擎并注册所有路由
+// setupHttpServer initialize Gin engine and register all routes
 func (a *App) setupHttpServer() {
-	// 设置文件上传大小限制，默认为 32 MiB，根据配置文件设置为 100 MiB
+	// Set file upload size limit, default is 32 MiB, according to configuration file set to 100 MiB
 	a.ginEngine.MaxMultipartMemory = int64(a.config.Code.Upload.MaxFileSize) << 20
 
-	// 获取路由前缀
+	// Get route prefix
 	routerPrefix := common.GetMarketRoutePrefix()
 	routerPrefix = strings.Trim(routerPrefix, "/")
 
-	// 注册实例管理接口
+	// Register instance management interface
 	instanceService := service.NewInstanceService(context.Background())
 	a.ginEngine.POST(fmt.Sprintf("/%s/instance/create", routerPrefix), instanceService.CreateHandler)
 	a.ginEngine.GET(fmt.Sprintf("/%s/instance/:instanceId", routerPrefix), instanceService.DetailHandler)
@@ -238,14 +238,14 @@ func (a *App) setupHttpServer() {
 	a.ginEngine.GET(fmt.Sprintf("/%s/instance/status/:instanceId", routerPrefix), instanceService.StatusHandler)
 	a.ginEngine.POST(fmt.Sprintf("/%s/instance/logs", routerPrefix), instanceService.LogsHandler)
 
-	// 创建资源管理服务实例
+	// Create resource management service instance
 	resourceService := service.NewResourceService(context.Background())
 	a.ginEngine.GET(fmt.Sprintf("/%s/resources/pvcs", routerPrefix), resourceService.ListPVCsHandler)
 	a.ginEngine.POST(fmt.Sprintf("/%s/resources/pvcs", routerPrefix), resourceService.CreatePVCHandler)
 	a.ginEngine.GET(fmt.Sprintf("/%s/resources/nodes", routerPrefix), resourceService.ListNodesHandler)
 	a.ginEngine.GET(fmt.Sprintf("/%s/resources/storage-classes", routerPrefix), resourceService.ListStorageClassesHandler)
 
-	// 创建环境管理服务实例
+	// Create environment management service instance
 	environmentService := service.NewEnvironmentService(context.Background())
 	a.ginEngine.POST(fmt.Sprintf("/%s/environments", routerPrefix), environmentService.CreateEnvironmentHandler)
 	a.ginEngine.PUT(fmt.Sprintf("/%s/environments/:id", routerPrefix), environmentService.UpdateEnvironmentHandler)
@@ -254,7 +254,7 @@ func (a *App) setupHttpServer() {
 	a.ginEngine.POST(fmt.Sprintf("/%s/environments/namespaces", routerPrefix), environmentService.ListNamespacesHandler)
 	a.ginEngine.POST(fmt.Sprintf("/%s/environments/:id/test", routerPrefix), environmentService.TestConnectivityHandler)
 
-	// 注册代码管理接口
+	// Register code management interface
 	codeService := service.NewCodeService()
 	a.ginEngine.POST(fmt.Sprintf("/%s/code/upload", routerPrefix), codeService.UploadPackage)
 	a.ginEngine.GET(fmt.Sprintf("/%s/code/tree", routerPrefix), codeService.GetCodeTree)
@@ -264,7 +264,7 @@ func (a *App) setupHttpServer() {
 	a.ginEngine.GET(fmt.Sprintf("/%s/code/packages", routerPrefix), codeService.GetCodePackageList)
 	a.ginEngine.DELETE(fmt.Sprintf("/%s/code/packages/:packageId", routerPrefix), codeService.DeleteCodePackage)
 
-	// 注册模板管理接口
+	// Register template management interface
 	templateService := service.NewTemplateService(context.Background())
 	a.ginEngine.POST(fmt.Sprintf("/%s/template/create", routerPrefix), templateService.TemplateCreateHandler)
 	a.ginEngine.GET(fmt.Sprintf("/%s/template/:templateId", routerPrefix), templateService.TemplateDetailHandler)
@@ -273,7 +273,7 @@ func (a *App) setupHttpServer() {
 	a.ginEngine.GET(fmt.Sprintf("/%s/template/list/pagination", routerPrefix), templateService.TemplateListWithPaginationHandler)
 	a.ginEngine.DELETE(fmt.Sprintf("/%s/template/:templateId", routerPrefix), templateService.TemplateDeleteHandler)
 
-	// 注册市场管理接口
+	// Register market management interface
 	marketService := service.NewMarketService()
 	if marketService != nil {
 		a.ginEngine.POST(fmt.Sprintf("/%s/market/list", routerPrefix), marketService.ListMarketServices)
@@ -282,46 +282,46 @@ func (a *App) setupHttpServer() {
 		a.ginEngine.GET(fmt.Sprintf("/%s/market/config", routerPrefix), marketService.GetMarketConfig)
 	}
 
-	// 注册存储管理接口
+	// Register storage management interface
 	storageService := service.NewStorageService(context.Background())
 	a.ginEngine.POST(fmt.Sprintf("/%s/storage/image", routerPrefix), storageService.UploadImageHandler)
 
-	// 注册 dashboard 管理接口
+	// Register dashboard management interface
 	dashboardService := service.NewDashboardService(context.Background())
 	a.ginEngine.GET(fmt.Sprintf("/%s/dashboard/statistical", routerPrefix), dashboardService.StatisticalHandler)
 	a.ginEngine.GET(fmt.Sprintf("/%s/dashboard/available-cases", routerPrefix), dashboardService.AvailableCasesHandler)
 
-	// 健康检查
+	// Health check
 	a.ginEngine.GET("/health", func(c *gin.Context) {
 		i18n.SuccessResponse(c, gin.H{"status": "ok"})
 	})
 }
 
-// setupMiddleware 设置中间件
+// setupMiddleware set up middleware
 func (a *App) setupMiddleware() {
-	// 添加恐慌恢复中间件
+	// Add panic recovery middleware
 	a.ginEngine.Use(middleware.PanicRecovery())
 
-	// 添加请求响应日志中间件
+	// Add request response logging middleware
 	a.ginEngine.Use(middleware.RequestResponseLoggingMiddleware())
 
-	// 添加跨域处理
+	// Add cross domain handling
 	domains := []string{"*"}
 	a.ginEngine.Use(middleware.CORSMiddleware(domains))
 
-	// 添加国际化中间件
+	// Add internationalization middleware
 	a.ginEngine.Use(middleware.I18nMiddleware())
 
-	// 添加安全中间件
+	// Add security middleware
 	a.ginEngine.Use(middleware.SecurityMiddleware(a.config.Secret))
 
-	// 添加认证中间件
+	// Add authentication middleware
 	a.ginEngine.Use(middleware.AuthTokenMiddleware(a.config.Secret))
 
-	// 添加错误处理中间件（必须在最后）
+	// Add error handling middleware (must be last)
 	a.ginEngine.Use(middleware.ErrorHandler())
 
-	// 设置自定义错误处理器
+	// Set custom error handler
 	a.ginEngine.NoRoute(middleware.NotFoundHandler)
 	a.ginEngine.NoMethod(middleware.MethodNotAllowedHandler)
 }

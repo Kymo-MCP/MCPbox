@@ -15,37 +15,37 @@ import (
 	instancepb "github.com/kymo-mcp/mcpcan/api/market/instance"
 )
 
-// InstanceBiz 实例数据处理层
+// InstanceBiz instance data processing layer
 type InstanceBiz struct {
 	ctx context.Context
 }
 
-// GInstanceBiz 全局实例数据处理层实例
+// GInstanceBiz global instance data processing layer instance
 var GInstanceBiz *InstanceBiz
 
 func init() {
 	GInstanceBiz = NewInstanceBiz(context.Background())
 }
 
-// NewInstanceBiz 创建实例数据处理层实例
+// NewInstanceBiz create instance data processing layer instance
 func NewInstanceBiz(ctx context.Context) *InstanceBiz {
 	return &InstanceBiz{
 		ctx: ctx,
 	}
 }
 
-// GetInstance 获取实例信息
+// GetInstance get instance information
 func (biz *InstanceBiz) GetInstance(instanceID string) (*model.McpInstance, error) {
 	return mysql.McpInstanceRepo.FindByInstanceID(biz.ctx, instanceID)
 }
 
-// DisableInstance 禁用实例
+// DisableInstance disable instance
 func (biz *InstanceBiz) DisableInstance(instanceID string) (string, error) {
 	instance, err := biz.GetInstance(instanceID)
 	if err != nil {
 		return "", err
 	}
-	msg := "实例已禁用"
+	msg := "Instance has been disabled"
 	if instance.AccessType == model.AccessTypeHosting {
 		res, err := GContainerBiz.DeleteContainer(instance)
 		if err != nil {
@@ -60,9 +60,9 @@ func (biz *InstanceBiz) DisableInstance(instanceID string) (string, error) {
 	return msg, mysql.McpInstanceRepo.Update(biz.ctx, instance)
 }
 
-// DeleteInstance 删除实例
+// DeleteInstance delete instance
 func (biz *InstanceBiz) DeleteInstance(instanceID string) error {
-	// 根据访问类型获取实例
+	// Get instance by access type
 	_, err := mysql.McpInstanceRepo.FindByInstanceID(biz.ctx, instanceID)
 	if err != nil {
 		return err
@@ -70,12 +70,12 @@ func (biz *InstanceBiz) DeleteInstance(instanceID string) error {
 	return mysql.McpInstanceRepo.Delete(biz.ctx, instanceID)
 }
 
-// ListInstance 获取实例列表
+// ListInstance get instance list
 func (biz *InstanceBiz) ListInstance(page, pageSize int32, filters map[string]interface{}, sortBy, sortOrder string) (*instancepb.ListResp, error) {
-	// 查询数据
+	// Query data
 	instances, total, err := mysql.McpInstanceRepo.FindWithPagination(biz.ctx, page, pageSize, filters, sortBy, sortOrder)
 	if err != nil {
-		return nil, fmt.Errorf("查询实例列表失败: %v", err)
+		return nil, fmt.Errorf("failed to query instance list: %v", err)
 	}
 
 	// envIds
@@ -85,10 +85,10 @@ func (biz *InstanceBiz) ListInstance(page, pageSize int32, filters map[string]in
 	}
 	envNames, err := mysql.McpEnvironmentRepo.FindNamesByIDs(biz.ctx, envIds)
 	if err != nil {
-		return nil, fmt.Errorf("查询环境名称失败: %v", err)
+		return nil, fmt.Errorf("failed to query environment names: %v", err)
 	}
 
-	// 转换为proto响应
+	// Convert to proto response
 	instanceInfos := make([]*instancepb.ListResp_InstanceInfo, 0, len(instances))
 	for _, instance := range instances {
 		instanceInfo := common.ConvertToInstanceInfo(instance)
@@ -106,22 +106,22 @@ func (biz *InstanceBiz) ListInstance(page, pageSize int32, filters map[string]in
 	}, nil
 }
 
-// CreateInstance 创建实例
+// CreateInstance create instance
 func (biz *InstanceBiz) CreateInstance(instance *model.McpInstance) error {
 	if instance.InstanceName == "" {
 		return fmt.Errorf("instance name cannot be empty")
 	}
-	// 查询 name 是否存在
+	// Check if name already exists
 	existingInstance, err := mysql.McpInstanceRepo.FindByName(biz.ctx, instance.InstanceName)
 	if err == nil && existingInstance != nil {
-		return fmt.Errorf("实例名称 %s 已存在", instance.InstanceName)
+		return fmt.Errorf("instance name %s already exists", instance.InstanceName)
 	}
 	return mysql.McpInstanceRepo.Create(biz.ctx, instance)
 }
 
-// UpdateInstanceForDirect 更新实例
+// UpdateInstanceForDirect update instance
 func (biz *InstanceBiz) UpdateInstanceForDirect(ctx context.Context, req *instancepb.EditRequest, oriInstance *model.McpInstance) (*instancepb.EditResp, error) {
-	// 更新基本信息
+	// Update basic information
 	if req.Name != "" {
 		oriInstance.InstanceName = req.Name
 	}
@@ -152,10 +152,10 @@ func (biz *InstanceBiz) UpdateInstanceForDirect(ctx context.Context, req *instan
 		oriInstance.PublicProxyConfig = sourceConfig
 	}
 
-	// 保存到数据库
+	// Save to database
 	err = mysql.McpInstanceRepo.Update(ctx, oriInstance)
 	if err != nil {
-		return nil, fmt.Errorf("更新实例失败: %v", err)
+		return nil, fmt.Errorf("failed to update instance: %v", err)
 	}
 
 	accessType, err := common.ConvertToProtoAccessType(oriInstance.AccessType)
@@ -178,9 +178,9 @@ func (biz *InstanceBiz) UpdateInstanceForDirect(ctx context.Context, req *instan
 	return resp, nil
 }
 
-// UpdateInstanceForProxy 更新实例
+// UpdateInstanceForProxy update instance
 func (biz *InstanceBiz) UpdateInstanceForProxy(ctx context.Context, req *instancepb.EditRequest, oriInstance *model.McpInstance) (*instancepb.EditResp, error) {
-	// 更新基本信息
+	// Update basic information
 	if req.Name != "" {
 		oriInstance.InstanceName = req.Name
 	}

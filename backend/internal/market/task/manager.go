@@ -10,25 +10,25 @@ import (
 	"go.uber.org/zap"
 )
 
-// TaskManagerImpl 任务管理器实现
+// TaskManagerImpl task manager implementation
 type TaskManagerImpl struct {
-	// instanceRepo 实例数据库操作
+	// instanceRepo instance database operations
 	instanceRepo *mysql.McpInstanceRepository
 
-	// scheduler 调度器
+	// scheduler scheduler
 	scheduler scheduler.Scheduler
 
-	// logger 日志记录器
+	// logger logger
 	logger *zap.Logger
 
-	// monitorTaskID 监控任务ID
+	// monitorTaskID monitor task ID
 	monitorTaskID string
 
-	// isRunning 是否正在运行
+	// isRunning whether it is running
 	isRunning bool
 }
 
-// NewTaskManager 创建新的任务管理器
+// NewTaskManager creates a new task manager
 func NewTaskManager(
 	instanceRepo *mysql.McpInstanceRepository,
 	scheduler scheduler.Scheduler,
@@ -41,45 +41,45 @@ func NewTaskManager(
 	}
 }
 
-// SetupGlobalTasks 设置全局任务
+// SetupGlobalTasks sets up global tasks
 func (tm *TaskManagerImpl) SetupGlobalTasks(ctx context.Context) error {
-	tm.logger.Info("开始设置全局任务")
+	tm.logger.Info("starting to set up global tasks")
 
-	// 创建容器监控器
+	// Create container monitor
 	containerMonitor := NewContainerMonitor(tm.instanceRepo, tm.logger)
 
-	// 创建任务函数适配器
+	// Create task function adapter
 	taskFunc := func(ctx context.Context) error {
 		return containerMonitor.MonitorContainers(ctx)
 	}
 
-	// 创建容器监控任务 - 使用Cron任务，每30秒执行一次
-	// Cron表达式: */30 * * * * * (每30秒执行一次)
+	// Create container monitoring task - using Cron task, execute every 30 seconds
+	// Cron expression: */30 * * * * * (execute every 30 seconds)
 	task, err := scheduler.NewCronTask(
 		"global_container_monitor",
-		"全局容器监控任务",
-		"*/30 * * * * *", // 每30秒执行一次
+		"global container monitoring task",
+		"*/30 * * * * *", // execute every 30 seconds
 		"container_monitor",
 		taskFunc,
 	)
 	if err != nil {
-		tm.logger.Error("创建全局容器监控任务失败",
+		tm.logger.Error("failed to create global container monitoring task",
 			zap.Error(err))
-		return fmt.Errorf("创建任务失败: %w", err)
+		return fmt.Errorf("failed to create task: %w", err)
 	}
 
-	// 添加任务到调度器
+	// Add task to scheduler
 	if err := tm.scheduler.AddTask(task); err != nil {
-		tm.logger.Error("添加全局容器监控任务失败",
+		tm.logger.Error("failed to add global container monitoring task",
 			zap.String("task_id", task.GetID()),
 			zap.Error(err))
-		return fmt.Errorf("添加任务失败: %w", err)
+		return fmt.Errorf("failed to add task: %w", err)
 	}
 
-	// 保存监控任务ID
+	// Save monitor task ID
 	tm.monitorTaskID = task.GetID()
 
-	tm.logger.Info("全局容器监控任务设置成功",
+	tm.logger.Info("global container monitoring task set up successfully",
 		zap.String("task_id", task.GetID()),
 		zap.String("task_name", task.GetName()),
 		zap.String("cron_expr", "*/30 * * * * *"))
@@ -87,56 +87,56 @@ func (tm *TaskManagerImpl) SetupGlobalTasks(ctx context.Context) error {
 	return nil
 }
 
-// StartMonitoring 开始监控
+// StartMonitoring starts monitoring
 func (tm *TaskManagerImpl) StartMonitoring(ctx context.Context) error {
 	if tm.isRunning {
-		tm.logger.Warn("任务管理器已在运行中")
+		tm.logger.Warn("task manager is already running")
 		return nil
 	}
 
-	tm.logger.Info("启动任务监控")
+	tm.logger.Info("starting task monitoring")
 
-	// 启动调度器
+	// Start scheduler
 	err := tm.scheduler.Start(ctx)
 	if err != nil {
-		tm.logger.Error("启动调度器失败", zap.Error(err))
-		return fmt.Errorf("启动调度器失败: %w", err)
+		tm.logger.Error("failed to start scheduler", zap.Error(err))
+		return fmt.Errorf("failed to start scheduler: %w", err)
 	}
 
 	tm.isRunning = true
-	tm.logger.Info("任务监控启动成功")
+	tm.logger.Info("task monitoring started successfully")
 
 	return nil
 }
 
-// StopMonitoring 停止监控
+// StopMonitoring stops monitoring
 func (tm *TaskManagerImpl) StopMonitoring(ctx context.Context) error {
 	if !tm.isRunning {
-		tm.logger.Warn("任务管理器未在运行")
+		tm.logger.Warn("task manager is not running")
 		return nil
 	}
 
-	tm.logger.Info("停止任务监控")
+	tm.logger.Info("stopping task monitoring")
 
-	// 停止调度器
+	// Stop scheduler
 	err := tm.scheduler.Stop()
 	if err != nil {
-		tm.logger.Error("停止调度器失败", zap.Error(err))
-		return fmt.Errorf("停止调度器失败: %w", err)
+		tm.logger.Error("failed to stop scheduler", zap.Error(err))
+		return fmt.Errorf("failed to stop scheduler: %w", err)
 	}
 
 	tm.isRunning = false
-	tm.logger.Info("任务监控停止成功")
+	tm.logger.Info("task monitoring stopped successfully")
 
 	return nil
 }
 
-// IsRunning 检查是否正在运行
+// IsRunning checks if it is running
 func (tm *TaskManagerImpl) IsRunning() bool {
 	return tm.isRunning
 }
 
-// GetMonitorTaskID 获取监控任务ID
+// GetMonitorTaskID gets monitor task ID
 func (tm *TaskManagerImpl) GetMonitorTaskID() string {
 	return tm.monitorTaskID
 }

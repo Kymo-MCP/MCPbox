@@ -79,13 +79,13 @@ func convertStorageClassInfo(k8sSC k8s.StorageClassInfo) *resource.StorageClassI
 
 // ListPVCsHandler handles PVC listing requests
 func (s *ResourceService) ListPVCsHandler(c *gin.Context) {
-	// 获取环境ID参数
+	// Get environment ID parameter
 	var req resource.ListPVCsRequest
 	if err := common.BindAndValidateQuery(c, &req); err != nil {
 		return
 	}
 
-	// 使用 ResourceService 处理请求
+	// Use ResourceService to handle request
 	result, err := s.ListPVCs(&req)
 	if err != nil {
 		common.GinError(c, i18nresp.CodeInternalError, err.Error())
@@ -97,19 +97,19 @@ func (s *ResourceService) ListPVCsHandler(c *gin.Context) {
 
 // ListPVCs retrieves a list of PVCs
 func (s *ResourceService) ListPVCs(req *resource.ListPVCsRequest) (*resource.ListPVCsResponse, error) {
-	// 使用数据处理层获取PVC列表
+	// Use data processing layer to get PVC list
 	pvcList, err := biz.GResourceBiz.ListPVCs(uint(req.EnvironmentId))
 	if err != nil {
-		return nil, fmt.Errorf("获取PVC列表失败: %s", err.Error())
+		return nil, fmt.Errorf("failed to get PVC list: %s", err.Error())
 	}
 
-	// 转换为 protobuf 类型
+	// Convert to protobuf type
 	var pbPVCList []*resource.PVCInfo
 	for _, pvc := range pvcList {
 		pbPVCList = append(pbPVCList, convertPVCInfo(&pvc))
 	}
 
-	// 构建响应
+	// Build response
 	response := &resource.ListPVCsResponse{
 		List: pbPVCList,
 	}
@@ -117,28 +117,28 @@ func (s *ResourceService) ListPVCs(req *resource.ListPVCsRequest) (*resource.Lis
 	return response, nil
 }
 
-// ListPVCsHandler 获取PVC列表接口（包级函数，保持向后兼容）
+// ListPVCsHandler get PVC list interface (package-level function, maintain backward compatibility)
 func ListPVCsHandler(c *gin.Context) {
-	// 获取环境ID参数
+	// Get environment ID parameter
 	var req resource.ListPVCsRequest
 	if err := common.BindAndValidateQuery(c, &req); err != nil {
 		return
 	}
 
-	// 使用数据处理层获取PVC列表
+	// Use data processing layer to get PVC list
 	pvcList, err := biz.GResourceBiz.ListPVCs(uint(req.EnvironmentId))
 	if err != nil {
-		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("获取PVC列表失败: %s", err.Error()))
+		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("failed to get PVC list: %s", err.Error()))
 		return
 	}
 
-	// 转换为 protobuf 类型
+	// Convert to protobuf type
 	var pbPVCList []*resource.PVCInfo
 	for _, pvc := range pvcList {
 		pbPVCList = append(pbPVCList, convertPVCInfo(&pvc))
 	}
 
-	// 构建响应
+	// Build response
 	response := &resource.ListPVCsResponse{
 		List: pbPVCList,
 	}
@@ -146,15 +146,15 @@ func ListPVCsHandler(c *gin.Context) {
 	common.GinSuccess(c, response)
 }
 
-// CreatePVCHandler 创建PVC接口Handler
+// CreatePVCHandler create PVC interface Handler
 func (s *ResourceService) CreatePVCHandler(c *gin.Context) {
 	var req resource.CreatePVCRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		common.GinError(c, i18nresp.CodeInternalError, "请求参数错误: "+err.Error())
+		common.GinError(c, i18nresp.CodeInternalError, "request parameter error: "+err.Error())
 		return
 	}
 
-	// 使用 ResourceService 处理请求
+	// Use ResourceService to handle request
 	result, err := s.CreatePVC(&req)
 	if err != nil {
 		common.GinError(c, i18nresp.CodeInternalError, err.Error())
@@ -166,35 +166,35 @@ func (s *ResourceService) CreatePVCHandler(c *gin.Context) {
 
 // CreatePVC creates a new PVC
 func (s *ResourceService) CreatePVC(req *resource.CreatePVCRequest) (*resource.CreatePVCResponse, error) {
-	// 验证必需参数
+	// Validate required parameters
 	if req.Name == "" {
-		return nil, fmt.Errorf("PVC名称不能为空")
+		return nil, fmt.Errorf("PVC name cannot be empty")
 	}
 	if req.EnvironmentId <= 0 {
-		return nil, fmt.Errorf("环境ID必须大于0")
+		return nil, fmt.Errorf("environment ID must be greater than 0")
 	}
 	if req.StorageSize <= 0 {
-		return nil, fmt.Errorf("存储大小必须大于0")
+		return nil, fmt.Errorf("storage size must be greater than 0")
 	}
 
-	// 验证访问模式
+	// Validate access mode
 	validAccessModes := map[string]bool{
 		"ReadWriteOnce": true,
 		"ReadOnlyMany":  true,
 		"ReadWriteMany": true,
 	}
 	if req.AccessMode != "" && !validAccessModes[req.AccessMode] {
-		return nil, fmt.Errorf("无效的访问模式，支持: ReadWriteOnce, ReadOnlyMany, ReadWriteMany")
+		return nil, fmt.Errorf("invalid access mode, supported: ReadWriteOnce, ReadOnlyMany, ReadWriteMany")
 	}
 
 	var pvcInfo *k8s.PVCInfo
 	var err error
 
-	// 根据是否提供hostPath选择不同的创建方法
+	// Choose different creation methods based on whether hostPath is provided
 	if req.HostPath != "" {
-		// 创建基于主机路径的PVC
+		// Create PVC based on host path
 		if req.NodeName == "" {
-			return nil, fmt.Errorf("创建HostPath类型PVC时，节点名称不能为空")
+			return nil, fmt.Errorf("node name cannot be empty when creating HostPath type PVC")
 		}
 		pvcInfo, err = biz.GResourceBiz.CreateHostPathPVC(
 			uint(req.EnvironmentId),
@@ -206,7 +206,7 @@ func (s *ResourceService) CreatePVC(req *resource.CreatePVCRequest) (*resource.C
 			req.StorageSize,
 		)
 	} else {
-		// 创建普通PVC
+		// Create regular PVC
 		pvcInfo, err = biz.GResourceBiz.CreatePVC(
 			uint(req.EnvironmentId),
 			req.Name,
@@ -219,56 +219,56 @@ func (s *ResourceService) CreatePVC(req *resource.CreatePVCRequest) (*resource.C
 	}
 
 	if err != nil {
-		return nil, fmt.Errorf("创建PVC失败: %s", err.Error())
+		return nil, fmt.Errorf("failed to create PVC: %s", err.Error())
 	}
 
-	// 转换为 protobuf 类型并返回
+	// Convert to protobuf type and return
 	return &resource.CreatePVCResponse{
 		Pvc: convertPVCInfo(pvcInfo),
 	}, nil
 }
 
-// CreatePVCHandler 创建PVC接口（包级函数，保持向后兼容）
+// CreatePVCHandler create PVC interface (package-level function, maintain backward compatibility)
 func CreatePVCHandler(c *gin.Context) {
 	var req resource.CreatePVCRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "请求参数错误: " + err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "request parameter error: " + err.Error()})
 		return
 	}
 
-	// 验证必需参数
+	// Validate required parameters
 	if req.Name == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "PVC名称不能为空"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "PVC name cannot be empty"})
 		return
 	}
 	if req.EnvironmentId <= 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "环境ID必须大于0"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "environment ID must be greater than 0"})
 		return
 	}
 	if req.StorageSize <= 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "存储大小必须大于0"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "storage size must be greater than 0"})
 		return
 	}
 
-	// 验证访问模式
+	// Validate access mode
 	validAccessModes := map[string]bool{
 		"ReadWriteOnce": true,
 		"ReadOnlyMany":  true,
 		"ReadWriteMany": true,
 	}
 	if req.AccessMode != "" && !validAccessModes[req.AccessMode] {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "无效的访问模式，支持: ReadWriteOnce, ReadOnlyMany, ReadWriteMany"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid access mode, supported: ReadWriteOnce, ReadOnlyMany, ReadWriteMany"})
 		return
 	}
 
 	var pvcInfo *k8s.PVCInfo
 	var err error
 
-	// 根据是否提供hostPath选择不同的创建方法
+	// Choose different creation methods based on whether hostPath is provided
 	if req.HostPath != "" {
-		// 创建基于主机路径的PVC
+		// Create PVC based on host path
 		if req.NodeName == "" {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "创建HostPath类型PVC时，节点名称不能为空"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "node name cannot be empty when creating HostPath type PVC"})
 			return
 		}
 		pvcInfo, err = biz.GResourceBiz.CreateHostPathPVC(
@@ -281,7 +281,7 @@ func CreatePVCHandler(c *gin.Context) {
 			req.StorageSize,
 		)
 	} else {
-		// 创建普通PVC（使用StorageClass）
+		// Create regular PVC (using StorageClass)
 		pvcInfo, err = biz.GResourceBiz.CreatePVC(
 			uint(req.EnvironmentId),
 			req.Name,
@@ -289,16 +289,16 @@ func CreatePVCHandler(c *gin.Context) {
 			req.AccessMode,
 			req.StorageClass,
 			req.StorageSize,
-			nil, // Labels 字段在 proto 中不存在，传入 nil
+			nil, // Labels field does not exist in proto, pass nil
 		)
 	}
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "创建PVC失败: " + err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create PVC: " + err.Error()})
 		return
 	}
 
-	// 构建响应
+	// Build response
 	response := &resource.CreatePVCResponse{
 		Pvc: convertPVCInfo(pvcInfo),
 	}
@@ -306,16 +306,16 @@ func CreatePVCHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-// ListNodesHandler 获取节点列表接口Handler
+// ListNodesHandler get node list interface Handler
 func (s *ResourceService) ListNodesHandler(c *gin.Context) {
-	// 获取环境ID参数
+	// Get environment ID parameter
 	var req resource.ListNodesRequest
 	if err := common.BindAndValidateQuery(c, &req); err != nil {
-		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("获取节点列表失败: %s", err.Error()))
+		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("failed to get node list: %s", err.Error()))
 		return
 	}
 
-	// 使用 ResourceService 处理请求
+	// Use ResourceService to handle request
 	result, err := s.ListNodes(&req)
 	if err != nil {
 		common.GinError(c, i18nresp.CodeInternalError, err.Error())
@@ -325,21 +325,21 @@ func (s *ResourceService) ListNodesHandler(c *gin.Context) {
 	common.GinSuccess(c, result)
 }
 
-// ListNodes 获取节点列表业务逻辑
+// ListNodes get node list business logic
 func (s *ResourceService) ListNodes(req *resource.ListNodesRequest) (*resource.ListNodesResponse, error) {
-	// 使用数据处理层获取节点列表
+	// Use data processing layer to get node list
 	nodeList, err := biz.GResourceBiz.ListNodes(uint(req.EnvironmentId))
 	if err != nil {
-		return nil, fmt.Errorf("获取节点列表失败: %s", err.Error())
+		return nil, fmt.Errorf("failed to get node list: %s", err.Error())
 	}
 
-	// 转换为 protobuf 类型
+	// Convert to protobuf type
 	var pbNodeList []*resource.NodeInfo
 	for _, node := range nodeList {
 		pbNodeList = append(pbNodeList, convertNodeInfo(node))
 	}
 
-	// 构建响应
+	// Build response
 	response := &resource.ListNodesResponse{
 		List: pbNodeList,
 	}
@@ -347,29 +347,29 @@ func (s *ResourceService) ListNodes(req *resource.ListNodesRequest) (*resource.L
 	return response, nil
 }
 
-// ListNodesHandler 获取节点列表接口（包级函数，保持向后兼容）
+// ListNodesHandler get node list interface (package-level function, maintain backward compatibility)
 func ListNodesHandler(c *gin.Context) {
-	// 获取环境ID参数
+	// Get environment ID parameter
 	var req resource.ListNodesRequest
 	if err := common.BindAndValidateQuery(c, &req); err != nil {
-		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("获取节点列表失败: %s", err.Error()))
+		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("failed to get node list: %s", err.Error()))
 		return
 	}
 
-	// 使用数据处理层获取节点列表
+	// Use data processing layer to get node list
 	nodeList, err := biz.GResourceBiz.ListNodes(uint(req.EnvironmentId))
 	if err != nil {
-		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("获取节点列表失败: %s", err.Error()))
+		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("failed to get node list: %s", err.Error()))
 		return
 	}
 
-	// 转换为 protobuf 类型
+	// Convert to protobuf type
 	var pbNodeList []*resource.NodeInfo
 	for _, node := range nodeList {
 		pbNodeList = append(pbNodeList, convertNodeInfo(node))
 	}
 
-	// 构建响应
+	// Build response
 	response := &resource.ListNodesResponse{
 		List: pbNodeList,
 	}
@@ -377,15 +377,15 @@ func ListNodesHandler(c *gin.Context) {
 	common.GinSuccess(c, response)
 }
 
-// ListStorageClassesHandler 获取存储类列表接口Handler
+// ListStorageClassesHandler get storage class list interface Handler
 func (s *ResourceService) ListStorageClassesHandler(c *gin.Context) {
-	// 获取环境ID参数
+	// Get environment ID parameter
 	var req resource.ListStorageClassesRequest
 	if err := common.BindAndValidateQuery(c, &req); err != nil {
 		return
 	}
 
-	// 使用 ResourceService 处理请求
+	// Use ResourceService to handle request
 	result, err := s.ListStorageClasses(&req)
 	if err != nil {
 		common.GinError(c, i18nresp.CodeInternalError, err.Error())
@@ -395,21 +395,21 @@ func (s *ResourceService) ListStorageClassesHandler(c *gin.Context) {
 	common.GinSuccess(c, result)
 }
 
-// ListStorageClasses 获取存储类列表业务逻辑
+// ListStorageClasses get storage class list business logic
 func (s *ResourceService) ListStorageClasses(req *resource.ListStorageClassesRequest) (*resource.ListStorageClassesResponse, error) {
-	// 使用数据处理层获取存储类列表
+	// Use data processing layer to get storage class list
 	storageClassList, err := biz.GResourceBiz.ListStorageClasses(uint(req.EnvironmentId))
 	if err != nil {
-		return nil, fmt.Errorf("获取存储类列表失败: %s", err.Error())
+		return nil, fmt.Errorf("failed to get storage class list: %s", err.Error())
 	}
 
-	// 转换为 protobuf 类型
+	// Convert to protobuf type
 	var pbStorageClassList []*resource.StorageClassInfo
 	for _, sc := range storageClassList {
 		pbStorageClassList = append(pbStorageClassList, convertStorageClassInfo(sc))
 	}
 
-	// 构建响应
+	// Build response
 	response := &resource.ListStorageClassesResponse{
 		List: pbStorageClassList,
 	}
@@ -417,29 +417,29 @@ func (s *ResourceService) ListStorageClasses(req *resource.ListStorageClassesReq
 	return response, nil
 }
 
-// ListStorageClassesHandler 获取存储类列表接口（包级函数，保持向后兼容）
+// ListStorageClassesHandler get storage class list interface (package-level function, maintain backward compatibility)
 func ListStorageClassesHandler(c *gin.Context) {
-	// 获取环境ID参数
+	// Get environment ID parameter
 	var req resource.ListStorageClassesRequest
 	if err := common.BindAndValidateQuery(c, &req); err != nil {
-		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("获取存储类列表失败: %s", err.Error()))
+		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("failed to get storage class list: %s", err.Error()))
 		return
 	}
 
-	// 使用数据处理层获取存储类列表
+	// Use data processing layer to get storage class list
 	storageClassList, err := biz.GResourceBiz.ListStorageClasses(uint(req.EnvironmentId))
 	if err != nil {
-		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("获取存储类列表失败: %s", err.Error()))
+		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("failed to get storage class list: %s", err.Error()))
 		return
 	}
 
-	// 转换为 protobuf 类型
+	// Convert to protobuf type
 	var pbStorageClassList []*resource.StorageClassInfo
 	for _, sc := range storageClassList {
 		pbStorageClassList = append(pbStorageClassList, convertStorageClassInfo(sc))
 	}
 
-	// 构建响应
+	// Build response
 	response := &resource.ListStorageClassesResponse{
 		List: pbStorageClassList,
 	}

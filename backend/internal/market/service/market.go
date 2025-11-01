@@ -43,17 +43,17 @@ type MarketAPIResponse struct {
 
 // ListMarketServices retrieves a list of market services
 func (s *MarketService) ListMarketServices(c *gin.Context) {
-	// 绑定请求参数
+	// Bind request parameters
 	var req market.ListRequest
 	if err := common.BindAndValidateUniversal(c, &req); err != nil {
-		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("参数验证失败: %v", err))
+		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("parameter validation failed: %v", err))
 		return
 	}
 
-	// 调用市场API
+	// Call market API
 	response, err := s.client.ListServices(&req)
 	if err != nil {
-		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("调用市场API失败: %v", err))
+		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("failed to call market API: %v", err))
 		return
 	}
 
@@ -62,17 +62,17 @@ func (s *MarketService) ListMarketServices(c *gin.Context) {
 
 // GetMarketServiceDetail retrieves detailed information about a market service
 func (s *MarketService) GetMarketServiceDetail(c *gin.Context) {
-	// 绑定请求参数
+	// Bind request parameters
 	var req market.DetailRequest
 	if err := common.BindAndValidateUniversal(c, &req); err != nil {
-		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("参数验证失败: %v", err))
+		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("parameter validation failed: %v", err))
 		return
 	}
 
-	// 调用市场API
+	// Call market API
 	response, err := s.client.GetServiceDetail(&req)
 	if err != nil {
-		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("调用市场API失败: %v", err))
+		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("failed to call market API: %v", err))
 		return
 	}
 
@@ -81,17 +81,17 @@ func (s *MarketService) GetMarketServiceDetail(c *gin.Context) {
 
 // GetMarketCategories retrieves market categories
 func (s *MarketService) GetMarketCategories(c *gin.Context) {
-	// 绑定请求参数
+	// Bind request parameters
 	var req market.CategoryRequest
 	if err := common.BindAndValidateUniversal(c, &req); err != nil {
-		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("参数验证失败: %v", err))
+		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("parameter validation failed: %v", err))
 		return
 	}
 
-	// 调用市场API
+	// Call market API
 	response, err := s.client.GetCategories(&req)
 	if err != nil {
-		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("调用市场API失败: %v", err))
+		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("failed to call market API: %v", err))
 		return
 	}
 
@@ -102,14 +102,14 @@ func (s *MarketService) GetMarketCategories(c *gin.Context) {
 func (s *MarketService) GetMarketConfig(c *gin.Context) {
 	config := s.client.GetConfig()
 
-	// 隐藏敏感信息
+	// Hide sensitive information
 	safeConfig := map[string]interface{}{
 		"host":          config.Host,
 		"customer_uuid": config.CustomerUuid,
-		"secret_key":    "***" + config.SecretKey[len(config.SecretKey)-4:], // 只显示后4位
+		"secret_key":    "***" + config.SecretKey[len(config.SecretKey)-4:], // Only show last 4 digits
 	}
 
 	common.GinSuccess(c, safeConfig)
 }
 
-// 删除不再需要的转换函数，因为已经移动到 api.go 中
+// Removed conversion functions that are no longer needed as they have been moved to api.go

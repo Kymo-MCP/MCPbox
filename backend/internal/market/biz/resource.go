@@ -10,126 +10,126 @@ import (
 	"github.com/kymo-mcp/mcpcan/pkg/k8s"
 )
 
-// ResourceBiz 资源数据处理层
+// ResourceBiz resource data processing layer
 type ResourceBiz struct {
 	ctx context.Context
 }
 
-// GResourceBiz 全局资源数据处理层实例
+// GResourceBiz global resource data processing layer instance
 var GResourceBiz *ResourceBiz
 
 func init() {
 	GResourceBiz = NewResourceBiz(context.Background())
 }
 
-// NewResourceBiz 创建资源数据处理实例
+// NewResourceBiz create resource data processing instance
 func NewResourceBiz(ctx context.Context) *ResourceBiz {
 	return &ResourceBiz{
 		ctx: ctx,
 	}
 }
 
-// ListPVCs 根据环境ID获取PVC列表
+// ListPVCs get PVC list by environment ID
 func (biz *ResourceBiz) ListPVCs(environmentID uint) ([]k8s.PVCInfo, error) {
-	// 获取环境配置
+	// Get environment configuration
 	k8sEntry, err := biz.getK8sEntryByEnvironmentID(environmentID)
 	if err != nil {
-		return nil, fmt.Errorf("获取K8s客户端失败: %s", err.Error())
+		return nil, fmt.Errorf("failed to get K8s client: %s", err.Error())
 	}
 
-	// 调用 Volume 管理器获取 PVC 列表, 指定环境命名空间
+	// Call Volume manager to get PVC list, specify environment namespace
 	return k8sEntry.Volume.ListPVCs(k8sEntry.Namespace)
 }
 
-// ListNodes 根据环境ID获取节点列表
+// ListNodes get node list by environment ID
 func (biz *ResourceBiz) ListNodes(environmentID uint) ([]k8s.NodeInfo, error) {
-	// 获取环境配置
+	// Get environment configuration
 	k8sEntry, err := biz.getK8sEntryByEnvironmentID(environmentID)
 	if err != nil {
-		return nil, fmt.Errorf("获取K8s客户端失败: %s", err.Error())
+		return nil, fmt.Errorf("failed to get K8s client: %s", err.Error())
 	}
 
-	// 调用 Node 管理器获取节点列表
+	// Call Node manager to get node list
 	return k8sEntry.Node.ListNodes()
 }
 
-// ListStorageClasses 根据环境ID获取存储类列表
+// ListStorageClasses get storage class list by environment ID
 func (biz *ResourceBiz) ListStorageClasses(environmentID uint) ([]k8s.StorageClassInfo, error) {
-	// 获取环境配置
+	// Get environment configuration
 	k8sEntry, err := biz.getK8sEntryByEnvironmentID(environmentID)
 	if err != nil {
-		return nil, fmt.Errorf("获取K8s客户端失败: %s", err.Error())
+		return nil, fmt.Errorf("failed to get K8s client: %s", err.Error())
 	}
 
-	// 调用 Volume 管理器获取存储类列表
+	// Call Volume manager to get storage class list
 	return k8sEntry.Volume.ListStorageClasses()
 }
 
-// CreateHostPathPVC 根据环境ID创建基于主机路径的PVC
+// CreateHostPathPVC create host path based PVC by environment ID
 func (biz *ResourceBiz) CreateHostPathPVC(environmentID uint, name, hostPath, nodeName, accessMode, storageClass string, storageSize int32) (*k8s.PVCInfo, error) {
-	// 获取环境配置
+	// Get environment configuration
 	k8sEntry, err := biz.getK8sEntryByEnvironmentID(environmentID)
 	if err != nil {
-		return nil, fmt.Errorf("获取K8s客户端失败: %s", err.Error())
+		return nil, fmt.Errorf("failed to get K8s client: %s", err.Error())
 	}
 
-	// 调用 Volume 管理器创建基于主机路径的 PVC 和 PV
-	// 使用空标签映射，因为标签已不再需要
+	// Call Volume manager to create host path based PVC and PV
+	// Use empty label map as labels are no longer needed
 	return k8sEntry.Volume.CreateHostPathPVCWithPV(name, hostPath, nodeName, accessMode, storageSize, storageClass, nil)
 }
 
-// CreatePVC 根据环境ID创建普通PVC
+// CreatePVC create regular PVC by environment ID
 func (biz *ResourceBiz) CreatePVC(environmentID uint, name, nodeName, accessMode, storageClass string, storageSize int32, labels map[string]string) (*k8s.PVCInfo, error) {
-	// 获取环境配置
+	// Get environment configuration
 	k8sEntry, err := biz.getK8sEntryByEnvironmentID(environmentID)
 	if err != nil {
-		return nil, fmt.Errorf("获取K8s客户端失败: %s", err.Error())
+		return nil, fmt.Errorf("failed to get K8s client: %s", err.Error())
 	}
 
-	// 调用 Volume 管理器创建普通 PVC
+	// Call Volume manager to create regular PVC
 	return k8sEntry.Volume.CreatePVCWithParams(name, nodeName, accessMode, storageClass, storageSize, labels)
 }
 
-// getK8sEntryByEnvironmentID 根据环境ID获取K8s Entry
+// getK8sEntryByEnvironmentID get K8s Entry by environment ID
 func (biz *ResourceBiz) getK8sEntryByEnvironmentID(environmentID uint) (*k8s.Entry, error) {
-	// 获取环境信息
+	// Get environment information
 	environment, err := GEnvironmentBiz.GetEnvironment(biz.ctx, environmentID)
 	if err != nil {
-		return nil, fmt.Errorf("获取环境信息失败: %s", err.Error())
+		return nil, fmt.Errorf("failed to get environment information: %s", err.Error())
 	}
 
-	// 验证环境类型
+	// Validate environment type
 	if environment.Environment != model.McpEnvironmentKubernetes {
-		return nil, fmt.Errorf("环境类型不是Kubernetes，无法查询K8s资源")
+		return nil, fmt.Errorf("environment type is not Kubernetes, cannot query K8s resources")
 	}
 
-	// 创建容器运行时配置
+	// Create container runtime configuration
 	config := container.Config{
 		Runtime:    container.RuntimeKubernetes,
 		Namespace:  environment.Namespace,
 		Kubeconfig: common.SetKubeConfig([]byte(environment.Config)),
-		Network:    "bridge", // 默认网络配置
+		Network:    "bridge", // Default network configuration
 	}
 
-	// 创建容器运行时入口
+	// Create container runtime entry
 	entry, err := container.NewEntry(config)
 	if err != nil {
-		return nil, fmt.Errorf("创建容器运行时入口失败: %s", err.Error())
+		return nil, fmt.Errorf("failed to create container runtime entry: %s", err.Error())
 	}
 
-	// 检查是否为Kubernetes运行时
+	// Check if it's Kubernetes runtime
 	if !entry.IsKubernetes() {
-		return nil, fmt.Errorf("运行时类型错误，预期Kubernetes运行时")
+		return nil, fmt.Errorf("runtime type error, expected Kubernetes runtime")
 	}
 
-	// 获取K8s入口
+	// Get K8s entry
 	k8sRuntime := entry.GetK8sRuntime()
 	if k8sRuntime == nil {
-		return nil, fmt.Errorf("获取K8s入口失败")
+		return nil, fmt.Errorf("failed to get K8s entry")
 	}
 	if k8sEntry := k8sRuntime.Entry; k8sEntry != nil {
 		return k8sEntry, nil
 	}
 
-	return nil, fmt.Errorf("K8s运行时类型断言失败")
+	return nil, fmt.Errorf("K8s runtime type assertion failed")
 }

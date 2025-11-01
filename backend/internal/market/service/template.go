@@ -38,12 +38,11 @@ func NewTemplateService(ctx context.Context) *TemplateService {
 
 // TemplateCreate creates a new template
 func (s *TemplateService) TemplateCreate(ctx context.Context, req *instance.TemplateCreateRequest) (*instance.TemplateCreateResp, error) {
-	// 参数验证
 	if req.Name == "" {
 		return nil, fmt.Errorf("template name is required")
 	}
 
-	// 检查模板名称是否已存在
+	// Check if template name already exists
 	existing, err := s.templateData.GetTemplateByName(ctx, req.Name)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, fmt.Errorf("failed to check template name: %v", err)
@@ -52,7 +51,7 @@ func (s *TemplateService) TemplateCreate(ctx context.Context, req *instance.Temp
 		return nil, fmt.Errorf("template name '%s' already exists", req.Name)
 	}
 
-	// 创建模板对象
+	// Create template object
 	template := &model.McpTemplate{
 		Name:           req.Name,
 		Port:           req.Port,
@@ -68,7 +67,7 @@ func (s *TemplateService) TemplateCreate(ctx context.Context, req *instance.Temp
 		IconPath:       req.IconPath,
 	}
 
-	// 处理访问类型
+	// Handle access type
 	switch req.AccessType {
 	case instance.AccessType_DIRECT:
 		template.AccessType = model.AccessTypeDirect
@@ -77,10 +76,10 @@ func (s *TemplateService) TemplateCreate(ctx context.Context, req *instance.Temp
 	case instance.AccessType_HOSTING:
 		template.AccessType = model.AccessTypeHosting
 	default:
-		template.AccessType = model.AccessTypeProxy // 默认代理模式
+		template.AccessType = model.AccessTypeProxy // Default proxy mode
 	}
 
-	// 处理MCP协议
+	// Handle MCP protocol
 	switch req.McpProtocol {
 	case instance.McpProtocol_SSE:
 		template.McpProtocol = model.McpProtocolSSE
@@ -89,10 +88,10 @@ func (s *TemplateService) TemplateCreate(ctx context.Context, req *instance.Temp
 	case instance.McpProtocol_STDIO:
 		template.McpProtocol = model.McpProtocolStdio
 	default:
-		template.McpProtocol = model.McpProtocolSSE // 默认SSE协议
+		template.McpProtocol = model.McpProtocolSSE // Default SSE protocol
 	}
 
-	// 处理环境变量
+	// Handle environment variables
 	if len(req.EnvironmentVariables) > 0 {
 		envBytes, err := json.Marshal(req.EnvironmentVariables)
 		if err != nil {
@@ -102,7 +101,7 @@ func (s *TemplateService) TemplateCreate(ctx context.Context, req *instance.Temp
 		template.EnvironmentVariables = envBytes
 	}
 
-	// 处理卷挂载配置
+	// Handle volume mount configuration
 	if len(req.VolumeMounts) > 0 {
 		volumeBytes, err := json.Marshal(req.VolumeMounts)
 		if err != nil {
@@ -112,12 +111,12 @@ func (s *TemplateService) TemplateCreate(ctx context.Context, req *instance.Temp
 		template.VolumeMounts = volumeBytes
 	}
 
-	// 处理MCP服务器配置
+	// Handle MCP server configuration
 	if req.McpServers != "" {
 		template.McpServers = json.RawMessage(req.McpServers)
 	}
 
-	// 处理令牌
+	// Handle tokens
 	if len(req.Tokens) > 0 {
 		tokens := make([]model.McpToken, 0, len(req.Tokens))
 		for _, token := range req.Tokens {
@@ -136,13 +135,13 @@ func (s *TemplateService) TemplateCreate(ctx context.Context, req *instance.Temp
 		template.Tokens = json.RawMessage(tokensJSON)
 	}
 
-	// 创建模板
+	// Create template
 	if err := s.templateData.CreateTemplate(ctx, template); err != nil {
 		logger.Error("failed to create template", zap.Error(err), zap.String("name", req.Name))
 		return nil, fmt.Errorf("failed to create template: %v", err)
 	}
 
-	// 返回响应
+	// Return response
 	resp := &instance.TemplateCreateResp{
 		TemplateId: int32(template.ID),
 	}
@@ -157,7 +156,7 @@ func (s *TemplateService) TemplateDetail(ctx context.Context, req *instance.Temp
 		return nil, fmt.Errorf("template ID is required")
 	}
 
-	// 查询模板
+	// Query template
 	template, err := s.templateData.GetTemplateByID(ctx, uint(req.TemplateId))
 	if err != nil {
 		logger.Error("failed to get template", zap.Error(err), zap.Int32("templateId", req.TemplateId))
@@ -167,7 +166,7 @@ func (s *TemplateService) TemplateDetail(ctx context.Context, req *instance.Temp
 		return nil, fmt.Errorf("template not found")
 	}
 
-	// 构建响应
+	// Build response
 	resp := &instance.TemplateDetailResp{
 		TemplateId:     int32(template.ID),
 		Name:           template.Name,
@@ -188,7 +187,7 @@ func (s *TemplateService) TemplateDetail(ctx context.Context, req *instance.Temp
 		ServicePath:    template.ServicePath,
 	}
 
-	// 处理访问类型
+	// Handle access type
 	switch template.AccessType {
 	case model.AccessTypeDirect:
 		resp.AccessType = instance.AccessType_DIRECT
@@ -200,7 +199,7 @@ func (s *TemplateService) TemplateDetail(ctx context.Context, req *instance.Temp
 		resp.AccessType = instance.AccessType_PROXY
 	}
 
-	// 处理MCP协议
+	// Handle MCP protocol
 	switch template.McpProtocol {
 	case model.McpProtocolSSE:
 		resp.McpProtocol = instance.McpProtocol_SSE
@@ -212,7 +211,7 @@ func (s *TemplateService) TemplateDetail(ctx context.Context, req *instance.Temp
 		resp.McpProtocol = instance.McpProtocol_SSE
 	}
 
-	// 处理环境变量
+	// Handle environment variables
 	if len(template.EnvironmentVariables) > 0 {
 		envVars := make(map[string]string)
 		if err := json.Unmarshal(template.EnvironmentVariables, &envVars); err != nil {
@@ -222,7 +221,7 @@ func (s *TemplateService) TemplateDetail(ctx context.Context, req *instance.Temp
 		}
 	}
 
-	// 处理卷挂载配置
+	// Handle volume mount configuration
 	if len(template.VolumeMounts) > 0 {
 		volumeMounts := make([]*instance.VolumeMount, 0)
 		if err := json.Unmarshal(template.VolumeMounts, &volumeMounts); err != nil {
@@ -232,7 +231,7 @@ func (s *TemplateService) TemplateDetail(ctx context.Context, req *instance.Temp
 		}
 	}
 
-	// 处理令牌
+	// Handle tokens
 	if len(template.Tokens) > 0 {
 		tokens := make([]*instance.McpToken, 0, len(template.Tokens))
 		if err := json.Unmarshal(template.Tokens, &tokens); err != nil {
@@ -251,7 +250,7 @@ func (s *TemplateService) TemplateEdit(ctx context.Context, req *instance.Templa
 		return nil, fmt.Errorf("template ID is required")
 	}
 
-	// 查询现有模板
+	// Query existing template
 	template, err := s.templateData.GetTemplateByID(ctx, uint(req.TemplateId))
 	if err != nil {
 		logger.Error("failed to get template", zap.Error(err), zap.Int32("templateId", req.TemplateId))
@@ -261,7 +260,7 @@ func (s *TemplateService) TemplateEdit(ctx context.Context, req *instance.Templa
 		return nil, fmt.Errorf("template not found")
 	}
 
-	// 更新模板字段
+	// Update template fields
 	template.Name = req.Name
 	template.Port = req.Port
 	template.InitScript = req.InitScript
@@ -275,7 +274,7 @@ func (s *TemplateService) TemplateEdit(ctx context.Context, req *instance.Templa
 	template.Notes = req.Notes
 	template.IconPath = req.IconPath
 
-	// 处理访问类型
+	// Handle access type
 	switch req.AccessType {
 	case instance.AccessType_DIRECT:
 		template.AccessType = model.AccessTypeDirect
@@ -284,10 +283,10 @@ func (s *TemplateService) TemplateEdit(ctx context.Context, req *instance.Templa
 	case instance.AccessType_HOSTING:
 		template.AccessType = model.AccessTypeHosting
 	default:
-		template.AccessType = model.AccessTypeProxy // 默认代理模式
+		template.AccessType = model.AccessTypeProxy // Default proxy mode
 	}
 
-	// 处理MCP协议
+	// Handle MCP protocol
 	switch req.McpProtocol {
 	case instance.McpProtocol_SSE:
 		template.McpProtocol = model.McpProtocolSSE
@@ -296,10 +295,10 @@ func (s *TemplateService) TemplateEdit(ctx context.Context, req *instance.Templa
 	case instance.McpProtocol_STDIO:
 		template.McpProtocol = model.McpProtocolStdio
 	default:
-		template.McpProtocol = model.McpProtocolSSE // 默认SSE协议
+		template.McpProtocol = model.McpProtocolSSE // Default SSE protocol
 	}
 
-	// 处理环境变量
+	// Handle environment variables
 	if len(req.EnvironmentVariables) > 0 {
 		envBytes, err := json.Marshal(req.EnvironmentVariables)
 		if err != nil {
@@ -309,7 +308,7 @@ func (s *TemplateService) TemplateEdit(ctx context.Context, req *instance.Templa
 		template.EnvironmentVariables = envBytes
 	}
 
-	// 处理卷挂载配置
+	// Handle volume mount configuration
 	if len(req.VolumeMounts) > 0 {
 		volumeBytes, err := json.Marshal(req.VolumeMounts)
 		if err != nil {
@@ -319,12 +318,12 @@ func (s *TemplateService) TemplateEdit(ctx context.Context, req *instance.Templa
 		template.VolumeMounts = volumeBytes
 	}
 
-	// 处理MCP服务器配置
+	// Handle MCP server configuration
 	if req.McpServers != "" {
 		template.McpServers = json.RawMessage(req.McpServers)
 	}
 
-	// 处理令牌
+	// Handle tokens
 	if len(req.Tokens) > 0 {
 		tokens := make([]model.McpToken, 0, len(req.Tokens))
 		for _, token := range req.Tokens {
@@ -343,13 +342,13 @@ func (s *TemplateService) TemplateEdit(ctx context.Context, req *instance.Templa
 		template.Tokens = json.RawMessage(tokensJSON)
 	}
 
-	// 更新模板
+	// Update template
 	if err := s.templateData.UpdateTemplate(ctx, template); err != nil {
 		logger.Error("failed to update template", zap.Error(err), zap.Int32("templateId", req.TemplateId))
 		return nil, fmt.Errorf("failed to update template: %v", err)
 	}
 
-	// 返回响应
+	// Return response
 	resp := &instance.TemplateEditResp{
 		Message: "Template updated successfully",
 	}
@@ -360,7 +359,7 @@ func (s *TemplateService) TemplateEdit(ctx context.Context, req *instance.Templa
 
 // TemplateList retrieves a list of templates
 func (s *TemplateService) TemplateList(ctx context.Context, req *instance.TemplateListRequest) (*instance.TemplateListResp, error) {
-	// 设置默认分页参数
+	// Set default pagination parameters
 	page := req.Page
 	if page <= 0 {
 		page = 1
@@ -373,20 +372,20 @@ func (s *TemplateService) TemplateList(ctx context.Context, req *instance.Templa
 		pageSize = int32(common.MaxPageSize)
 	}
 
-	// 构建筛选条件
+	// Build filter conditions
 	filters := make(map[string]interface{})
 
-	// 添加模板ID筛选
+	// Add template ID filter
 	if req.TemplateId > 0 {
 		filters["template_id"] = req.TemplateId
 	}
 
-	// 添加名称筛选
+	// Add name filter
 	if req.Name != "" {
 		filters["name"] = req.Name
 	}
 
-	// 分页查询模板列表
+	// Paginated query for template list
 	templates, total, err := s.templateData.GetTemplatesWithPagination(ctx, page, pageSize, filters, "id", "desc")
 	if err != nil {
 		logger.Error("failed to get templates", zap.Error(err))
@@ -401,10 +400,10 @@ func (s *TemplateService) TemplateList(ctx context.Context, req *instance.Templa
 	envIds = utils.RemoveDuplicates(envIds)
 	envNames, err := mysql.McpEnvironmentRepo.FindNamesByIDs(ctx, envIds)
 	if err != nil {
-		return nil, fmt.Errorf("查询环境名称失败: %v", err)
+		return nil, fmt.Errorf("failed to query environment names: %v", err)
 	}
 
-	// 构建响应
+	// Build response
 	resp := &instance.TemplateListResp{
 		List:     make([]*instance.TemplateDetailResp, 0, len(templates)),
 		Total:    int32(total),
@@ -412,7 +411,7 @@ func (s *TemplateService) TemplateList(ctx context.Context, req *instance.Templa
 		PageSize: pageSize,
 	}
 
-	// 处理每个模板
+	// Process each template
 	for _, template := range templates {
 		envName, ok := envNames[fmt.Sprintf("%d", template.EnvironmentID)]
 		if !ok {
@@ -439,7 +438,7 @@ func (s *TemplateService) TemplateList(ctx context.Context, req *instance.Templa
 			ServicePath:     template.ServicePath,
 		}
 
-		// 处理访问类型
+		// Handle access type
 		switch template.AccessType {
 		case model.AccessTypeDirect:
 			templateResp.AccessType = instance.AccessType_DIRECT
@@ -451,7 +450,7 @@ func (s *TemplateService) TemplateList(ctx context.Context, req *instance.Templa
 			templateResp.AccessType = instance.AccessType_PROXY
 		}
 
-		// 处理MCP协议
+		// Handle MCP protocol
 		switch template.McpProtocol {
 		case model.McpProtocolSSE:
 			templateResp.McpProtocol = instance.McpProtocol_SSE
@@ -463,7 +462,7 @@ func (s *TemplateService) TemplateList(ctx context.Context, req *instance.Templa
 			templateResp.McpProtocol = instance.McpProtocol_SSE
 		}
 
-		// 处理环境变量
+		// Handle environment variables
 		if len(template.EnvironmentVariables) > 0 {
 			envVars := make(map[string]string)
 			if err := json.Unmarshal(template.EnvironmentVariables, &envVars); err != nil {
@@ -473,7 +472,7 @@ func (s *TemplateService) TemplateList(ctx context.Context, req *instance.Templa
 			}
 		}
 
-		// 处理卷挂载配置
+		// Handle volume mount configuration
 		if len(template.VolumeMounts) > 0 {
 			volumeMounts := make([]*instance.VolumeMount, 0)
 			if err := json.Unmarshal(template.VolumeMounts, &volumeMounts); err != nil {
@@ -483,7 +482,7 @@ func (s *TemplateService) TemplateList(ctx context.Context, req *instance.Templa
 			}
 		}
 
-		// 处理令牌
+		// Handle tokens
 		if len(template.Tokens) > 0 {
 			tokens := make([]*instance.McpToken, 0, len(template.Tokens))
 			if err := json.Unmarshal(template.Tokens, &tokens); err != nil {
@@ -501,17 +500,17 @@ func (s *TemplateService) TemplateList(ctx context.Context, req *instance.Templa
 
 // TemplateListWithPagination retrieves a paginated list of templates
 func (s *TemplateService) TemplateListWithPagination(ctx context.Context, page, pageSize int32, filters map[string]interface{}, sortBy, sortOrder string) ([]*instance.TemplateDetailResp, int64, error) {
-	// 分页查询模板列表
+	// Paginated query for template list
 	templates, total, err := s.templateData.GetTemplatesWithPagination(ctx, page, pageSize, filters, sortBy, sortOrder)
 	if err != nil {
 		logger.Error("failed to get templates with pagination", zap.Error(err), zap.Int32("page", page), zap.Int32("pageSize", pageSize))
 		return nil, 0, fmt.Errorf("failed to get templates: %v", err)
 	}
 
-	// 构建响应
+	// Build response
 	templateResps := make([]*instance.TemplateDetailResp, 0, len(templates))
 
-	// 处理每个模板
+	// Process each template
 	for _, template := range templates {
 		templateResp := &instance.TemplateDetailResp{
 			TemplateId:     int32(template.ID),
@@ -530,7 +529,7 @@ func (s *TemplateService) TemplateListWithPagination(ctx context.Context, page, 
 			McpServers:     string(template.McpServers),
 		}
 
-		// 处理访问类型
+		// Handle access type
 		switch template.AccessType {
 		case model.AccessTypeDirect:
 			templateResp.AccessType = instance.AccessType_DIRECT
@@ -542,7 +541,7 @@ func (s *TemplateService) TemplateListWithPagination(ctx context.Context, page, 
 			templateResp.AccessType = instance.AccessType_PROXY
 		}
 
-		// 处理MCP协议
+		// Handle MCP protocol
 		switch template.McpProtocol {
 		case model.McpProtocolSSE:
 			templateResp.McpProtocol = instance.McpProtocol_SSE
@@ -554,7 +553,7 @@ func (s *TemplateService) TemplateListWithPagination(ctx context.Context, page, 
 			templateResp.McpProtocol = instance.McpProtocol_SSE
 		}
 
-		// 处理环境变量
+		// Handle environment variables
 		if len(template.EnvironmentVariables) > 0 {
 			envVars := make(map[string]string)
 			if err := json.Unmarshal(template.EnvironmentVariables, &envVars); err != nil {
@@ -564,7 +563,7 @@ func (s *TemplateService) TemplateListWithPagination(ctx context.Context, page, 
 			}
 		}
 
-		// 处理卷挂载配置
+		// Handle volume mount configuration
 		if len(template.VolumeMounts) > 0 {
 			volumeMounts := make([]*instance.VolumeMount, 0)
 			if err := json.Unmarshal(template.VolumeMounts, &volumeMounts); err != nil {
@@ -574,7 +573,7 @@ func (s *TemplateService) TemplateListWithPagination(ctx context.Context, page, 
 			}
 		}
 
-		// 处理令牌
+		// Handle tokens
 		if len(template.Tokens) > 0 {
 			tokens := make([]*instance.McpToken, 0, len(template.Tokens))
 			if err := json.Unmarshal(template.Tokens, &tokens); err != nil {
@@ -596,59 +595,59 @@ func (s *TemplateService) TemplateDelete(ctx context.Context, req *instance.Temp
 		return nil, fmt.Errorf("template ID is required")
 	}
 
-	// 查询模板
+	// Query template
 	template, err := s.templateData.GetTemplateByID(ctx, uint(req.TemplateId))
 	if err != nil {
 		logger.Error("failed to get template", zap.Error(err), zap.Int32("templateId", req.TemplateId))
 		return nil, fmt.Errorf("failed to get template: %v", err)
 	}
 
-	// 删除模板
+	// Delete template
 	if err := s.templateData.DeleteTemplate(ctx, template.ID); err != nil {
 		logger.Error("failed to delete template", zap.Error(err), zap.Int32("templateId", req.TemplateId))
 		return nil, fmt.Errorf("failed to delete template: %v", err)
 	}
 
-	// 返回响应
+	// Return response
 	resp := &instance.TemplateDeleteResp{}
 
 	logger.Info("template deleted successfully", zap.Int32("templateId", req.TemplateId))
 	return resp, nil
 }
 
-// HTTP Handler 方法
+// HTTP Handler methods
 
-// TemplateCreateHandler 创建模板HTTP处理函数
+// TemplateCreateHandler creates template HTTP handler function
 func (s *TemplateService) TemplateCreateHandler(c *gin.Context) {
 	var req instance.TemplateCreateRequest
 	if err := common.BindAndValidate(c, &req); err != nil {
 		return
 	}
 
-	// 验证必填字段
+	// Validate required fields
 	if req.Name == "" {
 		common.GinError(c, i18nresp.CodeInternalError, "missing required field: name")
 		return
 	}
 
-	// 调用创建模板处理函数
+	// Call create template handler function
 	result, err := s.TemplateCreate(c, &req)
 	if err != nil {
-		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("创建模板失败: %s", err.Error()))
+		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("failed to create template: %s", err.Error()))
 		return
 	}
 
-	// 返回成功响应
+	// Return success response
 	common.GinSuccess(c, result)
 }
 
-// TemplateListWithPaginationHandler 分页获取模板列表HTTP处理函数
+// TemplateListWithPaginationHandler paginated template list HTTP handler function
 func (s *TemplateService) TemplateListWithPaginationHandler(c *gin.Context) {
-	// 获取分页参数
+	// Get pagination parameters
 	pageStr := c.DefaultQuery("page", "1")
 	pageSizeStr := c.DefaultQuery("pageSize", "10")
 
-	// 转换分页参数
+	// Convert pagination parameters
 	page, err := strconv.ParseInt(pageStr, 10, 32)
 	if err != nil || page < 1 {
 		page = 1
@@ -659,43 +658,43 @@ func (s *TemplateService) TemplateListWithPaginationHandler(c *gin.Context) {
 		pageSize = 10
 	}
 
-	// 获取排序参数
+	// Get sorting parameters
 	sortBy := c.DefaultQuery("sortBy", "id")
 	sortOrder := c.DefaultQuery("sortOrder", "desc")
 
-	// 构建筛选条件
+	// Build filter conditions
 	filters := make(map[string]interface{})
 
-	// 处理环境ID筛选
+	// Handle environment ID filter
 	if envIdStr := c.Query("environmentId"); envIdStr != "" {
 		if envId, parseErr := strconv.ParseInt(envIdStr, 10, 32); parseErr == nil {
 			filters["environment_id"] = envId
 		}
 	}
 
-	// 处理访问类型筛选
+	// Handle access type filter
 	if accessType := c.Query("accessType"); accessType != "" {
 		filters["access_type"] = accessType
 	}
 
-	// 处理来源类型筛选
+	// Handle source type filter
 	if sourceType := c.Query("sourceType"); sourceType != "" {
 		filters["source_type"] = sourceType
 	}
 
-	// 处理名称模糊搜索
+	// Handle name fuzzy search
 	if name := c.Query("name"); name != "" {
 		filters["name"] = name
 	}
 
-	// 调用分页获取模板列表处理函数
+	// Call paginated template list handler function
 	result, total, err := s.TemplateListWithPagination(c, int32(page), int32(pageSize), filters, sortBy, sortOrder)
 	if err != nil {
-		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("分页获取模板列表失败: %s", err.Error()))
+		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("failed to get paginated template list: %s", err.Error()))
 		return
 	}
 
-	// 构建分页响应
+	// Build pagination response
 	response := map[string]interface{}{
 		"list":      result,
 		"total":     total,
@@ -704,11 +703,11 @@ func (s *TemplateService) TemplateListWithPaginationHandler(c *gin.Context) {
 		"totalPage": (total + int64(pageSize) - 1) / int64(pageSize),
 	}
 
-	// 返回成功响应
+	// Return success response
 	common.GinSuccess(c, response)
 }
 
-// TemplateDetailHandler 获取模板详情HTTP处理函数
+// TemplateDetailHandler get template details HTTP handler function
 func (s *TemplateService) TemplateDetailHandler(c *gin.Context) {
 	var req instance.TemplateDetailRequest
 	if err := common.BindAndValidate(c, &req); err != nil {
@@ -719,67 +718,67 @@ func (s *TemplateService) TemplateDetailHandler(c *gin.Context) {
 		return
 	}
 
-	// 调用获取模板详情处理函数
+	// Call get template details handler function
 	result, err := s.TemplateDetail(c, &req)
 	if err != nil {
-		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("获取模板详情失败: %s", err.Error()))
+		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("failed to get template details: %s", err.Error()))
 		return
 	}
 
-	// 返回成功响应
+	// Return success response
 	common.GinSuccess(c, result)
 }
 
-// TemplateEditHandler 编辑模板HTTP处理函数
+// TemplateEditHandler edit template HTTP handler function
 func (s *TemplateService) TemplateEditHandler(c *gin.Context) {
 	var req instance.TemplateEditRequest
 	if err := common.BindAndValidate(c, &req); err != nil {
-		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("绑定请求体失败: %s", err.Error()))
+		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("failed to bind request body: %s", err.Error()))
 		return
 	}
 
-	// 验证必填字段
+	// Validate required fields
 	if req.Name == "" {
 		common.GinError(c, i18nresp.CodeInternalError, "missing required field: name")
 		return
 	}
 
-	// 调用编辑模板处理函数
+	// Call edit template handler function
 	result, err := s.TemplateEdit(c, &req)
 	if err != nil {
-		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("编辑模板失败: %s", err.Error()))
+		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("failed to edit template: %s", err.Error()))
 		return
 	}
 
-	// 返回成功响应
+	// Return success response
 	common.GinSuccess(c, result)
 }
 
-// TemplateListHandler 获取模板列表HTTP处理函数
+// TemplateListHandler get template list HTTP handler function
 func (s *TemplateService) TemplateListHandler(c *gin.Context) {
 	var req instance.TemplateListRequest
 
-	// 绑定请求体
+	// Bind request body
 	if err := common.BindAndValidate(c, &req); err != nil {
 		return
 	}
 
-	// 调用获取模板列表处理函数
+	// Call get template list handler function
 	result, err := s.TemplateList(c, &req)
 	if err != nil {
-		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("获取模板列表失败: %s", err.Error()))
+		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("failed to get template list: %s", err.Error()))
 		return
 	}
 
-	// 返回成功响应
+	// Return success response
 	common.GinSuccess(c, result)
 }
 
-// TemplateDeleteHandler 删除模板HTTP处理函数
+// TemplateDeleteHandler delete template HTTP handler function
 func (s *TemplateService) TemplateDeleteHandler(c *gin.Context) {
 	var req instance.TemplateDeleteRequest
 	if err := common.BindAndValidate(c, &req); err != nil {
-		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("绑定请求体失败: %s", err.Error()))
+		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("failed to bind request body: %s", err.Error()))
 		return
 	}
 	if req.TemplateId == 0 {
@@ -787,13 +786,13 @@ func (s *TemplateService) TemplateDeleteHandler(c *gin.Context) {
 		return
 	}
 
-	// 调用删除模板处理函数
+	// Call delete template handler function
 	result, err := s.TemplateDelete(c, &req)
 	if err != nil {
-		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("删除模板失败: %s", err.Error()))
+		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("failed to delete template: %s", err.Error()))
 		return
 	}
 
-	// 返回成功响应
+	// Return success response
 	common.GinSuccess(c, result)
 }

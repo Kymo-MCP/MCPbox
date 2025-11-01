@@ -70,27 +70,27 @@ func (s *InstanceService) CreateHandler(c *gin.Context) {
 	common.GinSuccess(c, result)
 }
 
-// DetailHandler 获取实例详情HTTP处理函数
+// DetailHandler gets instance details HTTP handler function
 func (s *InstanceService) DetailHandler(c *gin.Context) {
 	var req instancepb.DetailRequest
 	if err := common.BindAndValidate(c, &req); err != nil {
 		return
 	}
 
-	// 验证必填字段
+	// Validate required fields
 	if req.InstanceId == "" {
 		common.GinError(c, i18nresp.CodeInternalError, "missing required field: instanceId")
 		return
 	}
 
-	// 调用获取实例详情处理函数
+	// Call get instance details handler function
 	result, err := s.detail(&req)
 	if err != nil {
-		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("获取实例详情失败: %s", err.Error()))
+		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("failed to get instance details: %s", err.Error()))
 		return
 	}
 
-	// 返回成功响应
+	// Return success response
 	common.GinSuccess(c, result)
 }
 
@@ -107,14 +107,14 @@ func (s *InstanceService) EditHandler(c *gin.Context) {
 		return
 	}
 
-	// 获取原始实例信息
+	// Get original instance information
 	oriInstance, err := biz.GInstanceBiz.GetInstance(req.InstanceId)
 	if err != nil {
-		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("获取实例信息失败: %s", err.Error()))
+		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("failed to get instance information: %s", err.Error()))
 		return
 	}
 	if oriInstance == nil {
-		common.GinError(c, i18nresp.CodeInternalError, "实例不存在")
+		common.GinError(c, i18nresp.CodeInternalError, "instance does not exist")
 		return
 	}
 
@@ -133,7 +133,7 @@ func (s *InstanceService) EditHandler(c *gin.Context) {
 		}
 		resp, err = biz.GInstanceBiz.UpdateInstanceForDirect(c.Request.Context(), &req, oriInstance)
 		if err != nil {
-			common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("编辑实例失败: %s", err.Error()))
+			common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("failed to edit instance: %s", err.Error()))
 			return
 		}
 	case model.AccessTypeProxy:
@@ -149,7 +149,7 @@ func (s *InstanceService) EditHandler(c *gin.Context) {
 		}
 		resp, err = biz.GInstanceBiz.UpdateInstanceForProxy(c.Request.Context(), &req, oriInstance)
 		if err != nil {
-			common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("编辑实例失败: %s", err.Error()))
+			common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("failed to edit instance: %s", err.Error()))
 			return
 		}
 	case model.AccessTypeHosting:
@@ -165,11 +165,11 @@ func (s *InstanceService) EditHandler(c *gin.Context) {
 		}
 		resp, err = biz.GInstanceBiz.UpdateInstanceForHosting(c.Request.Context(), &req, oriInstance)
 		if err != nil {
-			common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("编辑实例失败: %s", err.Error()))
+			common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("failed to edit instance: %s", err.Error()))
 			return
 		}
 	default:
-		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("未知的访问类型: %s", oriInstance.AccessType))
+		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("unknown access type: %s", oriInstance.AccessType))
 		return
 	}
 
@@ -186,7 +186,7 @@ func (s *InstanceService) ListHandler(c *gin.Context) {
 	// Use InstanceService to handle request
 	result, err := s.list(&req)
 	if err != nil {
-		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("获取实例列表失败: %s", err.Error()))
+		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("failed to get instance list: %s", err.Error()))
 		return
 	}
 
@@ -326,30 +326,30 @@ func (s *InstanceService) create(req *instancepb.CreateRequest) (*instancepb.Cre
 	}
 }
 
-// Detail 获取实例详情
+// detail gets instance details
 func (s *InstanceService) detail(req *instancepb.DetailRequest) (*instancepb.DetailResp, error) {
-	// 获取实例信息
+	// Get instance information
 	instance, err := biz.GInstanceBiz.GetInstance(req.InstanceId)
 	if err != nil {
-		return nil, fmt.Errorf("获取实例信息失败: %v", err)
+		return nil, fmt.Errorf("failed to get instance information: %v", err)
 	}
 	if instance == nil {
-		return nil, fmt.Errorf("实例不存在")
+		return nil, fmt.Errorf("instance does not exist")
 	}
 
-	// 转换访问类型
+	// Convert access type
 	pbAccessType, err := common.ConvertToProtoAccessType(instance.AccessType)
 	if err != nil {
-		return nil, fmt.Errorf("转换访问类型失败: %w", err)
+		return nil, fmt.Errorf("failed to convert access type: %w", err)
 	}
 
-	// 转换MCP协议类型
+	// Convert MCP protocol type
 	pbMcpProtocol, err := common.ConvertToProtoMcpProtocol(instance.McpProtocol)
 	if err != nil {
-		return nil, fmt.Errorf("转换MCP协议类型失败: %w", err)
+		return nil, fmt.Errorf("failed to convert MCP protocol type: %w", err)
 	}
 
-	// 构建响应
+	// Build response
 	resp := &instancepb.DetailResp{
 		InstanceId:  instance.InstanceID,
 		Name:        instance.InstanceName,
@@ -360,7 +360,7 @@ func (s *InstanceService) detail(req *instancepb.DetailRequest) (*instancepb.Det
 		IconPath:    instance.IconPath,
 	}
 
-	// 根据访问类型添加特定字段
+	// Add specific fields based on access type
 	switch instance.AccessType {
 	case model.AccessTypeHosting:
 		resp.PackageId = instance.PackageID
@@ -379,7 +379,7 @@ func (s *InstanceService) detail(req *instancepb.DetailRequest) (*instancepb.Det
 		resp.ContainerLastMessage = instance.ContainerLastMessage
 		resp.ContainerIsReady = instance.ContainerIsReady
 
-		// 转换环境变量
+		// Convert environment variables
 		if len(instance.EnvironmentVariables) > 0 {
 			envVarsMap := make(map[string]string)
 			if err := json.Unmarshal(instance.EnvironmentVariables, &envVarsMap); err == nil {
@@ -387,7 +387,7 @@ func (s *InstanceService) detail(req *instancepb.DetailRequest) (*instancepb.Det
 			}
 		}
 
-		// 转换卷挂载
+		// Convert volume mounts
 		if len(instance.VolumeMounts) > 0 {
 			var volumeMounts []*instancepb.VolumeMount
 			if err := json.Unmarshal(instance.VolumeMounts, &volumeMounts); err == nil {
@@ -395,14 +395,14 @@ func (s *InstanceService) detail(req *instancepb.DetailRequest) (*instancepb.Det
 			}
 		}
 
-		// 转换令牌
+		// Convert tokens
 		resp.Tokens = common.ConvertToProtoMcpToken(instance.Tokens)
 
-		// 转换公共代理配置
+		// Convert public proxy configuration
 		resp.PublicProxyConfig = string(instance.PublicProxyConfig)
 
 	case model.AccessTypeDirect, model.AccessTypeProxy:
-		// 对于直连和代理模式，添加MCP服务器配置
+		// For direct and proxy mode, add MCP servers configuration
 		if len(instance.SourceConfig) > 0 {
 			resp.McpServers = string(instance.SourceConfig)
 		}
@@ -412,7 +412,7 @@ func (s *InstanceService) detail(req *instancepb.DetailRequest) (*instancepb.Det
 }
 
 func (s *InstanceService) list(req *instancepb.ListRequest) (*instancepb.ListResp, error) {
-	// 参数验证
+	// Parameter validation
 	page := req.Page
 	if page <= 0 {
 		page = 1
@@ -471,10 +471,10 @@ func (s *InstanceService) getLogs(req *instancepb.LogsRequest) (*instancepb.Logs
 
 	instance, err := biz.GInstanceBiz.GetInstance(req.InstanceId)
 	if err != nil {
-		return nil, fmt.Errorf("获取实例信息失败: %v", err)
+		return nil, fmt.Errorf("failed to get instance information: %v", err)
 	}
 	if instance == nil {
-		return nil, fmt.Errorf("实例不存在")
+		return nil, fmt.Errorf("instance does not exist")
 	}
 
 	var response instancepb.LogsResp
@@ -522,10 +522,10 @@ func (s *InstanceService) getLogs(req *instancepb.LogsRequest) (*instancepb.Logs
 func (s *InstanceService) getStatus(req *instancepb.GetStatusRequest) (*instancepb.GetStatusResp, error) {
 	instance, err := biz.GInstanceBiz.GetInstance(req.InstanceId)
 	if err != nil {
-		return nil, fmt.Errorf("获取实例信息失败: %v", err)
+		return nil, fmt.Errorf("failed to get instance information: %v", err)
 	}
 	if instance == nil {
-		return nil, fmt.Errorf("实例不存在")
+		return nil, fmt.Errorf("instance does not exist")
 	}
 
 	var response *instancepb.GetStatusResp
@@ -539,14 +539,14 @@ func (s *InstanceService) getStatus(req *instancepb.GetStatusRequest) (*instance
 		}
 		result, err := biz.GContainerBiz.GetContainerStatus(params)
 		if err != nil {
-			return nil, fmt.Errorf("获取容器状态失败: %s", err.Error())
+			return nil, fmt.Errorf("failed to get container status: %s", err.Error())
 		}
 
 		response = result
 	case model.AccessTypeProxy:
 		_, _, tMcpConfig, err := instance.GetTargetConfig()
 		if err != nil {
-			return nil, fmt.Errorf("获取目标配置失败: %s", err.Error())
+			return nil, fmt.Errorf("failed to get target configuration: %s", err.Error())
 		}
 
 		// Use HTTP probe to check service availability
@@ -567,7 +567,7 @@ func (s *InstanceService) getStatus(req *instancepb.GetStatusRequest) (*instance
 	case model.AccessTypeDirect:
 		_, _, sMcpConfig, err := instance.GetTargetConfig()
 		if err != nil {
-			return nil, fmt.Errorf("获取目标配置失败: %s", err.Error())
+			return nil, fmt.Errorf("failed to get target configuration: %s", err.Error())
 		}
 
 		// Use HTTP probe to check service availability
@@ -586,7 +586,7 @@ func (s *InstanceService) getStatus(req *instancepb.GetStatusRequest) (*instance
 			response.ProbeHttp = true
 		}
 	default:
-		return nil, fmt.Errorf("不支持的访问类型")
+		return nil, fmt.Errorf("unsupported access type")
 	}
 
 	return response, nil
@@ -601,27 +601,27 @@ func (s *InstanceService) delete(instanceID string) (*instancepb.DeleteResp, err
 	// Get instance information directly
 	instance, err := biz.GInstanceBiz.GetInstance(req.InstanceId)
 	if err != nil {
-		return nil, fmt.Errorf("获取实例信息失败: %v", err)
+		return nil, fmt.Errorf("failed to get instance information: %v", err)
 	}
 	if instance == nil {
-		return nil, fmt.Errorf("实例不存在")
+		return nil, fmt.Errorf("instance does not exist")
 	}
 
 	switch instance.AccessType {
 	case model.AccessTypeHosting:
 		_, err = biz.GContainerBiz.DeleteContainer(instance)
 		if err != nil {
-			return nil, fmt.Errorf("删除容器失败: %v", err)
+			return nil, fmt.Errorf("failed to delete container: %v", err)
 		}
 	}
 
 	// Disable the instance and set deletion time
 	err = biz.GInstanceBiz.DeleteInstance(req.InstanceId)
 	if err != nil {
-		return nil, fmt.Errorf("禁用实例失败: %v", err)
+		return nil, fmt.Errorf("failed to disable instance: %v", err)
 	}
 
-	return &instancepb.DeleteResp{Message: "实例删除成功"}, nil
+	return &instancepb.DeleteResp{Message: "Instance deleted successfully"}, nil
 }
 
 // restart restarts an instance
@@ -636,10 +636,10 @@ func (s *InstanceService) restart(req *instancepb.RestartRequest) (*instancepb.R
 	case model.AccessTypeHosting:
 		_, err = biz.GContainerBiz.RestartContainer(instance)
 		if err != nil {
-			return nil, fmt.Errorf("重启容器失败: %w", err)
+			return nil, fmt.Errorf("failed to restart container: %w", err)
 		}
 	default:
-		return nil, fmt.Errorf("此服务无需重启")
+		return nil, fmt.Errorf("this service does not need to be restarted")
 	}
 
 	// 3. Update container status to pending
@@ -649,7 +649,7 @@ func (s *InstanceService) restart(req *instancepb.RestartRequest) (*instancepb.R
 
 	pbAccessType, err := common.ConvertToProtoAccessType(instance.AccessType)
 	if err != nil {
-		return nil, fmt.Errorf("转换访问类型失败: %w", err)
+		return nil, fmt.Errorf("failed to convert access type: %w", err)
 	}
 
 	// 4. Return restart result
@@ -660,7 +660,7 @@ func (s *InstanceService) restart(req *instancepb.RestartRequest) (*instancepb.R
 		AccessType:        pbAccessType,
 		AccessConfig:      s.convertMcpConfigToProto(instance.TargetConfig),
 		PublicProxyConfig: s.convertMcpConfigToProto(instance.PublicProxyConfig),
-		Message:           "实例重启成功",
+		Message:           "Instance restarted successfully",
 	}, nil
 }
 
@@ -669,7 +669,7 @@ func (s *InstanceService) disable(req *instancepb.DisabledRequest) (*instancepb.
 	// Disable the instance and set deletion time
 	msg, err := biz.GInstanceBiz.DisableInstance(req.InstanceId)
 	if err != nil {
-		return nil, fmt.Errorf("禁用实例失败: %v", err)
+		return nil, fmt.Errorf("failed to disable instance: %v", err)
 	}
 
 	return &instancepb.DisabledResp{Message: msg}, nil
@@ -679,10 +679,10 @@ func (s *InstanceService) disable(req *instancepb.DisabledRequest) (*instancepb.
 func (s *InstanceService) getInstanceByID(instanceID string) (*model.McpInstance, error) {
 	instance, err := biz.GInstanceBiz.GetInstance(instanceID)
 	if err != nil {
-		return nil, fmt.Errorf("获取实例信息失败: %v", err)
+		return nil, fmt.Errorf("failed to get instance information: %v", err)
 	}
 	if instance == nil {
-		return nil, fmt.Errorf("实例不存在")
+		return nil, fmt.Errorf("instance does not exist")
 	}
 	return instance, nil
 }
@@ -1005,7 +1005,6 @@ func (s *InstanceService) validateTimeoutParams(startupTimeout, runningTimeout i
 	return nil
 }
 
-// List get instance list
 // convertMcpConfigToProto converts JSON configuration from database to proto structure
 func (s *InstanceService) convertMcpConfigToProto(configData json.RawMessage) *instancepb.McpServersConfig {
 	if len(configData) == 0 {

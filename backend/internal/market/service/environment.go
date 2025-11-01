@@ -70,7 +70,7 @@ func (s *EnvironmentService) CreateEnvironmentHandler(c *gin.Context) {
 		return
 	}
 
-	// 使用 EnvironmentService 处理请求
+	// Use EnvironmentService to handle request
 	result, err := s.CreateEnvironment(&req)
 	if err != nil {
 		common.GinError(c, i18nresp.CodeInternalError, err.Error())
@@ -82,12 +82,12 @@ func (s *EnvironmentService) CreateEnvironmentHandler(c *gin.Context) {
 
 // CreateEnvironment creates a new environment
 func (s *EnvironmentService) CreateEnvironment(req *mcp_environment.CreateEnvironmentRequest) (*mcp_environment.EnvironmentResponse, error) {
-	// 验证必填字段
+	// Validate required fields
 	if req.Name == "" {
-		return nil, fmt.Errorf("环境名称不能为空")
+		return nil, fmt.Errorf("environment name cannot be empty")
 	}
 
-	// 验证环境类型
+	// Validate environment type
 	var envType model.McpEnvironmentType
 	switch req.Environment {
 	case mcp_environment.McpEnvironmentType_Kubernetes:
@@ -95,16 +95,16 @@ func (s *EnvironmentService) CreateEnvironment(req *mcp_environment.CreateEnviro
 	case mcp_environment.McpEnvironmentType_Docker:
 		envType = model.McpEnvironmentDocker
 	default:
-		return nil, fmt.Errorf("不支持的环境类型，仅支持 kubernetes 或 docker")
+		return nil, fmt.Errorf("unsupported environment type, only kubernetes or docker are supported")
 	}
 
-	// 检查环境名称是否已存在
+	// Check if environment name already exists
 	existingEnv, err := biz.GEnvironmentBiz.GetEnvironmentByName(s.ctx, req.Name)
 	if err == nil && existingEnv != nil {
-		return nil, fmt.Errorf("环境名称已存在")
+		return nil, fmt.Errorf("environment name already exists")
 	}
 
-	// 创建环境对象
+	// Create environment object
 	environment := &model.McpEnvironment{
 		Name:        req.Name,
 		Environment: envType,
@@ -113,38 +113,38 @@ func (s *EnvironmentService) CreateEnvironment(req *mcp_environment.CreateEnviro
 		CreatorID:   "",
 	}
 
-	// 验证和准备创建
+	// Validate and prepare for creation
 	if validationErr := environment.ValidateForCreate(); validationErr != nil {
-		return nil, fmt.Errorf("环境数据验证失败: %s", err.Error())
+		return nil, fmt.Errorf("environment data validation failed: %s", err.Error())
 	}
 	environment.PrepareForCreate()
 
-	// 创建环境
+	// Create environment
 	err = biz.GEnvironmentBiz.CreateEnvironment(s.ctx, environment)
 	if err != nil {
-		return nil, fmt.Errorf("创建环境失败: %s", err.Error())
+		return nil, fmt.Errorf("failed to create environment: %s", err.Error())
 	}
 
-	// 构建响应
+	// Build response
 	response := modelToEnvironmentResponse(environment)
 
 	return response, nil
 }
 
-// CreateEnvironmentHandler 创建环境接口（包级函数，保持向后兼容）
+// CreateEnvironmentHandler create environment interface (package-level function for backward compatibility)
 func CreateEnvironmentHandler(c *gin.Context) {
 	var req mcp_environment.CreateEnvironmentRequest
 	if err := common.BindAndValidate(c, &req); err != nil {
 		return
 	}
 
-	// 验证必填字段
+	// Validate required fields
 	if req.Name == "" {
-		common.GinError(c, i18nresp.CodeInternalError, "环境名称不能为空")
+		common.GinError(c, i18nresp.CodeInternalError, "environment name cannot be empty")
 		return
 	}
 
-	// 验证环境类型
+	// Validate environment type
 	var envType model.McpEnvironmentType
 	switch req.Environment {
 	case mcp_environment.McpEnvironmentType_Kubernetes:
@@ -152,18 +152,18 @@ func CreateEnvironmentHandler(c *gin.Context) {
 	case mcp_environment.McpEnvironmentType_Docker:
 		envType = model.McpEnvironmentDocker
 	default:
-		common.GinError(c, i18nresp.CodeInternalError, "不支持的环境类型，仅支持 kubernetes 或 docker")
+		common.GinError(c, i18nresp.CodeInternalError, "unsupported environment type, only kubernetes or docker are supported")
 		return
 	}
 
-	// 检查环境名称是否已存在
+	// Check if environment name already exists
 	existingEnv, err := biz.GEnvironmentBiz.GetEnvironmentByName(c.Request.Context(), req.Name)
 	if err == nil && existingEnv != nil {
-		common.GinError(c, i18nresp.CodeInternalError, "环境名称已存在")
+		common.GinError(c, i18nresp.CodeInternalError, "environment name already exists")
 		return
 	}
 
-	// 创建环境对象
+	// Create environment object
 	environment := &model.McpEnvironment{
 		Name:        req.Name,
 		Environment: envType,
@@ -172,21 +172,21 @@ func CreateEnvironmentHandler(c *gin.Context) {
 		CreatorID:   "",
 	}
 
-	// 验证和准备创建
+	// Validate and prepare for creation
 	if validationErr := environment.ValidateForCreate(); validationErr != nil {
-		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("环境数据验证失败: %s", err.Error()))
+		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("environment data validation failed: %s", err.Error()))
 		return
 	}
 	environment.PrepareForCreate()
 
-	// 创建环境
+	// Create environment
 	err = biz.GEnvironmentBiz.CreateEnvironment(c.Request.Context(), environment)
 	if err != nil {
-		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("创建环境失败: %s", err.Error()))
+		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("failed to create environment: %s", err.Error()))
 		return
 	}
 
-	// 构建响应
+	// Build response
 	response := modelToEnvironmentResponse(environment)
 
 	common.GinSuccess(c, response)
@@ -199,21 +199,21 @@ func (s *EnvironmentService) UpdateEnvironmentHandler(c *gin.Context) {
 		return
 	}
 
-	// 从URL路径参数获取ID
+	// Get ID from URL path parameter
 	idStr := c.Param("id")
 	if idStr == "" {
-		common.GinError(c, i18nresp.CodeInternalError, "环境ID不能为空")
+		common.GinError(c, i18nresp.CodeInternalError, "environment ID cannot be empty")
 		return
 	}
 
 	id, err := strconv.ParseUint(idStr, 10, 32)
 	if err != nil {
-		common.GinError(c, i18nresp.CodeInternalError, "无效的环境ID")
+		common.GinError(c, i18nresp.CodeInternalError, "invalid environment ID")
 		return
 	}
 	req.Id = int32(id)
 
-	// 使用 EnvironmentService 处理请求
+	// Use EnvironmentService to handle request
 	result, err := s.UpdateEnvironment(&req)
 	if err != nil {
 		common.GinError(c, i18nresp.CodeInternalError, err.Error())
@@ -225,7 +225,7 @@ func (s *EnvironmentService) UpdateEnvironmentHandler(c *gin.Context) {
 
 // UpdateEnvironment updates an existing environment
 func (s *EnvironmentService) UpdateEnvironment(req *mcp_environment.UpdateEnvironmentRequest) (*mcp_environment.EnvironmentResponse, error) {
-	// 验证环境类型
+	// Validate environment type
 	var envType model.McpEnvironmentType
 	switch req.Environment {
 	case mcp_environment.McpEnvironmentType_Kubernetes:
@@ -233,63 +233,63 @@ func (s *EnvironmentService) UpdateEnvironment(req *mcp_environment.UpdateEnviro
 	case mcp_environment.McpEnvironmentType_Docker:
 		envType = model.McpEnvironmentDocker
 	default:
-		return nil, fmt.Errorf("不支持的环境类型，仅支持 kubernetes 或 docker")
+		return nil, fmt.Errorf("unsupported environment type, only kubernetes or docker are supported")
 	}
 
-	// 更新环境
+	// Update environment
 
-	// 先获取现有环境
+	// First get existing environment
 	environment, err := biz.GEnvironmentBiz.GetEnvironment(s.ctx, uint(req.Id))
 	if err != nil {
-		return nil, fmt.Errorf("查询环境失败: %s", err.Error())
+		return nil, fmt.Errorf("failed to query environment: %s", err.Error())
 	}
 
-	// 更新字段
+	// Update fields
 	environment.Name = req.Name
 	environment.Environment = envType
 	environment.Config = req.Config
 	environment.Namespace = req.Namespace
 
-	// 验证和准备更新
+	// Validate and prepare for update
 	if validationErr := environment.ValidateForUpdate(); validationErr != nil {
-		return nil, fmt.Errorf("环境数据验证失败: %s", validationErr.Error())
+		return nil, fmt.Errorf("environment data validation failed: %s", validationErr.Error())
 	}
 	environment.PrepareForUpdate()
 
-	// 执行更新
+	// Execute update
 	err = biz.GEnvironmentBiz.UpdateEnvironment(s.ctx, environment)
 	if err != nil {
-		return nil, fmt.Errorf("更新环境失败: %s", err.Error())
+		return nil, fmt.Errorf("failed to update environment: %s", err.Error())
 	}
 
-	// 构建响应
+	// Build response
 	response := modelToEnvironmentResponse(environment)
 
 	return response, nil
 }
 
-// UpdateEnvironmentHandler 更新环境接口（包级函数，保持向后兼容）
+// UpdateEnvironmentHandler update environment interface (package-level function for backward compatibility)
 func UpdateEnvironmentHandler(c *gin.Context) {
 	var req mcp_environment.UpdateEnvironmentRequest
 	if err := common.BindAndValidate(c, &req); err != nil {
 		return
 	}
 
-	// 从URL路径参数获取ID
+	// Get ID from URL path parameter
 	idStr := c.Param("id")
 	if idStr == "" {
-		common.GinError(c, i18nresp.CodeInternalError, "环境ID不能为空")
+		common.GinError(c, i18nresp.CodeInternalError, "environment ID cannot be empty")
 		return
 	}
 
 	id, err := strconv.ParseUint(idStr, 10, 32)
 	if err != nil {
-		common.GinError(c, i18nresp.CodeInternalError, "无效的环境ID")
+		common.GinError(c, i18nresp.CodeInternalError, "invalid environment ID")
 		return
 	}
 	req.Id = int32(id)
 
-	// 验证环境类型
+	// Validate environment type
 	var envType model.McpEnvironmentType
 	switch req.Environment {
 	case mcp_environment.McpEnvironmentType_Kubernetes:
@@ -297,61 +297,61 @@ func UpdateEnvironmentHandler(c *gin.Context) {
 	case mcp_environment.McpEnvironmentType_Docker:
 		envType = model.McpEnvironmentDocker
 	default:
-		common.GinError(c, i18nresp.CodeInternalError, "不支持的环境类型，仅支持 kubernetes 或 docker")
+		common.GinError(c, i18nresp.CodeInternalError, "unsupported environment type, only kubernetes or docker are supported")
 		return
 	}
 
-	// 更新环境
+	// Update environment
 
-	// 先获取现有环境
+	// First get existing environment
 	environment, err := biz.GEnvironmentBiz.GetEnvironment(c.Request.Context(), uint(req.Id))
 	if err != nil {
-		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("查询环境失败: %s", err.Error()))
+		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("failed to query environment: %s", err.Error()))
 		return
 	}
 
-	// 更新字段
+	// Update fields
 	environment.Name = req.Name
 	environment.Environment = envType
 	environment.Config = req.Config
 	environment.Namespace = req.Namespace
 
-	// 验证和准备更新
+	// Validate and prepare for update
 	if validationErr := environment.ValidateForUpdate(); validationErr != nil {
-		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("环境数据验证失败: %s", validationErr.Error()))
+		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("environment data validation failed: %s", validationErr.Error()))
 		return
 	}
 	environment.PrepareForUpdate()
 
-	// 执行更新
+	// Execute update
 	err = biz.GEnvironmentBiz.UpdateEnvironment(c.Request.Context(), environment)
 	if err != nil {
-		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("更新环境失败: %s", err.Error()))
+		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("failed to update environment: %s", err.Error()))
 		return
 	}
 
-	// 构建响应
+	// Build response
 	response := modelToEnvironmentResponse(environment)
 
 	common.GinSuccess(c, response)
 }
 
-// GetEnvironmentHandler 获取环境接口Handler
+// GetEnvironmentHandler get environment interface Handler
 func (s *EnvironmentService) GetEnvironmentHandler(c *gin.Context) {
-	// 从URL路径参数获取ID
+	// Get ID from URL path parameter
 	idStr := c.Param("id")
 	if idStr == "" {
-		common.GinError(c, i18nresp.CodeInternalError, "环境ID不能为空")
+		common.GinError(c, i18nresp.CodeInternalError, "environment ID cannot be empty")
 		return
 	}
 
 	id, err := strconv.ParseUint(idStr, 10, 32)
 	if err != nil {
-		common.GinError(c, i18nresp.CodeInternalError, "无效的环境ID")
+		common.GinError(c, i18nresp.CodeInternalError, "invalid environment ID")
 		return
 	}
 
-	// 使用 EnvironmentService 处理请求
+	// Use EnvironmentService to handle request
 	result, err := s.GetEnvironment(uint(id))
 	if err != nil {
 		common.GinError(c, i18nresp.CodeInternalError, err.Error())
@@ -361,64 +361,64 @@ func (s *EnvironmentService) GetEnvironmentHandler(c *gin.Context) {
 	common.GinSuccess(c, result)
 }
 
-// GetEnvironment 获取环境业务逻辑
+// GetEnvironment get environment business logic
 func (s *EnvironmentService) GetEnvironment(id uint) (*mcp_environment.EnvironmentResponse, error) {
-	// 获取环境
+	// Get environment
 	environment, err := biz.GEnvironmentBiz.GetEnvironment(s.ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("查询环境失败: %s", err.Error())
+		return nil, fmt.Errorf("failed to query environment: %s", err.Error())
 	}
 
-	// 构建响应
+	// Build response
 	response := modelToEnvironmentResponse(environment)
 
 	return response, nil
 }
 
-// DeleteEnvironmentHandler 删除环境接口Handler
+// DeleteEnvironmentHandler delete environment interface Handler
 func (s *EnvironmentService) DeleteEnvironmentHandler(c *gin.Context) {
-	// 从URL路径参数获取ID
+	// Get ID from URL path parameter
 	idStr := c.Param("id")
 	if idStr == "" {
-		common.GinError(c, i18nresp.CodeInternalError, "环境ID不能为空")
+		common.GinError(c, i18nresp.CodeInternalError, "environment ID cannot be empty")
 		return
 	}
 
 	id, err := strconv.ParseUint(idStr, 10, 32)
 	if err != nil {
-		common.GinError(c, i18nresp.CodeInternalError, "无效的环境ID")
+		common.GinError(c, i18nresp.CodeInternalError, "invalid environment ID")
 		return
 	}
 
-	// 使用 EnvironmentService 处理请求
+	// Use EnvironmentService to handle request
 	err = s.DeleteEnvironment(uint(id))
 	if err != nil {
 		common.GinError(c, i18nresp.CodeInternalError, err.Error())
 		return
 	}
 
-	common.GinSuccess(c, gin.H{"message": "环境删除成功"})
+	common.GinSuccess(c, gin.H{"message": "environment deleted successfully"})
 }
 
-// DeleteEnvironment 删除环境业务逻辑
+// DeleteEnvironment delete environment business logic
 func (s *EnvironmentService) DeleteEnvironment(id uint) error {
-	// 删除环境
+	// Delete environment
 	err := biz.GEnvironmentBiz.DeleteEnvironment(s.ctx, id)
 	if err != nil {
-		return fmt.Errorf("删除环境失败: %s", err.Error())
+		return fmt.Errorf("failed to delete environment: %s", err.Error())
 	}
 
 	return nil
 }
 
-// ListEnvironmentsHandler 环境列表接口Handler
+// ListEnvironmentsHandler environment list interface Handler
 func (s *EnvironmentService) ListEnvironmentsHandler(c *gin.Context) {
 	var req mcp_environment.ListEnvironmentsRequest
 	if err := common.BindAndValidate(c, &req); err != nil {
 		return
 	}
 
-	// 使用 EnvironmentService 处理请求
+	// Use EnvironmentService to handle request
 	result, err := s.ListEnvironments(&req)
 	if err != nil {
 		common.GinError(c, i18nresp.CodeInternalError, err.Error())
@@ -428,9 +428,9 @@ func (s *EnvironmentService) ListEnvironmentsHandler(c *gin.Context) {
 	common.GinSuccess(c, result)
 }
 
-// ListEnvironments 环境列表业务逻辑
+// ListEnvironments environment list business logic
 func (s *EnvironmentService) ListEnvironments(req *mcp_environment.ListEnvironmentsRequest) (*mcp_environment.ListEnvironmentsResponse, error) {
-	// 设置默认分页参数
+	// Set default pagination parameters
 	if req.Page <= 0 {
 		req.Page = 1
 	}
@@ -438,13 +438,13 @@ func (s *EnvironmentService) ListEnvironments(req *mcp_environment.ListEnvironme
 		req.PageSize = 20
 	}
 	if req.PageSize > 100 {
-		req.PageSize = 100 // 限制最大页面大小
+		req.PageSize = 100 // Limit maximum page size
 	}
 
 	var environments []*model.McpEnvironment
 	var err error
 
-	// 根据过滤条件查询
+	// Query based on filter conditions
 	var envType model.McpEnvironmentType
 	switch req.Environment {
 	case mcp_environment.McpEnvironmentType_Kubernetes:
@@ -454,15 +454,15 @@ func (s *EnvironmentService) ListEnvironments(req *mcp_environment.ListEnvironme
 		envType = model.McpEnvironmentDocker
 		environments, err = biz.GEnvironmentBiz.ListEnvironmentsByType(s.ctx, envType)
 	default:
-		// 查询所有环境
+		// Query all environments
 		environments, err = biz.GEnvironmentBiz.ListEnvironments(s.ctx)
 	}
 
 	if err != nil {
-		return nil, fmt.Errorf("查询环境列表失败: %s", err.Error())
+		return nil, fmt.Errorf("failed to query environment list: %s", err.Error())
 	}
 
-	// 计算分页
+	// Calculate pagination
 	total := int64(len(environments))
 	start := (int(req.Page) - 1) * int(req.PageSize)
 	end := start + int(req.PageSize)
@@ -476,7 +476,7 @@ func (s *EnvironmentService) ListEnvironments(req *mcp_environment.ListEnvironme
 		environments = environments[start:end]
 	}
 
-	// 构建响应列表
+	// Build response list
 	var responseList []*mcp_environment.McpEnvironmentInfo
 	for _, env := range environments {
 		responseList = append(responseList, modelToMcpEnvironmentInfo(env))
@@ -492,14 +492,14 @@ func (s *EnvironmentService) ListEnvironments(req *mcp_environment.ListEnvironme
 	return response, nil
 }
 
-// ListEnvironmentsHandler 环境列表接口（包级函数，保持向后兼容）
+// ListEnvironmentsHandler environment list interface (package-level function for backward compatibility)
 func ListEnvironmentsHandler(c *gin.Context) {
 	var req mcp_environment.ListEnvironmentsRequest
 	if err := common.BindAndValidateQuery(c, &req); err != nil {
 		return
 	}
 
-	// 设置默认分页参数
+	// Set default pagination parameters
 	if req.Page <= 0 {
 		req.Page = 1
 	}
@@ -507,15 +507,15 @@ func ListEnvironmentsHandler(c *gin.Context) {
 		req.PageSize = 20
 	}
 	if req.PageSize > 100 {
-		req.PageSize = 100 // 限制最大页面大小
+		req.PageSize = 100 // Limit maximum page size
 	}
 
 	var environments []*model.McpEnvironment
 	var err error
 
-	// 根据过滤条件查询
-	// 注意：由于proto中没有Unspecified值，我们需要通过其他方式判断是否需要过滤
-	// 这里我们检查请求中是否明确指定了环境类型
+	// Query based on filter conditions
+	// Note: Since there's no Unspecified value in proto, we need to determine if filtering is needed through other means
+	// Here we check if environment type is explicitly specified in the request
 	var envType model.McpEnvironmentType
 	switch req.Environment {
 	case mcp_environment.McpEnvironmentType_Kubernetes:
@@ -525,7 +525,7 @@ func ListEnvironmentsHandler(c *gin.Context) {
 		envType = model.McpEnvironmentDocker
 		environments, err = biz.GEnvironmentBiz.ListEnvironmentsByType(c.Request.Context(), envType)
 	default:
-		// 查询所有环境
+		// Query all environments
 		environments, err = biz.GEnvironmentBiz.ListEnvironments(c.Request.Context())
 	}
 
@@ -534,7 +534,7 @@ func ListEnvironmentsHandler(c *gin.Context) {
 		return
 	}
 
-	// 计算分页
+	// Calculate pagination
 	total := int64(len(environments))
 	start := (int(req.Page) - 1) * int(req.PageSize)
 	end := start + int(req.PageSize)
@@ -548,7 +548,7 @@ func ListEnvironmentsHandler(c *gin.Context) {
 		environments = environments[start:end]
 	}
 
-	// 构建响应列表
+	// Build response list
 	var responseList []*mcp_environment.McpEnvironmentInfo
 	for _, env := range environments {
 		responseList = append(responseList, modelToMcpEnvironmentInfo(env))
@@ -564,22 +564,22 @@ func ListEnvironmentsHandler(c *gin.Context) {
 	common.GinSuccess(c, response)
 }
 
-// TestConnectivityHandler 连通性测试接口Handler
+// TestConnectivityHandler connectivity test interface Handler
 func (s *EnvironmentService) TestConnectivityHandler(c *gin.Context) {
-	// 从URL路径参数获取ID
+	// Get ID from URL path parameter
 	idStr := c.Param("id")
 	if idStr == "" {
-		common.GinError(c, i18nresp.CodeInternalError, "环境ID不能为空")
+		common.GinError(c, i18nresp.CodeInternalError, "environment ID cannot be empty")
 		return
 	}
 
 	id, err := strconv.ParseUint(idStr, 10, 32)
 	if err != nil {
-		common.GinError(c, i18nresp.CodeInternalError, "无效的环境ID")
+		common.GinError(c, i18nresp.CodeInternalError, "invalid environment ID")
 		return
 	}
 
-	// 使用 EnvironmentService 处理请求
+	// Use EnvironmentService to handle request
 	result, err := s.TestConnectivity(uint(id))
 	if err != nil {
 		common.GinError(c, i18nresp.CodeInternalError, err.Error())
@@ -589,33 +589,33 @@ func (s *EnvironmentService) TestConnectivityHandler(c *gin.Context) {
 	common.GinSuccess(c, result)
 }
 
-// TestConnectivity 连通性测试业务逻辑
+// TestConnectivity connectivity test business logic
 func (s *EnvironmentService) TestConnectivity(id uint) (*mcp_environment.TestConnectivityResponse, error) {
-	// 获取环境信息
+	// Get environment information
 	environment, err := biz.GEnvironmentBiz.GetEnvironment(s.ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("查询环境失败: %s", err.Error())
+		return nil, fmt.Errorf("failed to query environment: %s", err.Error())
 	}
 	if environment == nil {
-		return nil, fmt.Errorf("环境不存在")
+		return nil, fmt.Errorf("environment does not exist")
 	}
 
-	// 执行连通性测试
+	// Execute connectivity test
 	result, err := testEnvironmentConnectivity(s.ctx, environment)
 	if err != nil {
-		return nil, fmt.Errorf("连通性测试失败: %s", err.Error())
+		return nil, fmt.Errorf("connectivity test failed: %s", err.Error())
 	}
 
 	return result, nil
 }
 
-// testEnvironmentConnectivity 执行环境连通性测试
+// testEnvironmentConnectivity execute environment connectivity test
 func testEnvironmentConnectivity(ctx context.Context, environment *model.McpEnvironment) (*mcp_environment.TestConnectivityResponse, error) {
-	// 使用数据层的连通性测试方法
+	// Use data layer connectivity test method
 	return biz.GEnvironmentBiz.TestEnvironmentConnectivity(ctx, environment)
 }
 
-// ListAllEnvironmentsHandler 获取所有环境列表（包括已删除）
+// ListAllEnvironmentsHandler get all environment list (including deleted ones)
 func ListAllEnvironmentsHandler(c *gin.Context) {
 	environments, err := biz.GEnvironmentBiz.ListAllEnvironments(c.Request.Context())
 	if err != nil {
@@ -638,16 +638,16 @@ func ListAllEnvironmentsHandler(c *gin.Context) {
 	common.GinSuccess(c, response)
 }
 
-// ListNamespacesHandler 获取命名空间列表Handler
+// ListNamespacesHandler get namespace list Handler
 func (s *EnvironmentService) ListNamespacesHandler(c *gin.Context) {
-	// 绑定请求参数
+	// Bind request parameters
 	var req mcp_environment.ListNamespacesRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("参数绑定失败: %s", err.Error()))
+		common.GinError(c, i18nresp.CodeInternalError, fmt.Sprintf("parameter binding failed: %s", err.Error()))
 		return
 	}
 
-	// 使用 EnvironmentService 处理请求
+	// Use EnvironmentService to handle request
 	result, err := s.ListNamespaces(&req)
 	if err != nil {
 		common.GinError(c, i18nresp.CodeInternalError, err.Error())
@@ -657,13 +657,13 @@ func (s *EnvironmentService) ListNamespacesHandler(c *gin.Context) {
 	common.GinSuccess(c, result)
 }
 
-// ListNamespaces 获取命名空间列表业务逻辑
+// ListNamespaces get namespace list business logic
 func (s *EnvironmentService) ListNamespaces(req *mcp_environment.ListNamespacesRequest) (*mcp_environment.ListNamespacesResponse, error) {
 	if req.Config == "" {
-		return nil, fmt.Errorf("config参数不能为空")
+		return nil, fmt.Errorf("config parameter cannot be empty")
 	}
 
-	// 解析环境类型
+	// Parse environment type
 	var environmentType model.McpEnvironmentType
 	switch req.Environment {
 	case mcp_environment.McpEnvironmentType_Kubernetes:
@@ -671,16 +671,16 @@ func (s *EnvironmentService) ListNamespaces(req *mcp_environment.ListNamespacesR
 	case mcp_environment.McpEnvironmentType_Docker:
 		environmentType = model.McpEnvironmentDocker
 	default:
-		return nil, fmt.Errorf("不支持的环境类型")
+		return nil, fmt.Errorf("unsupported environment type")
 	}
 
-	// 调用业务逻辑
+	// Call business logic
 	namespaces, err := biz.GEnvironmentBiz.ListNamespaces(s.ctx, req.Config, environmentType)
 	if err != nil {
 		return nil, err
 	}
 
-	// 构建响应
+	// Build response
 	response := &mcp_environment.ListNamespacesResponse{
 		List: namespaces,
 	}

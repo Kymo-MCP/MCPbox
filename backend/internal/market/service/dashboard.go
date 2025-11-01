@@ -25,7 +25,7 @@ type DashboardService struct {
 	ctx            context.Context
 }
 
-// NewDashboardService create dashboard service
+// NewDashboardService creates dashboard service
 func NewDashboardService(ctx context.Context) *DashboardService {
 	return &DashboardService{
 		instanceBiz:    biz.GInstanceBiz,
@@ -34,7 +34,7 @@ func NewDashboardService(ctx context.Context) *DashboardService {
 	}
 }
 
-// Statistical get statistical data
+// Statistical gets statistical data
 func (s *DashboardService) Statistical(ctx context.Context, req *pb.StatisticalRequest) (*pb.StatisticalResponse, error) {
 	// Get all instances
 	instances, err := s.instanceBiz.ListInstance(1, 10000, nil, "", "")

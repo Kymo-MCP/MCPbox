@@ -14,7 +14,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// EnvironmentBiz 环境数据访问层
+// EnvironmentBiz environment data access layer
 type EnvironmentBiz struct {
 	ctx  context.Context
 	repo *mysql.McpEnvironmentRepository
@@ -26,7 +26,7 @@ func init() {
 	GEnvironmentBiz = NewEnvironmentBiz(context.Background())
 }
 
-// NewEnvironmentBiz 创建环境数据访问层实例
+// NewEnvironmentBiz create environment data access layer instance
 func NewEnvironmentBiz(ctx context.Context) *EnvironmentBiz {
 	return &EnvironmentBiz{
 		ctx:  ctx,
@@ -34,17 +34,17 @@ func NewEnvironmentBiz(ctx context.Context) *EnvironmentBiz {
 	}
 }
 
-// CreateEnvironment 创建环境
+// CreateEnvironment create environment
 func (biz *EnvironmentBiz) CreateEnvironment(ctx context.Context, environment *model.McpEnvironment) error {
 	return biz.repo.Create(ctx, environment)
 }
 
-// UpdateEnvironment 更新环境
+// UpdateEnvironment update environment
 func (biz *EnvironmentBiz) UpdateEnvironment(ctx context.Context, environment *model.McpEnvironment) error {
 	return biz.repo.Update(ctx, environment)
 }
 
-// DeleteEnvironment 删除环境
+// DeleteEnvironment delete environment
 func (biz *EnvironmentBiz) DeleteEnvironment(ctx context.Context, id uint) error {
 	// Check if there are templates associated with this environment
 	templates, err := GTemplateBiz.GetTemplatesByEnvironmentID(ctx, id)
@@ -67,44 +67,44 @@ func (biz *EnvironmentBiz) DeleteEnvironment(ctx context.Context, id uint) error
 	return biz.repo.Delete(ctx, id)
 }
 
-// GetEnvironment 根据ID获取环境
+// GetEnvironment get environment by ID
 func (biz *EnvironmentBiz) GetEnvironment(ctx context.Context, id uint) (*model.McpEnvironment, error) {
 	return biz.repo.FindByID(ctx, id)
 }
 
-// GetEnvironmentByName 根据名称获取环境
+// GetEnvironmentByName get environment by name
 func (biz *EnvironmentBiz) GetEnvironmentByName(ctx context.Context, name string) (*model.McpEnvironment, error) {
 	return biz.repo.FindByName(ctx, name)
 }
 
-// ListEnvironments 获取所有环境列表
+// ListEnvironments get all environment list
 func (biz *EnvironmentBiz) ListEnvironments(ctx context.Context) ([]*model.McpEnvironment, error) {
 	return biz.repo.FindAll(ctx)
 }
 
-// ListEnvironmentsByType 根据环境类型获取环境列表
+// ListEnvironmentsByType get environment list by environment type
 func (biz *EnvironmentBiz) ListEnvironmentsByType(ctx context.Context, environmentType model.McpEnvironmentType) ([]*model.McpEnvironment, error) {
 	return biz.repo.FindByEnvironment(ctx, environmentType)
 }
 
-// GetDeletedEnvironment 根据ID获取已删除的环境
+// GetDeletedEnvironment get deleted environment by ID
 func (biz *EnvironmentBiz) GetDeletedEnvironment(ctx context.Context, id uint) (*model.McpEnvironment, error) {
 	return biz.repo.FindDeletedByID(ctx, id)
 }
 
-// ListAllEnvironments 获取所有环境列表（包括已删除）
+// ListAllEnvironments get all environment list (including deleted)
 func (biz *EnvironmentBiz) ListAllEnvironments(ctx context.Context) ([]*model.McpEnvironment, error) {
 	return biz.repo.FindAllWithDeleted(ctx)
 }
 
-// RestoreEnvironment 恢复已删除的环境
+// RestoreEnvironment restore deleted environment
 func (biz *EnvironmentBiz) RestoreEnvironment(ctx context.Context, id uint) error {
 	return biz.repo.RestoreEnvironment(ctx, id)
 }
 
-// TestEnvironmentConnectivity 执行环境连通性测试
+// TestEnvironmentConnectivity perform environment connectivity test
 func (biz *EnvironmentBiz) TestEnvironmentConnectivity(ctx context.Context, environment *model.McpEnvironment) (*mcp_environment.TestConnectivityResponse, error) {
-	// 根据环境类型执行不同的连通性测试
+	// Execute different connectivity tests based on environment type
 	switch environment.Environment {
 	case model.McpEnvironmentKubernetes:
 		return biz.testKubernetesConnectivity(ctx, environment)
@@ -113,97 +113,97 @@ func (biz *EnvironmentBiz) TestEnvironmentConnectivity(ctx context.Context, envi
 	default:
 		return &mcp_environment.TestConnectivityResponse{
 			Success: false,
-			Message: "不支持的环境类型",
+			Message: "unsupported environment type",
 		}, nil
 	}
 }
 
-// testKubernetesConnectivity 测试Kubernetes连通性
+// testKubernetesConnectivity test Kubernetes connectivity
 func (biz *EnvironmentBiz) testKubernetesConnectivity(ctx context.Context, environment *model.McpEnvironment) (*mcp_environment.TestConnectivityResponse, error) {
-	// 创建容器运行时配置
+	// Create container runtime configuration
 	config := container.Config{
 		Runtime:    container.RuntimeKubernetes,
 		Namespace:  environment.Namespace,
 		Kubeconfig: common.SetKubeConfig([]byte(environment.Config)),
-		Network:    "bridge", // 默认网络配置
+		Network:    "bridge", // Default network configuration
 	}
 
-	// 创建容器运行时入口
+	// Create container runtime entry
 	entry, err := container.NewEntry(config)
 	if err != nil {
 		return &mcp_environment.TestConnectivityResponse{
 			Success: false,
-			Message: "Kubernetes客户端初始化失败",
+			Message: "Kubernetes client initialization failed",
 		}, nil
 	}
 
-	// 检查是否为Kubernetes运行时
+	// Check if it's Kubernetes runtime
 	if !entry.IsKubernetes() {
 		return &mcp_environment.TestConnectivityResponse{
 			Success: false,
-			Message: "运行时类型错误",
+			Message: "runtime type error",
 		}, nil
 	}
 
-	// 获取K8s入口
+	// Get K8s entry
 	k8sRuntime := entry.GetK8sRuntime()
 	if k8sRuntime == nil {
 		return &mcp_environment.TestConnectivityResponse{
 			Success: false,
-			Message: "Kubernetes客户端获取失败",
+			Message: "Kubernetes client acquisition failed",
 		}, nil
 	}
 
-	// 测试连接 - 尝试获取节点信息
+	// Test connection - try to get node information
 	containerManager := entry.GetContainerManager()
 	if containerManager == nil {
 		return &mcp_environment.TestConnectivityResponse{
 			Success: false,
-			Message: "容器管理器获取失败",
+			Message: "container manager acquisition failed",
 		}, nil
 	}
 
 	return &mcp_environment.TestConnectivityResponse{
 		Success: true,
-		Message: "Kubernetes连接测试成功",
+		Message: "Kubernetes connection test successful",
 	}, nil
 }
 
-// testDockerConnectivity 测试Docker连通性
+// testDockerConnectivity test Docker connectivity
 func (biz *EnvironmentBiz) testDockerConnectivity(ctx context.Context, environment *model.McpEnvironment) (*mcp_environment.TestConnectivityResponse, error) {
-	// 创建容器运行时配置
+	// Create container runtime configuration
 	config := container.Config{
 		Runtime: container.RuntimeDocker,
-		Network: "bridge", // 默认Docker网络
+		Network: "bridge", // Default Docker network
 	}
 
-	// 创建容器运行时入口
+	// Create container runtime entry
 	entry, err := container.NewEntry(config)
 	if err != nil {
 		return &mcp_environment.TestConnectivityResponse{
 			Success: false,
-			Message: "Docker客户端初始化失败",
+			Message: "Docker client initialization failed",
 		}, nil
 	}
 
-	// 检查是否为Docker运行时
+	// Check if it's Docker runtime
 	if !entry.IsDocker() {
 		return &mcp_environment.TestConnectivityResponse{
 			Success: false,
-			Message: "运行时类型错误",
+			Message: "runtime type error",
 		}, nil
 	}
 
-	// 获取容器管理器进行连通性测试
+	// Get container manager for connectivity test
 	containerManager := entry.GetContainerManager()
 	if containerManager == nil {
 		return &mcp_environment.TestConnectivityResponse{
 			Success: false,
-			Message: "Docker容器管理器未初始化",
+			Message: "Docker container manager not initialized",
 		}, nil
 	}
 
-	details := "Docker连接测试通过"
+	details := "Docker connection test successful"
 	if environment.Config != "" {
 		details += fmt.Sprintf("，使用配置: %s", environment.Config)
 	}

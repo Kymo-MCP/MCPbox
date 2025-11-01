@@ -12,7 +12,7 @@ import (
 
 var GlobalConfig *Config
 
-// Config 表示配置结构
+// Config represents configuration structure
 type Config struct {
 	ServiceName string                `mapstructure:"-"`
 	VersionInfo *version.VersionInfo  `mapstructure:"-"`
@@ -30,32 +30,32 @@ type Config struct {
 var serviceName = "market"
 var cfgFileName = "market.yaml"
 
-// GetConfig 获取全局配置
+// GetConfig gets global configuration
 func GetConfig() *Config {
 	return GlobalConfig
 }
 
-// Load 加载配置文件
+// Load loads configuration file
 func Load() (*Config, error) {
 	v := viper.New()
 	v.SetConfigType("yaml")
 
-	// 如果未指定配置文件路径，尝试自动查找
+	// If configuration file path is not specified, try to find it automatically
 	var err error
 	configPath, err := common.FindConfigFile(cfgFileName)
 	if err != nil {
 		return nil, err
 	}
 
-	// 设置配置文件路径
+	// Set configuration file path
 	v.SetConfigFile(configPath)
 
-	// 读取配置文件
+	// Read configuration file
 	if err := v.ReadInConfig(); err != nil {
 		return nil, fmt.Errorf("failed to read config file: %v", err)
 	}
 
-	// 解析配置
+	// Parse configuration
 	var config Config
 	if err := v.Unmarshal(&config); err != nil {
 		return nil, fmt.Errorf("failed to parse config file: %v", err)
@@ -84,7 +84,7 @@ func Load() (*Config, error) {
 	}
 	utils.MkdirP(config.Storage.StaticPath)
 
-	// 追加 Version 信息
+	// Append Version information
 	config.ServiceName = serviceName
 	config.VersionInfo = version.GetVersionInfo()
 

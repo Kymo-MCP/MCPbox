@@ -6,30 +6,30 @@ import (
 	"github.com/kymo-mcp/mcpcan/pkg/database/model"
 )
 
-// TaskManager 任务管理器接口
-// 负责管理全局任务的生命周期
+// TaskManager task manager interface
+// Responsible for managing the lifecycle of global tasks
 type TaskManager interface {
-	// SetupGlobalTasks 设置全局任务
-	// 初始化所有需要的全局任务
+	// SetupGlobalTasks sets up global tasks
+	// Initializes all required global tasks
 	SetupGlobalTasks(ctx context.Context) error
 
-	// StartMonitoring 开始监控
-	// 启动所有监控任务
+	// StartMonitoring starts monitoring
+	// Starts all monitoring tasks
 	StartMonitoring(ctx context.Context) error
 
-	// StopMonitoring 停止监控
-	// 停止所有监控任务
+	// StopMonitoring stops monitoring
+	// Stops all monitoring tasks
 	StopMonitoring(ctx context.Context) error
 }
 
-// ContainerMonitor 容器监控接口
-// 负责容器状态监控和管理
+// ContainerMonitor container monitoring interface
+// Responsible for container status monitoring and management
 type ContainerMonitor interface {
-	// MonitorContainers 监控所有容器
-	// 检查所有活跃实例的容器状态
+	// MonitorContainers monitors all containers
+	// Checks the container status of all active instances
 	MonitorContainers(ctx context.Context) error
 
-	// CheckContainer 检查单个容器
-	// 检查指定实例的容器状态并在需要时重建
+	// CheckContainer checks a single container
+	// Checks the container status of a specified instance and rebuilds if necessary
 	CheckContainer(ctx context.Context, instance *model.McpInstance) error
 }

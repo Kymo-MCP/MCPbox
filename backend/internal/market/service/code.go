@@ -43,14 +43,14 @@ func NewCodeService() *CodeService {
 
 // UploadPackage uploads a code package
 func (s *CodeService) UploadPackage(c *gin.Context) {
-	// 记录上传开始时间
+	// Record upload start time
 	startTime := time.Now()
 	logger.Info("Starting code package upload request",
 		zap.String("client_ip", c.ClientIP()),
 		zap.String("request_id", c.GetString("RequestID")),
 		zap.String("content_type", c.ContentType()))
 
-	// 获取上传的文件
+	// Get uploaded file
 	file, header, err := c.Request.FormFile("file")
 	if err != nil {
 		logger.Error("Failed to get uploaded file",
@@ -62,7 +62,7 @@ func (s *CodeService) UploadPackage(c *gin.Context) {
 	}
 	defer file.Close()
 
-	// 记录上传文件的详细信息
+	// Record detailed information of uploaded file
 	logger.Info("File received for upload",
 		zap.String("filename", header.Filename),
 		zap.Int64("size", header.Size),
@@ -70,7 +70,7 @@ func (s *CodeService) UploadPackage(c *gin.Context) {
 		zap.Float64("size_mb", float64(header.Size)/(1024*1024)),
 		zap.String("content_type", header.Header.Get("Content-Type")))
 
-	// 使用代码包管理器处理上传和解压
+	// Use code package manager to handle upload and extraction
 	packageInfo, err := s.packageManager.UploadAndExtractPackage(file, header)
 	if err != nil {
 		logger.Error("Failed to upload and extract package", zap.Error(err))
@@ -80,7 +80,7 @@ func (s *CodeService) UploadPackage(c *gin.Context) {
 
 	ctx := context.Background()
 
-	// 保存到数据库
+	// Save to database
 	codePackage := &model.McpCodePackage{
 		PackageID:     packageInfo.PackageID,
 		PackageType:   packageInfo.PackageType,
@@ -93,13 +93,13 @@ func (s *CodeService) UploadPackage(c *gin.Context) {
 
 	if err := s.codePackageRepo.Create(ctx, codePackage); err != nil {
 		logger.Error("Failed to save package to database", zap.Error(err))
-		// 清理创建的目录
+		// Clean up created directory
 		os.RemoveAll(packageInfo.PackagePath)
 		common.GinError(c, i18nresp.CodeInternalError, "failed to save package information")
 		return
 	}
 
-	// 计算总体耗时
+	// Calculate total elapsed time
 	totalElapsed := time.Since(startTime)
 	logger.Info("Package uploaded successfully",
 		zap.String("packageId", packageInfo.PackageID),
@@ -111,7 +111,7 @@ func (s *CodeService) UploadPackage(c *gin.Context) {
 
 	common.GinSuccess(c, &code.UploadPackageResponse{
 		PackageId:   packageInfo.PackageID,
-		PackagePath: packageInfo.ExtractedPath, // 返回相对路径
+		PackagePath: packageInfo.ExtractedPath, // Return relative path
 	})
 }
 
@@ -124,7 +124,7 @@ func (s *CodeService) GetCodeTree(c *gin.Context) {
 
 	ctx := context.Background()
 
-	// 查找代码包
+	// Find code package
 	codePackage, err := s.codePackageRepo.FindByPackageID(ctx, req.PackageId)
 	if err != nil {
 		logger.Error("Failed to find code package", zap.String("packageId", req.PackageId), zap.Error(err))
@@ -132,14 +132,14 @@ func (s *CodeService) GetCodeTree(c *gin.Context) {
 		return
 	}
 
-	// 使用解压后的路径构建文件结构
+	// Use extracted path to build file structure
 	extractedPath := codePackage.ExtractedPath
 	if extractedPath == "" {
-		// 兼容旧数据，如果没有解压路径，使用包路径
+		// Compatible with old data, use package path if no extracted path
 		extractedPath = codePackage.PackagePath
 	}
 
-	// 将相对路径转换为绝对路径
+	// Convert relative path to absolute path
 	absExtractedPath, err := s.packageManager.ToAbsolutePath(extractedPath)
 	if err != nil {
 		logger.Error("Failed to convert to absolute path", zap.String("relativePath", extractedPath), zap.Error(err))
@@ -168,7 +168,7 @@ func (s *CodeService) GetCodeFile(c *gin.Context) {
 
 	ctx := context.Background()
 
-	// 查找代码包
+	// Find code package
 	codePackage, err := s.codePackageRepo.FindByPackageID(ctx, req.PackageId)
 	if err != nil {
 		logger.Error("Failed to find code package", zap.String("instanceId", req.PackageId), zap.Error(err))
@@ -176,14 +176,14 @@ func (s *CodeService) GetCodeFile(c *gin.Context) {
 		return
 	}
 
-	// 使用解压后的路径
+	// Use extracted path
 	extractedPath := codePackage.ExtractedPath
 	if extractedPath == "" {
-		// 兼容旧数据，如果没有解压路径，使用包路径
+		// Compatible with old data, use package path if no extracted path
 		extractedPath = codePackage.PackagePath
 	}
 
-	// 将相对路径转换为绝对路径
+	// Convert relative path to absolute path
 	absExtractedPath, err := s.packageManager.ToAbsolutePath(extractedPath)
 	if err != nil {
 		logger.Error("Failed to convert to absolute path", zap.String("relativePath", extractedPath), zap.Error(err))
@@ -191,10 +191,10 @@ func (s *CodeService) GetCodeFile(c *gin.Context) {
 		return
 	}
 
-	// 构建完整文件路径
+	// Build complete file path
 	fullPath := filepath.Join(absExtractedPath, req.FilePath)
 
-	// 安全检查：确保文件路径在包目录内
+	// Security check: ensure file path is within package directory
 	absPackagePath, err := filepath.Abs(absExtractedPath)
 	if err != nil {
 		logger.Error("Failed to get absolute package path", zap.String("path", absExtractedPath), zap.Error(err))
@@ -217,13 +217,13 @@ func (s *CodeService) GetCodeFile(c *gin.Context) {
 		return
 	}
 
-	// 检查文件是否存在
+	// Check if file exists
 	if _, statErr := os.Stat(fullPath); os.IsNotExist(statErr) {
 		common.GinError(c, i18nresp.CodeInternalError, "file not found")
 		return
 	}
 
-	// 读取文件内容
+	// Read file content
 	content, err := os.ReadFile(fullPath)
 	if err != nil {
 		logger.Error("Failed to read file", zap.String("path", fullPath), zap.Error(err))
@@ -245,7 +245,7 @@ func (s *CodeService) EditCodeFile(c *gin.Context) {
 
 	ctx := context.Background()
 
-	// 查找代码包
+	// Find code package
 	codePackage, err := s.codePackageRepo.FindByPackageID(ctx, req.PackageId)
 	if err != nil {
 		logger.Error("Failed to find code package", zap.String("instanceId", req.PackageId), zap.Error(err))
@@ -253,14 +253,14 @@ func (s *CodeService) EditCodeFile(c *gin.Context) {
 		return
 	}
 
-	// 使用解压后的路径
+	// Use extracted path
 	extractedPath := codePackage.ExtractedPath
 	if extractedPath == "" {
-		// 兼容旧数据，如果没有解压路径，使用包路径
+		// Compatible with old data, use package path if no extracted path
 		extractedPath = codePackage.PackagePath
 	}
 
-	// 将相对路径转换为绝对路径
+	// Convert relative path to absolute path
 	absExtractedPath, err := s.packageManager.ToAbsolutePath(extractedPath)
 	if err != nil {
 		logger.Error("Failed to convert to absolute path", zap.String("relativePath", extractedPath), zap.Error(err))
@@ -268,10 +268,10 @@ func (s *CodeService) EditCodeFile(c *gin.Context) {
 		return
 	}
 
-	// 构建完整文件路径
+	// Build complete file path
 	fullPath := filepath.Join(absExtractedPath, req.FilePath)
 
-	// 安全检查：确保文件路径在包目录内
+	// Security check: ensure file path is within package directory
 	absPackagePath, err := filepath.Abs(absExtractedPath)
 	if err != nil {
 		logger.Error("Failed to get absolute package path", zap.String("path", absExtractedPath), zap.Error(err))
@@ -294,7 +294,7 @@ func (s *CodeService) EditCodeFile(c *gin.Context) {
 		return
 	}
 
-	// 确保目录存在
+	// Ensure directory exists
 	dir := filepath.Dir(fullPath)
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		logger.Error("Failed to create directory", zap.String("dir", dir), zap.Error(err))
@@ -302,7 +302,7 @@ func (s *CodeService) EditCodeFile(c *gin.Context) {
 		return
 	}
 
-	// 写入文件内容
+	// Write file content
 	if err := os.WriteFile(fullPath, []byte(req.Content), 0644); err != nil {
 		logger.Error("Failed to write file", zap.String("path", fullPath), zap.Error(err))
 		common.GinError(c, i18nresp.CodeInternalError, "failed to write file")
@@ -314,7 +314,7 @@ func (s *CodeService) EditCodeFile(c *gin.Context) {
 	})
 }
 
-// buildFileTree 构建文件树结构
+// buildFileTree builds file tree structure
 func (s *CodeService) buildFileTree(rootPath string) (*code.FileNode, error) {
 	return utils.BuildFileTreeRecursive(rootPath, rootPath, "")
 }
@@ -383,8 +383,8 @@ func (s *CodeService) DownloadPackage(c *gin.Context) {
 	c.File(absFilePath)
 }
 
-// GenerateDownloadZip 处理下载请求的通用逻辑
-// GetCodePackageList 获取代码包列表
+// GenerateDownloadZip handles common logic for download requests
+// GetCodePackageList gets code package list
 func (s *CodeService) GetCodePackageList(c *gin.Context) {
 	var req code.CodePackageListRequest
 	if err := common.BindAndValidateQuery(c, &req); err != nil {
@@ -393,7 +393,7 @@ func (s *CodeService) GetCodePackageList(c *gin.Context) {
 		return
 	}
 
-	// 设置默认值
+	// Set default values
 	if req.Page <= 0 {
 		req.Page = 1
 	}
@@ -409,7 +409,7 @@ func (s *CodeService) GetCodePackageList(c *gin.Context) {
 		filters["keyword"] = req.Keyword
 	}
 	if len(req.PackageType) > 0 {
-		// 转换为模型类型
+		// Convert to model type
 		var packageTypes []model.PackageType
 		for _, t := range req.PackageType {
 			modelType, _ := common.ConvertToModelPackageType(t)
@@ -419,7 +419,7 @@ func (s *CodeService) GetCodePackageList(c *gin.Context) {
 			filters["packageType"] = packageTypes
 		}
 	}
-	// 查询代码包列表
+	// Query code package list
 	packages, total, err := s.codePackageRepo.FindWithPagination(c.Request.Context(), req.Page, req.PageSize, filters)
 	if err != nil {
 		logger.Error("Failed to query code packages", zap.Error(err))
@@ -427,7 +427,7 @@ func (s *CodeService) GetCodePackageList(c *gin.Context) {
 		return
 	}
 
-	// 转换为响应格式
+	// Convert to response format
 	var packageList []*code.CodePackageInfo
 	for _, pkg := range packages {
 		packageInfo := &code.CodePackageInfo{
@@ -451,7 +451,7 @@ func (s *CodeService) GetCodePackageList(c *gin.Context) {
 	common.GinSuccess(c, response)
 }
 
-// convertPackageType 转换包类型
+// convertPackageType converts package type
 func convertPackageType(modelType model.PackageType) code.PackageType {
 	switch modelType {
 	case model.PackageTypeTar:
