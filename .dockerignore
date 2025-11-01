@@ -1,0 +1,92 @@
+# Git files
+.git
+.gitignore
+.gitmessage
+
+# Documentation
+README.md
+README_CN.md
+*.md
+docs/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+.nyc_output/
+
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Optional npm cache directory
+.npm
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variables file
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Build outputs
+dist/
+build/
+*.tar.gz
+
+# Test files
+test/
+*.test.js
+*.spec.js
+
+# Temporary files
+tmp/
+temp/
+
+# Backend specific
+backend/bin/
+backend/data/
+backend/test/
+
+# Frontend specific
+frontend/.vite/
+frontend/dist/
+frontend/node_modules/
+
+# Docker files (exclude from context when building)
+Dockerfile*
+docker-compose*.yml
+.dockerignore
