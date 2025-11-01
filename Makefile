@@ -217,8 +217,15 @@ proto-buf:
 	@cd $(BACKEND_PATH)/api && buf --debug generate 
 	@find $(BACKEND_PATH)/api -name "*.pb.go" -exec protoc-go-inject-tag -input={} \; || echo "No .pb.go files found for tag injection"
 	@echo "---- Merging swagger files ----"
-	@swagger mixin $(shell rm -rf $(BACKEND_PATH)/api/merged.swagger.json && find $(BACKEND_PATH)/api -name "*.json") -o $(BACKEND_PATH)/api/merged.swagger.json 2>/dev/null || true
-	@ls -la $(BACKEND_PATH)/api/merged.swagger.json
+	@rm -f $(BACKEND_PATH)/api/merged.swagger.json
+	@if [ -n "$$(find $(BACKEND_PATH)/api -name '*.json' -type f)" ]; then \
+		swagger mixin $$(find $(BACKEND_PATH)/api -name '*.json' -type f) -o $(BACKEND_PATH)/api/merged.swagger.json; \
+		echo "Swagger files merged successfully"; \
+		ls -la $(BACKEND_PATH)/api/merged.swagger.json; \
+	else \
+		echo "No swagger JSON files found to merge"; \
+		touch $(BACKEND_PATH)/api/merged.swagger.json; \
+	fi
 
 # Development targets
 .PHONY: dev-backend
